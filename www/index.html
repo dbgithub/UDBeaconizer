@@ -10,24 +10,23 @@
         <title>UD Beaconizer</title>
     </head>
     <body>
-        <!-- <div class="app"> -->
             <header><h1>What are you looking for?</h1></header>
             <button onclick="callAnothePage()">Click me!</button>
 
-            <!-- <div id="deviceready" class="blink">
-                <p class="event listening">Connecting to Device</p>
-                <p class="event received">Device is Ready</p>
-            </div> -->
-            <section></section>
+
+            <section>
+              <input id="input_search_bar" type="text" name="search_bar" value=":)">
+
+              <button class="button" style="vertical-align:middle"><span>Hover </span></button>
+
+            </section>
 
             <footer>
                 <div class="div_black-separator"></div>
-                <div id="rotatingDiv">
                 <img id="img_logo" style="-moz-transform: rotate(0deg) translateZ(0px); -webkit-transform: rotate(0deg) translateZ(0px); transform: rotate(0deg) translateZ(0px);" src="./img/logo_UD-standard.svg" alt="logo">
-                </div>
             </footer>
 
-        <!-- </div> -->
+
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         <script type="text/javascript" src="js/propeller.js"></script>
@@ -35,7 +34,7 @@
             app.initialize();
             new Propeller(document.getElementById('img_logo'), {inertia: 0.90, speed: 1, onDragStop: function() {dragStop()}});
             function dragStop() {
-              alert("helloworld!");
+
             }
         </script>
         <script type="text/javascript">
