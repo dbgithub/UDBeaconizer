@@ -5,10 +5,14 @@
     -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
     padding: 0px;
     margin: 0px;
+    -webkit-box-sizing: border-box; /* It changes how the Width and Height of the elements are calculated */
+    -moz-box-sizing: border-box; /* It changes how the Width and Height of the elements are calculated */
+    box-sizing: border-box; /* It changes how the Width and Height of the elements are calculated */
 }
 
 body {
     background-image: url("../img/bg-gray-bars.jpg");
+    font-family:'PT Sans', sans-serif;
     /*background-color:#E4E4E4;
     background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
@@ -21,12 +25,24 @@ body {
         color-stop(0.51, #E4E4E4)
     );
     background-attachment:fixed;
-    font-family:'HelveticaNeue-Light', 'HelveticaNeue', Helvetica, Arial, sans-serif;
+
     font-size:12px;
     height:100%;
     text-transform:uppercase;
     width:100%;
     */
+}
+
+section {
+    margin: 0 5% 0 5%;;
+}
+
+h1 {
+    text-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    font-size:90px;
+    font-weight:normal;
+    text-align:center;
+    margin-top: 35px;
 }
 
 footer {
@@ -36,29 +52,61 @@ footer {
     background-attachment:fixed;
     text-align: center;
     vertical-align: middle;
-    margin-top: 100%;
-    margin-bottom: 0px;
+    position: fixed;
+    bottom: 0px;
+    width: 100%;
+    height: 100px;
 }
+
+footer img {
+    margin: 12px;
+    max-height:inherit;
+}
+
 .div_black-separator {
     background-color: rgba(51,53,55,1);
     height: 15px;
     width: 100%;
 }
 
+.input_search_bar {
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(41, 41, 41);
+    color: white;
+    padding: 12px;
+    margin-top: 110px;
+    font-size: 60px;
+    vertical-align: middle;;
+    display: block;
+    width: 100%;
+    height: 100px;
+    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    user-select: text; /* allows copy, paste and manipulating text within text field*/
+}
+
 .button {
-    position: relative;
-    background-color: #4CAF50;
+    box-shadow: 0px 1px 10px 3px rgba(0, 0, 0, 0.8);
+    background-color: #0053ce;
+    display: block;
     border: none;
-    font-size: 28px;
-    color: #FFFFFF;
-    padding: 20px;
-    width: 200px;
+    font-size: 60px;
+    color: #FFF;
+    padding: 50px;
+    width: 300px;
     text-align: center;
-    -webkit-transition-duration: 0.4s; /* Safari */
-    transition-duration: 0.4s;
-    text-decoration: none;
-    overflow: hidden;
-    cursor: pointer;
+    vertical-align: middle;
+    margin: 60px auto 0px auto;
+}
+.button:active {
+    background-color: #FFF;
+    color: #0053ce;
+    -webkit-transform: scale3d(0.9, 0.9, 1);
+    -moz-transform: scale3d(0.9, 0.9, 1);
+    transform: scale3d(0.9, 0.9, 1);
 }
 
 /* Portrait layout (default) */
@@ -74,17 +122,6 @@ footer {
       background-color: #000;
       font-size: 50px;
     }
-}
-
-
-
-h1 {
-    font-size:24px;
-    font-weight:normal;
-    margin:0px;
-    overflow:visible;
-    padding:0px;
-    text-align:center;
 }
 
 /* Possible useful CSS rules and classes towards the future: */
