@@ -11,12 +11,10 @@
     <title>UD Beaconizer</title>
 </head>
 <body>
-    <header><h1>What are you looking for?</h1></header>
+    <header><h1>Map</h1></header>
 
     <section>
-        <input class="input_search_bar" type="text" name="search_bar" value="">
-        <button class="button" onclick="callAnothePage()" ontouchstart="return true;">GO!</button>
-        <button class="button" onclick="goMap()" ontouchstart="return true;">MAP</button>
+        <img id="map" src="img/4_planta_cuarta.jpg" alt="map" height="600" width="800">
     </section>
 
     <footer>
@@ -28,7 +26,9 @@
     <script type="text/javascript" src="js/propeller.js"></script>
     <script type="text/javascript">
     app.initialize();
-
+    </script>
+    <script type="text/javascript">
+    new Propeller(document.getElementById('map'), {inertia: 0.90, speed: 1});
     </script>
     <script type="text/javascript">
     function callAnothePage() {
