@@ -9,7 +9,14 @@
     "installed_plugins": {
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
+        "cordova-plugin-eddystone": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "cordova-plugin-ble": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        }
+    }
 }

@@ -16,6 +16,7 @@
     <section>
         <input class="input_search_bar" type="text" name="search_bar" value="">
         <button class="button" onclick="callAnothePage()" ontouchstart="return true;">GO!</button>
+        <button class="button" onclick="goMap()" ontouchstart="return true;">MAP</button>
     </section>
 
     <footer>
@@ -32,6 +33,9 @@
     <script type="text/javascript">
     function callAnothePage() {
         window.location = "page2.html";
+    }
+    function goMap() {
+        window.location = "map.html";
     }
     function BackKeyDown()
     {

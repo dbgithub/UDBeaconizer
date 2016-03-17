@@ -78,6 +78,15 @@ footer img {
     width: auto;
 }
 
+#map {
+-moz-transform: rotateX(0deg);
+-webkit-transform: rotateX(0deg);
+transform: rotate(0deg);
+-moz-transform: translateZ(0px);
+-webkit-transform: translateZ(0px);
+transform: translateZ(0px);
+}
+
 .div_black-separator {
     background-color: rgba(51,53,55,1);
     height: 15px;

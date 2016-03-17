@@ -5,7 +5,7 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <meta name="viewport" content="user-scalable=0, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
     <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>UD Beaconizer</title>
@@ -14,7 +14,10 @@
     <header><h1>Map</h1></header>
 
     <section>
-        <img id="map" src="img/4_planta_cuarta.jpg" alt="map" height="600" width="800">
+        <div id="map">
+            <svg width="100%" height="100%" style="position: absolute;"><circle cx="100" cy="50" r="12" fill="red" /></svg>
+            <img src="img/4_planta_cuarta.jpg" alt="map">
+        </div>
     </section>
 
     <footer>
@@ -24,11 +27,16 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/propeller.js"></script>
+    <script type="text/javascript" src="js/iscroll-zoom.js"></script>
     <script type="text/javascript">
     app.initialize();
+    alert("holas");
+    document.body.style.backgroundImage="url('img/bg-noisy-grey.jpg')";
     </script>
+
     <script type="text/javascript">
-    new Propeller(document.getElementById('map'), {inertia: 0.90, speed: 1});
+    //var p = new Propeller(document.getElementById('map'), {inertia: 0.90, speed: 1});
+    //p.angle = -9; // esto es para que se quede en horizontal
     </script>
     <script type="text/javascript">
     function callAnothePage() {

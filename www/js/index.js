@@ -39,6 +39,17 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
+        // Evothings.eddystone.js: Timer that displays list of beacons.
+        var timer = null;
+        // Evothings.eddystone.js: Start tracking beacons!
+        setTimeout(startScan, 500);
+        // Evothings.eddystone.js: Timer that refreshes the display.
+        timer = setInterval(updateBeaconList, 500);
+
+
+        /* iScroll */
+        //var myScroll = new IScroll('#map', { zoom:true, mouseWheel: true, zoomMax: 10, zoomMin: 0.1 });
+
         /*var parentElement = document.getElementById(id);
         var listeningElement = parentElement.querySelector('.listening');
         var receivedElement = parentElement.querySelector('.received');

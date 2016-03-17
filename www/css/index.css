@@ -79,12 +79,13 @@ footer img {
 }
 
 #map {
--moz-transform: rotateX(0deg);
--webkit-transform: rotateX(0deg);
+-moz-transform: rotate(0deg);
+-webkit-transform: rotate(0deg);
 transform: rotate(0deg);
--moz-transform: translateZ(0px);
--webkit-transform: translateZ(0px);
-transform: translateZ(0px);
+-moz-transform: translateZ(0);
+-webkit-transform: translateZ(0);
+transform: translateZ(0);
+background-color: #000;
 }
 
 .div_black-separator {
