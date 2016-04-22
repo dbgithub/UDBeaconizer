@@ -5,37 +5,62 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, target-densitydpi=device-dpi" />
     <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>UD Beaconizer</title>
 </head>
 <body>
     <header><h1>What are you looking for?</h1></header>
-
+    <div id="test_beacons" style="font-size: 50px;"><p>beacons</p></div>
     <section>
-        <input class="input_search_bar" type="text" name="search_bar" value="">
+            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+        <div class="">
+            <div id="div_liveSearchResults">
+            </div>
+
+        </div>
         <button class="button" onclick="callAnothePage()" ontouchstart="return true;">GO!</button>
         <button class="button" onclick="goMap()" ontouchstart="return true;">MAP</button>
+        <button class="button" onclick="goContact()" ontouchstart="return true;">Contact</button>
     </section>
+
 
     <footer>
         <div class="div_black-separator"></div>
         <img id="img_logo" src="./img/logo_UD-standard.svg" alt="logo">
     </footer>
+
+    <form id="form_hidden" class="form" action="contact.html" method="post">
+        <input id="input_hidden" type="text" name="index" value="0">
+    </form>
+
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript" src="js/propeller.js"></script>
+    <script type="text/javascript" src="js/events.js"></script>
+    <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script src="js/pouchdb-5.3.1.min.js"></script>
+    <script src="js/readStaff.js"></script>
+    <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();
-
     </script>
+
     <script type="text/javascript">
     function callAnothePage() {
         window.location = "page2.html";
     }
     function goMap() {
+        evothings.eddystone.stopScan();
         window.location = "map.html";
+    }
+    function goContact(index) {
+        // document.getElementById("input_hidden").value = indice;
+        // document.getElementById("form_hidden").submit();
+        localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+        evothings.eddystone.stopScan();
+        window.location = "contact.html";
     }
     function BackKeyDown()
     {

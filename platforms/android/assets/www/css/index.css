@@ -13,6 +13,7 @@
 body {
     background-image: url("../img/bg-gray-bars.jpg");
     font-family:'PT Sans', sans-serif;
+    height: 100%;
     /*background-color:#E4E4E4;
     background-image:linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
     background-image:-webkit-linear-gradient(top, #A7A7A7 0%, #E4E4E4 51%);
@@ -78,13 +79,22 @@ footer img {
     width: auto;
 }
 
+#map_wrapper {
+    position: absolute;
+    overflow: hidden;
+    background-color: #ccc;
+}
+/* no estoy utilizando esto */
 #map {
--moz-transform: rotateX(0deg);
--webkit-transform: rotateX(0deg);
-transform: rotate(0deg);
--moz-transform: translateZ(0px);
--webkit-transform: translateZ(0px);
-transform: translateZ(0px);
+    -moz-transform: scale(0.5,0.5);
+    -webkit-transform: scale(0.5,0.5);
+    transform: scale(0.5,0.5);
+}
+
+#location_ico {
+    height: 85px; /* This should be equal to height of header - the height of the black divisor */
+    margin: 5px 10px 5px 10px;
+    float: left;
 }
 
 .div_black-separator {
@@ -110,6 +120,41 @@ transform: translateZ(0px);
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
     user-select: text; /* allows copy, paste and manipulating text within text field*/
+}
+
+#div_liveSearchResults {
+    background-image: url("../img/bg-noisy-grey.jpg");
+    opacity: 0.75;
+    filter: alpha(opacity=75); /* For IE8 and earlier */
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    border-style: solid;
+    border-color: black;
+    background-color: red;
+    width: 95%;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative; /* This should absolute, in order to make the impressions that float over the rest of the elements */
+    /*margin-top: -0px; - not needed for the moment */
+    /*z-index: ?; -do we need it?-*/
+    visibility: hidden;
+}
+#div_liveSearchResults ul {
+    list-style-type:none;
+}
+#div_liveSearchResults li {
+    font-size:50px;
+    font-weight:normal;
+    text-align:left;
+    /*padding: 6px;*/
+    border-bottom: 1px solid gray;
+    overflow: hidden;
+}
+#div_liveSearchResults li:first-child {
+    border-top: 1px solid gray;
+}
+
+.form{
+    visibility: hidden;
 }
 
 .button {
