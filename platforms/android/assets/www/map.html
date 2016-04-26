@@ -11,32 +11,42 @@
     <link rel="stylesheet" type="text/css" href="css/map.css" />
     <title>UD Beaconizer</title>
 </head>
-<body>
-    <header><h1>Map</h1></header>
+<body onload="loadMap()">
+    <header>
+            <img id="location_ico" src="img/location_ico.png" alt="location icon" />
+            <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+            <div id="div_liveSearchResults"></div>
+        <div class="div_black-separator"></div>
+    </header>
 
     <section>
+        hola
         <div id="map_wrapper">
-            <div>
-                <svg width="100%" height="100%" style="position: absolute;"><circle cx="100" cy="50" r="12" fill="red" /></svg>
-                <img src="img/4_planta_cuarta.jpg" alt="map" width="1000" height="800">
+            <div style="background-color:blue; width:auto; height:auto;position:absolute">
+                <!-- <svg><circle cx="100" cy="50" r="12" fill="red" /></svg> -->
+                <img id="map" src="" alt="map">
             </div>
         </div>
     </section>
 
     <footer>
         <div class="div_black-separator"></div>
-        <img id="img_logo" src="./img/logo_UD-standard.svg" alt="logo">
+        <img id="img_badge" src="./img/logo_UD-badge.png" alt="UD badge">
     </footer>
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" src="js/events.js"></script>
+    <script type="text/javascript" src="js/evothings.eddystone.js"></script>
     <script type="text/javascript" src="js/iscroll-zoom.js"></script>
+    <script src="js/pouchdb-5.3.1.min.js"></script>
+    <script src="js/readFiles.js"></script>
+    <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();
-    document.body.style.backgroundImage="url('img/bg-noisy-grey.jpg')";
-    /* IScroll5 */
-    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
+    </script>
 
+    <script type="text/javascript">
     function BackKeyDown()
     {
         //navigator.notification.alert();
@@ -44,6 +54,5 @@
         navigator.app.backHistory(); // Going back one step
     }
     </script>
-    <script type="text/javascript" src="js/evothings.eddystone.js"></script>
 </body>
 </html>

@@ -17,10 +17,13 @@
  * under the License.
  */
 // GLOBAL VARIABLES for all javascript files:
-var _tuples; // text lines read from stafflist ''.txt'
-var _db; // database
+var _tuples; // text lines read from stafflist '.txt'
+var _jsondata // json documents read from rooms '.json' file
+var _db; // database for staff
+var _dbrooms; // database for rooms
 var _reva; // returned value for any function
-var _searched_people; // an array containing the staff/people who have been found with the query
+var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
+var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
 var app = {
     // Application Constructor
     initialize: function() {
@@ -51,8 +54,9 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-            createDB(); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                        // If it is not the first time, the database is just fetched
+            createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+                            // If it is not the first time, the database is just fetched
+            createDB("rooms");
 
         // Evothings.eddystone.js: Timer that displays list of beacons.
         var timer = null;
@@ -60,25 +64,6 @@ var app = {
         setTimeout(startScan, 500);
         // Evothings.eddystone.js: Timer that refreshes the display.
         timer = setInterval(updateBeaconList, 500);
-
-        /* IScroll 5 */
-        // If you change the elements or the structure of your DOM you should call the refresh method: myScroll.refresh();
-    	// There are multiple events you can handle:
-    	// zoomEnd
-    	// zoomStart
-    	// scrollStart ...
-    	// like this: myScroll.on('scrollEnd', doSomething);
-    	// more info at: https://github.com/cubiq/iscroll
-    	// var myScroll = new IScroll('#map_wrapper', {
-    	// 	zoom: true, // It allosw zooming
-    	// 	scrollX: true, // It allows to scroll in the X axis
-    	// 	scrollY: true, // It allows to scroll in the Y axis
-    	// 	mouseWheel: true, // It listens to mouse wheel event
-    	// 	zoomMin:0.1, // Default: 1
-    	// 	freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
-    	// 	deceleration: 0.0001,
-    	// 	wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
-    	// });
 
         /* Lo que habia al crear la app: */
         /*var parentElement = document.getElementById(id);

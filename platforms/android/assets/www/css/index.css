@@ -79,18 +79,6 @@ footer img {
     width: auto;
 }
 
-#map_wrapper {
-    position: absolute;
-    overflow: hidden;
-    background-color: #ccc;
-}
-/* no estoy utilizando esto */
-#map {
-    -moz-transform: scale(0.5,0.5);
-    -webkit-transform: scale(0.5,0.5);
-    transform: scale(0.5,0.5);
-}
-
 #location_ico {
     height: 85px; /* This should be equal to height of header - the height of the black divisor */
     margin: 5px 10px 5px 10px;
@@ -151,10 +139,6 @@ footer img {
 }
 #div_liveSearchResults li:first-child {
     border-top: 1px solid gray;
-}
-
-.form{
-    visibility: hidden;
 }
 
 .button {

@@ -1,3 +1,64 @@
+body {
+    background-image: none;
+}
 section {
-    margin: 0;
+    margin: 115px 0px 115px 0px;
+    padding-bottom: 0px;
+    background-color: red;
+    overflow: visible;
+    width: 100%;
+}
+
+header {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 110px; /*  valor que le he asignado yo */
+    margin: 0px;
+    background-image: url("../img/bg-noisy-grey.jpg");
+}
+
+.input_search_bar2 {
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(41, 41, 41);
+    color: white;
+    padding: 12px;
+    margin: 5px auto 5px auto;
+    font-size: 45px;
+    vertical-align: middle;
+    height: 85px; /* This should be equal to height of header - the height of the black divisor */
+    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    user-select: text; /* allows copy, paste and manipulating text within text field*/
+}
+
+footer {
+    height: 100px;
+}
+footer img {
+    height: 85px;
+    padding: 5px;
+}
+
+#map_wrapper {
+    background-color: #ccc;
+    margin-top: 0%;
+    /*position: absolute;*/
+    height: 50px;
+    width: 50px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: visible;
+}
+#map_wrapper svg {
+    position: absolute;
+}
+
+#map {
+    -moz-transform: scale(0.5,0.5);
+    -webkit-transform: scale(0.9,0.9);
+    transform: scale(0.9,0.9);
 }

@@ -15,6 +15,7 @@
     <header>
             <img id="location_ico" src="img/location_ico.png" alt="location icon" />
             <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+            <div id="div_liveSearchResults"></div>
         <div class="div_black-separator"></div>
     </header>
 
@@ -22,24 +23,12 @@
     <section>
         <div id="div_header">
             <img src="img/profilepic.png" alt="profile pic" />
-            <p id="p_header">
-                Lorem ipsum dolor sit
-            </p>
+            <p id="p_header"></p>
         </div>
         <hr>
         <div id="div_body">
-            <p>
-                Title: Lorem ipsum dolor sit
-            </p>
-            <p>
-                Title: Lorem ipsum dolor sit
-            </p>
-            <p>
-                Title: Lorem ipsum dolor sit
-            </p>
         </div>
     </section>
-
 
     <footer>
         <div class="div_black-separator"></div>
@@ -49,10 +38,23 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
-
+    <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script src="js/pouchdb-5.3.1.min.js"></script>
+    <script src="js/readFiles.js"></script>
+    <script src="js/database.js"></script>
+    <script type="text/javascript">
+    app.initialize();
+    </script>
 
     <script type="text/javascript">
-    // var myvariable = <?=$_POST[index]?>; // That's for a string
+    function goContact(index) {
+        // Estas lineas son temporales porque la idea es hacer una SPA (SinglePageApplication)
+        localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+        loadContactDetails();
+        hideLiveSearchResults();
+    }
+
     function BackKeyDown()
     {
         //navigator.notification.alert();

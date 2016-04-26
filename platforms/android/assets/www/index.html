@@ -15,11 +15,7 @@
     <div id="test_beacons" style="font-size: 50px;"><p>beacons</p></div>
     <section>
             <input id="searchbar" class="input_search_bar" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
-        <div class="">
-            <div id="div_liveSearchResults">
-            </div>
-
-        </div>
+            <div id="div_liveSearchResults"></div>
         <button class="button" onclick="callAnothePage()" ontouchstart="return true;">GO!</button>
         <button class="button" onclick="goMap()" ontouchstart="return true;">MAP</button>
         <button class="button" onclick="goContact()" ontouchstart="return true;">Contact</button>
@@ -31,16 +27,12 @@
         <img id="img_logo" src="./img/logo_UD-standard.svg" alt="logo">
     </footer>
 
-    <form id="form_hidden" class="form" action="contact.html" method="post">
-        <input id="input_hidden" type="text" name="index" value="0">
-    </form>
-
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
-    <script src="js/readStaff.js"></script>
+    <script src="js/readFiles.js"></script>
     <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();
@@ -50,13 +42,13 @@
     function callAnothePage() {
         window.location = "page2.html";
     }
-    function goMap() {
+    function goMap(index) {
+        localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         evothings.eddystone.stopScan();
         window.location = "map.html";
     }
     function goContact(index) {
-        // document.getElementById("input_hidden").value = indice;
-        // document.getElementById("form_hidden").submit();
         localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         evothings.eddystone.stopScan();

@@ -8,8 +8,8 @@ function livesearch(text) {
                         // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
                         // hence the serach would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
     text = text.trim().toLowerCase(); // Here we "validate"/filter the input. We avoid "all whitespaces" and empty strings among others.
-    if (text.length != 0 && text != "") {
-        // hyper.log(text);
+    if (text.length != 0 && text != "" && !/\d/.test(text)) {
+        console.log("ES UNA PERSONA!");
         inputValue = text;
         console.log(inputValue);
         if (searchtimer === undefined) {
@@ -18,25 +18,41 @@ function livesearch(text) {
             clearTimeout(searchtimer);
             searchtimer = setTimeout(searchPeople, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } // END inside if
+    } else if (/\d/.test(text)){ // This is going to happen if the input has a digit among what has been written
+        console.log("ES UN NUMERO!");
+        inputValue = text;
+        console.log(inputValue);
+        if (searchtimer === undefined) {
+            searchtimer = setTimeout(searchRoom, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
+        } else {
+            clearTimeout(searchtimer);
+            searchtimer = setTimeout(searchRoom, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
+        } // END inside if
     } else {
         clearTimeout(searchtimer);
-        var div = document.getElementById("div_liveSearchResults");
-        div.innerHTML = " ";
-        div.style.visibility = "hidden";
+        hideLiveSearchResults();
     }// END outside if
 }
 
+function hideLiveSearchResults() {
+    var div = document.getElementById("div_liveSearchResults");
+    div.innerHTML = " ";
+    div.style.visibility = "hidden";
+}
 // Searches for the person/people in the database
 function searchPeople() {
     retrievePerson(inputValue);
 }
+// Searches for the room in the database
+function searchRoom() {
+    retrieveRoom(inputValue);
+}
 // Show the list of people (staff) found in the database according to the input text
-function showlist() {
+function showStaffList() {
     setTimeout(function() {
         if (_searched_people.length != 0) {
             var list = "";
             for (j = 0; j < _searched_people.length; j++) {
-                var thing = _searched_people[j]; // esto no funciona!
                 list += "<li onclick='goContact("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + _searched_people[j].name + "</li>"
             }
             var div = document.getElementById("div_liveSearchResults");
@@ -49,7 +65,25 @@ function showlist() {
             div.style.visibility = "hidden";
         }
     }, 100);
+}
 
+function showRoomsList() {
+    setTimeout(function() {
+        if (_searched_rooms.length != 0) {
+            var list = "";
+            for (j = 0; j < _searched_rooms.length; j++) {
+                list += "<li onclick='goMap("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + (_searched_rooms[j])[0].label + "</li>"
+            }
+            var div = document.getElementById("div_liveSearchResults");
+            div.innerHTML = "<ul>" + list + "</ul>";
+            div.style.visibility = "visible";
+        } else {
+            console.log("Per que coño pasa?!");
+            var div = document.getElementById("div_liveSearchResults");
+            div.innerHTML = " ";
+            div.style.visibility = "hidden";
+        }
+    }, 100);
 }
 
 function highlight(li) {
@@ -85,4 +119,73 @@ function loadContactDetails() {
     "<p>LINKEDIN: </p><p>" + ((person.linkedin != " ") ? person.linkedin : "-") + "</p>"+
     "<p>WORKING AT DeustoTech?: </p><p>" + ((person.dtech) ? "Yes" : "No") + "</p>"+
     "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
+}
+
+function loadMap() {
+    var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                            // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    localStorage.removeItem('_room');
+    // Info about canvas at:
+    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
+    // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image#What_is_a_.22tainted.22_canvas.3F
+    // W3School:
+    // http://www.w3schools.com/tags/ref_canvas.asp
+    var map = document.getElementById("map");
+    switch(room[1]) { // Before this I used to use: (room[1]).charAt(0) in order to figure out the floor number
+        case '0':
+        map.src = "img/0_planta_cero.png";
+        map.addEventListener("load", function() {
+            // map.style.position = "relative";
+            // map.style.top = -map.clientHeight * 0.5 * 0.5 + "px";
+            // map.style.left = -map.clientWidth * 0.5 + "px";
+            // map.style.width = "100%";
+            // map.style.marginLeft = "auto";
+            // map.style.marginRight = "auto";
+        }, false);
+        break;
+        case '1':
+        map.src = "img/1_planta_uno.png"
+        break;
+        case '2':
+        map.src = "img/2_planta_dos.png"
+        break;
+        case '3':
+        map.src = "img/3_planta_tres.png"
+        break;
+        case '4':
+        map.src = "img/4_planta_cuatro.png"
+        break;
+        case '5':
+        map.src = "img/5_planta_cinco.png"
+        break;
+        default:
+        break;
+    }
+
+    /* IScroll 5 */
+    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
+    // If you change the elements or the structure of your DOM you should call the refresh method: myScroll.refresh();
+    // There are multiple events you can handle:
+    // zoomEnd
+    // zoomStart
+    // scrollStart ...
+    // like this: myScroll.on('scrollEnd', doSomething);
+    // more info at: https://github.com/cubiq/iscroll
+    var myScroll = new IScroll('#map_wrapper', {
+        zoom: true, // It allos zooming
+        scrollX: true, // It allows to scroll in the X axis
+        scrollY: true, // It allows to scroll in the Y axis
+        mouseWheel: true, // It listens to mouse wheel event
+        zoomMin:0.1, // Default: 1
+        freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
+        deceleration: 0.0001,
+        wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
+    });
+    setTimeout(function() {
+        myScroll.zoom(1.5, 0, 0, 2000);
+        myScroll.scrollTo(-200, -100,2000,IScroll.utils.ease.bounce);
+
+    }, 2000);
+
 }

@@ -73,16 +73,27 @@
 
     // This function creates/fetches the database
     // There exists a local document that says whether there have been changes or not.
-    function createDB() {
-        _db = new PouchDB('staffdb');
-
+    function createDB(whichDB) {
         // We want to insert metadata information in the database as a '.local' document.
-        // This is to check whether there have been changes in the DB or not.
-        // First, we should check whether we are fetching the DB or creating for first time:
-        hasChanged(null);
+        // 'hasCHanged' is to check whether there have been changes in the DB or not.
+        // First, we should check whether we are fetching the DB or creating for first time.
+        if (whichDB === "staff") {
+            _db = new PouchDB('staffdb');
+            hasChanged(null, _db);
+            createChangesLoadData(_db);
+        } else {
+            _dbrooms = new PouchDB('roomsdb');
+            hasChanged(null, _dbrooms);
+            createChangesLoadData(_dbrooms);
+        }
+    }
+
+    // This function creates a local document changes in the database in order to control whether the DBs changes or not.
+    // Afterwards, depending on the database given by the argument, we load the corresponding data in each database
+    function createChangesLoadData(db) {
         setTimeout(function() {
             if (_reva === -404) {
-                _db.put({
+                db.put({
                     _id: '_local/changes',
                     hasChanged: true
                 }).then(function (response) {
@@ -90,13 +101,16 @@
                 }).catch(function (err) {
                     console.log("ERROR! CACA!: " + err);
                 });
-                // createDesignDocuments();
-                readTxtFile("stafflist.txt", loadStaffList); // We are passing 'loadStaffList' as a callback function to ensure synchronous operations.
-                hasChanged(false);
+                if (db === _db) { // This is the staff database
+                    readTxtFile("stafflist.txt", loadStaffList); // We are passing 'loadStaffList' as a callback function to ensure synchronous operations.
+                    hasChanged(false, _db);
+                } else { // This is the rooms database
+                    readJsonFile("rooms.json", loadRooms); // We are passing 'loadRooms' as a callback function to ensure synchronous operations.
+                    hasChanged(false, _dbrooms);
+                }
             }
         }, 2000);
     }
-
 
     function DBinfo() {
         _db.info().then(function (result) {
@@ -114,15 +128,15 @@
 
     // This function checks whether there has been any change in the DB or not
     // This function changes the value of the state of the changes, passing the desired value as an argument
-    function hasChanged(change) {
-        _db.get('_local/changes').then(function (result) {
+    function hasChanged(change, db) {
+        db.get('_local/changes').then(function (result) {
             if (change !== null) {
-                _db.put({
+                db.put({
                     _id: '_local/changes',
                     _rev: result._rev,
                     hasChanged: change
                 }).then(function (response) {
-                    console.log("Corrently updated. hasChanged: " + result.hasChanged);
+                    console.log("Corrently updated. hasChanged: " + response.hasChanged);
                 });
             }
             _reva = result.hasChanged;
@@ -162,7 +176,7 @@
                 console.log("Correctly added. " + i + ":"+ response.id);
             }).catch(function (err) {
                 console.log(err);
-                console.log("error="+err.id);
+                console.log("error id="+err.id);
             });
         }
         console.log("i = " + i);
@@ -184,10 +198,49 @@
                 }
             }
             console.log(_searched_people);
-            showlist(); // display all people found with the query
+            if (_searched_people.length == 0) { // If this happens, then it means that the user is looking for a place which has no number, e.g. cafe, lab, secretary office
+                retrieveRoom(name) // In this case, 'name' is a place not a person (but without a number)
+            } else {
+                showStaffList(); // display all people found with the query
+            }
         }).catch(function (err) {
             console.log(err);
         });
+    }
+
+    // This function retrieves a room or several rooms based on the given number
+    function retrieveRoom(room) {
+        _dbrooms.allDocs({
+            include_docs: true,
+            attachments: true // This is not used for the moment
+        }).then(function (result) {
+            // handle result
+            _searched_rooms = [];
+            for (i = 0; i < result.total_rows; i++) {
+                var keys = Object.getOwnPropertyNames(result.rows[i].doc.rooms); // It gets all the keys for all the objects. More info at: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames
+                for (j = 0; j<keys.length; j++) {
+                    if (keys[j].indexOf(room) > -1) {
+                        _searched_rooms.push([result.rows[i].doc.rooms[keys[j]], result.rows[i].doc._id]); // Inserting an array (in an array) composed by the object and the floor number ('_id' of the document). Rooms found with the query
+                    }
+                }
+            }
+            console.log(_searched_rooms);
+            showRoomsList(); // display all people found with the query
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }
+
+    function loadRooms() {
+        for (eachIndex in _jsondata) {
+            _dbrooms.put(_jsondata[eachIndex]).then(function (response) {
+                console.log("Correctly added JSON document. = ");
+                console.log(response);
+            }).catch(function (err) {
+                console.log(err);
+                console.log("error id="+err.id);
+            });
+        }
     }
 
     // This function creates design documents which are used for second indexers for queries against the database
