@@ -20,10 +20,9 @@
     </header>
 
     <section>
-        hola
-        <div id="map_wrapper">
-            <div style="background-color:blue; width:auto; height:auto;position:absolute">
-                <!-- <svg><circle cx="100" cy="50" r="12" fill="red" /></svg> -->
+        <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
+            <div id="scrollable_content"> <!-- This div ('scrollable_content') is necessary becasue IScroll focuses in the first child of the element you indicate in the initialization -->
+                <svg><circle cx="100" cy="50" r="12" fill="red" /></svg>
                 <img id="map" src="" alt="map">
             </div>
         </div>
@@ -38,6 +37,7 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script type="text/javascript" src="js/blob-util.min.js"></script>
     <script type="text/javascript" src="js/iscroll-zoom.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
     <script src="js/readFiles.js"></script>
@@ -47,6 +47,17 @@
     </script>
 
     <script type="text/javascript">
+    function goContact(index) {
+        localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+        window.location = "contact.html";
+    }
+    function goMap(index) {
+        localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+        loadMap();
+        hideLiveSearchResults();
+    }
     function BackKeyDown()
     {
         //navigator.notification.alert();

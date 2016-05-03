@@ -4,29 +4,30 @@ var inputValue; // Value/text introduced by the user
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
 function livesearch(text) {
-    // var re = /\s/g; // regular expression checking for one or more space characters in the whole string, "g" means global.
-                        // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
-                        // hence the serach would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
+    // var re = /\s/g; // this is a regular expression checking for one or more space characters in the whole string, "g" means global.
+    // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
+    // hence the search would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
     text = text.trim().toLowerCase(); // Here we "validate"/filter the input. We avoid "all whitespaces" and empty strings among others.
+    // We check whether the input text introduced by the user contains numbers (rooms, offices...) or a simple name:
     if (text.length != 0 && text != "" && !/\d/.test(text)) {
-        console.log("ES UNA PERSONA!");
+        console.log("LOOKING FOR PERSONA/ROOM!");
         inputValue = text;
         console.log(inputValue);
         if (searchtimer === undefined) {
-            searchtimer = setTimeout(searchPeople, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
+            searchtimer = setTimeout(searchPeople, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } else {
             clearTimeout(searchtimer);
-            searchtimer = setTimeout(searchPeople, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
+            searchtimer = setTimeout(searchPeople, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } // END inside if
     } else if (/\d/.test(text)){ // This is going to happen if the input has a digit among what has been written
-        console.log("ES UN NUMERO!");
+        console.log("LOOKING FOR NUMERO!");
         inputValue = text;
         console.log(inputValue);
         if (searchtimer === undefined) {
-            searchtimer = setTimeout(searchRoom, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
+            searchtimer = setTimeout(searchRoom, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } else {
             clearTimeout(searchtimer);
-            searchtimer = setTimeout(searchRoom, 500); // More info about timer at: http://www.w3schools.com/js/js_timing.asp
+            searchtimer = setTimeout(searchRoom, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } // END inside if
     } else {
         clearTimeout(searchtimer);
@@ -34,39 +35,25 @@ function livesearch(text) {
     }// END outside if
 }
 
+// It hides the live-search-result DOM element and its content
 function hideLiveSearchResults() {
     var div = document.getElementById("div_liveSearchResults");
     div.innerHTML = " ";
     div.style.visibility = "hidden";
 }
+
 // Searches for the person/people in the database
+// We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
 function searchPeople() {
     retrievePerson(inputValue);
+    retrieveRoom(inputValue, false); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
 }
 // Searches for the room in the database
 function searchRoom() {
-    retrieveRoom(inputValue);
-}
-// Show the list of people (staff) found in the database according to the input text
-function showStaffList() {
-    setTimeout(function() {
-        if (_searched_people.length != 0) {
-            var list = "";
-            for (j = 0; j < _searched_people.length; j++) {
-                list += "<li onclick='goContact("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + _searched_people[j].name + "</li>"
-            }
-            var div = document.getElementById("div_liveSearchResults");
-            div.innerHTML = "<ul>" + list + "</ul>";
-            div.style.visibility = "visible";
-        } else {
-            console.log("Per que coño pasa?!");
-            var div = document.getElementById("div_liveSearchResults");
-            div.innerHTML = " ";
-            div.style.visibility = "hidden";
-        }
-    }, 100);
+    retrieveRoom(inputValue, true); // true means that it DOES show its results because the search item contains a number
 }
 
+// Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showRoomsList() {
     setTimeout(function() {
         if (_searched_rooms.length != 0) {
@@ -78,27 +65,55 @@ function showRoomsList() {
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
-            console.log("Per que coño pasa?!");
-            var div = document.getElementById("div_liveSearchResults");
-            div.innerHTML = " ";
-            div.style.visibility = "hidden";
+            console.log("WARNING: no results found in the database");
+            hideLiveSearchResults();
         }
     }, 100);
 }
 
+// Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
+function showBothStaffNRooms() {
+    setTimeout(function() {
+        console.log("length PEOPLE: " +_searched_people.length); // eliminar esta traza
+        console.log("length ROOMS: " +_searched_rooms.length); // eliminar esta traza
+        var list = "";
+        if (_searched_people.length != 0) {
+            for (j = 0; j < _searched_people.length; j++) {
+                list += "<li onclick='goContact("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + _searched_people[j].name + "</li>"
+            }
+        }
+        if (_searched_rooms.length != 0) {
+            for (j = 0; j < _searched_rooms.length; j++) {
+                list += "<li onclick='goMap("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + (_searched_rooms[j])[0].label + "</li>"
+            }
+        }
+        if (list != "") {
+            var div = document.getElementById("div_liveSearchResults");
+            div.innerHTML = "<ul>" + list + "</ul>";
+            div.style.visibility = "visible";
+        } else {
+            console.log("WARNING: no results found in the database");
+            hideLiveSearchResults();
+        }
+    }, 100);
+}
+
+// It highlights the row touched by the user on the live-search-result element
 function highlight(li) {
     li.style.backgroundColor = "#0053ce";
     li.style.color = "#FFF";
 }
 
+// It reverts back the highlight of the row touched by the user on the live-search-result element
 function highlightdefault(li) {
     li.style.backgroundColor = "transparent";
     li.style.color = "initial";
 }
 
+// This methods is called in the 'onLoad' event handler of the contact.html page
 function loadContactDetails() {
     var person = JSON.parse(localStorage.getItem('_person')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-                                                            // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     localStorage.removeItem('_person');
     var rows = " ";
     var officehours = " - ";
@@ -121,47 +136,19 @@ function loadContactDetails() {
     "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
 }
 
+// This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
     var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-                                                            // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     localStorage.removeItem('_room');
-    // Info about canvas at:
-    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-    // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image#What_is_a_.22tainted.22_canvas.3F
-    // W3School:
-    // http://www.w3schools.com/tags/ref_canvas.asp
-    var map = document.getElementById("map");
-    switch(room[1]) { // Before this I used to use: (room[1]).charAt(0) in order to figure out the floor number
-        case '0':
-        map.src = "img/0_planta_cero.png";
-        map.addEventListener("load", function() {
-            // map.style.position = "relative";
-            // map.style.top = -map.clientHeight * 0.5 * 0.5 + "px";
-            // map.style.left = -map.clientWidth * 0.5 + "px";
-            // map.style.width = "100%";
-            // map.style.marginLeft = "auto";
-            // map.style.marginRight = "auto";
-        }, false);
-        break;
-        case '1':
-        map.src = "img/1_planta_uno.png"
-        break;
-        case '2':
-        map.src = "img/2_planta_dos.png"
-        break;
-        case '3':
-        map.src = "img/3_planta_tres.png"
-        break;
-        case '4':
-        map.src = "img/4_planta_cuatro.png"
-        break;
-        case '5':
-        map.src = "img/5_planta_cinco.png"
-        break;
-        default:
-        break;
-    }
+    console.log("YOU ARE LOOKING FOR -"+ room[0].label + "- ROOM"); // eliminar esta traza
+    setTimeout(function() {
+        retrieveMap(room[1]); // If I take this call out of setTimeout function, JavaScripts yields errors.
+    },0)
+
+    // map.addEventListener("load", function() {
+    //     // nothing to declare here for the moment
+    // }, false);
 
     /* IScroll 5 */
     document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
@@ -177,15 +164,38 @@ function loadMap() {
         scrollX: true, // It allows to scroll in the X axis
         scrollY: true, // It allows to scroll in the Y axis
         mouseWheel: true, // It listens to mouse wheel event
-        zoomMin:0.1, // Default: 1
+        zoomMin:0.5, // Default: 1
+        zoomMax:1.2,
         freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
         deceleration: 0.0001,
         wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
     });
-    setTimeout(function() {
-        myScroll.zoom(1.5, 0, 0, 2000);
-        myScroll.scrollTo(-200, -100,2000,IScroll.utils.ease.bounce);
-
-    }, 2000);
 
 }
+
+// Shows/depipcts/loads the image within the DOM element
+function showMap() {
+    var map = document.getElementById("map");
+    map.src = _reva;
+}
+
+// // NOT USED ANYMORE, BUT WHO KNOWS....
+// // Shows the list of people (staff) found in the database according to the input text
+// function showStaffList() {
+//     setTimeout(function() {
+//         if (_searched_people.length != 0) {
+//             var list = "";
+//             for (j = 0; j < _searched_people.length; j++) {
+//                 list += "<li onclick='goContact("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + _searched_people[j].name + "</li>"
+//             }
+//             var div = document.getElementById("div_liveSearchResults");
+//             div.innerHTML = "<ul>" + list + "</ul>";
+//             div.style.visibility = "visible";
+//         } else {
+//             console.log("Per que coño pasa?!");
+//             var div = document.getElementById("div_liveSearchResults");
+//             div.innerHTML = " ";
+//             div.style.visibility = "hidden";
+//         }
+//     }, 100);
+// }

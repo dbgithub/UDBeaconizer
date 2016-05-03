@@ -60,12 +60,13 @@
         });
     }
 
-    function deleteDB() {
-        if (_db.info().doc_count != 0) { // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
-            _db.destroy().then(function (response) { // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
+    function deleteDB(db) {
+        if (db.info().doc_count != 0) { // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
+            db.destroy().then(function (response) { // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
                 // success
                 console.log("Database deleted/removed successfully:");
             }).catch(function (err) { // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
+                console.log("error deleting the database:");
                 console.log(err); // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
             });
         }
@@ -74,6 +75,7 @@
     // This function creates/fetches the database
     // There exists a local document that says whether there have been changes or not.
     function createDB(whichDB) {
+        console.log("Preferred adapters: "+ PouchDB.preferredAdapters); // Displays the list of adapters in order of preference for the browser. PouchDB tries using the first adapter, if not, tries the second one and etc.
         // We want to insert metadata information in the database as a '.local' document.
         // 'hasCHanged' is to check whether there have been changes in the DB or not.
         // First, we should check whether we are fetching the DB or creating for first time.
@@ -97,15 +99,18 @@
                     _id: '_local/changes',
                     hasChanged: true
                 }).then(function (response) {
-                    console.log("Corrently inserted. hasChanged: " + response.hasChanged);
+                    console.log("'_local/changes' corrently inserted. hasChanged=" + true);
                 }).catch(function (err) {
-                    console.log("ERROR! CACA!: " + err);
+                    console.log("error in createChangesLoadData:");
+                    console.log(err);
                 });
                 if (db === _db) { // This is the staff database
                     readTxtFile("stafflist.txt", loadStaffList); // We are passing 'loadStaffList' as a callback function to ensure synchronous operations.
                     hasChanged(false, _db);
                 } else { // This is the rooms database
                     readJsonFile("rooms.json", loadRooms); // We are passing 'loadRooms' as a callback function to ensure synchronous operations.
+                    // readImageFile(["img/0_planta_cero.png", "img/1_planta_uno.png", "img/2_planta_dos.png", "img/3_planta_tres.png", "img/4_planta_cuatro.png", "img/5_planta_cinco.png"], loadMaps);
+                    // readImageFile(["img/0_planta_cero.png"], loadMaps);
                     hasChanged(false, _dbrooms);
                 }
             }
@@ -113,10 +118,11 @@
     }
 
     function DBinfo() {
-        _db.info().then(function (result) {
+        _dbrooms.info().then(function (result) {
             var str =
             "DB name: " + result.db_name + "\n" +
             "doc count: "+ result.doc_count + "\n" +
+            "attachment format: " + result.idb_attachment_format + "\n" +
             "adapter: " + result.adapter + "\n" +
             "sqlite plugin: " + result.sqlite_plugin + "\n" +
             "websql encoding: " + result.websql_encoding;
@@ -136,11 +142,12 @@
                     _rev: result._rev,
                     hasChanged: change
                 }).then(function (response) {
-                    console.log("Corrently updated. hasChanged: " + response.hasChanged);
+                    console.log("'_local/changes' corrently updated. hasChanged=" + change);
                 });
             }
             _reva = result.hasChanged;
         }).catch(function (err) {
+            console.log("error/warning in hasChanged:");
             console.log(err);
             if (err.status === 404) {
                 // not found
@@ -173,20 +180,19 @@
                 notes: "notes...", // This is an example, it should be removed and let teachers add it by themselves
                 dtech: temp[8] // This is an example, it should be removed and let teachers add it by themselves
             }).then(function (response) {
-                console.log("Correctly added. " + i + ":"+ response.id);
+                // console.log("Correctly added STAFF document: " + response.id);
             }).catch(function (err) {
+                console.log("error loading staff list:");
                 console.log(err);
-                console.log("error id="+err.id);
             });
         }
-        console.log("i = " + i);
     }
 
     // This function retrieves a person or several persons based on the given name
     function retrievePerson(name) {
         _db.allDocs({
-            include_docs: true,
-            attachments: true // This is not used for the moment
+            include_docs: true
+            // attachments: true // This is not used for the moment
         }).then(function (result) {
             // handle result
             console.log(_searched_people);
@@ -212,11 +218,12 @@
     function retrieveRoom(room) {
         _dbrooms.allDocs({
             include_docs: true,
-            attachments: true // This is not used for the moment
+            startkey: '0', // We are including startkey and endkey so that we skip the floor documents which are not part of the search.
+            endkey:'5' // We are including startkey and endkey so that we skip the floor documents which are not part of the search.
         }).then(function (result) {
             // handle result
             _searched_rooms = [];
-            for (i = 0; i < result.total_rows; i++) {
+            for (i = 0; i < result.rows.length; i++) {
                 var keys = Object.getOwnPropertyNames(result.rows[i].doc.rooms); // It gets all the keys for all the objects. More info at: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/getOwnPropertyNames
                 for (j = 0; j<keys.length; j++) {
                     if (keys[j].indexOf(room) > -1) {
@@ -234,13 +241,73 @@
     function loadRooms() {
         for (eachIndex in _jsondata) {
             _dbrooms.put(_jsondata[eachIndex]).then(function (response) {
-                console.log("Correctly added JSON document. = ");
-                console.log(response);
+                console.log("Correctly added JSON document:" + response.id);
             }).catch(function (err) {
+                console.log("error adding json data:");
                 console.log(err);
-                console.log("error id="+err.id);
             });
         }
+    }
+
+    // This function saves the read images into dbrooms database as attachments
+    function loadMaps() {
+        // Con este snippet de codigo funciona en Desktop a las mil maravillas, en Phonegap se atasca, se satura sobremanera.
+        // for (i in _maps) {
+        //     _dbrooms.putAttachment('floor'+i, 'attachment'+i, _maps[i], 'image/png').then(function (result) {
+        //         // handle result
+        //         console.log("Correctly added FLOOR:" + result.id);
+        //     }).catch(function (err) {
+        //         console.log("error loading floor in the database:");
+        //         console.log(err);
+        //     });
+        // }
+        // Con este snippet de codigo nos aseguramos de que los attachments se añadan syncronamente sin saturar la maquina y por tanto Phonegap no se atasca y funciona bien.
+        // Pero el tiempo de ejecucion y de recuperacion de imagees es excesivo dejando esta implementacion casi inutil. Mejor hacer AJAX (al servidor o local) cada vez que se solcite una imagen.
+        _dbrooms.putAttachment('floor'+0, 'attachment'+0, _maps[0], 'image/png').then(function (result) {
+                // handle result
+                console.log("Correctly added FLOOR:" + result.id);
+                _dbrooms.putAttachment('floor'+1, 'attachment'+1, _maps[1], 'image/png').then(function (result) {
+                        // handle result
+                        console.log("Correctly added FLOOR:" + result.id);
+                        _dbrooms.putAttachment('floor'+2, 'attachment'+2, _maps[2], 'image/png').then(function (result) {
+                                // handle result
+                                console.log("Correctly added FLOOR:" + result.id);
+                            }).catch(function (err) {
+                                console.log("error loading floor in the database:");
+                                console.log(err);
+                            });
+                    }).catch(function (err) {
+                        console.log("error loading floor in the database:");
+                        console.log(err);
+                    });
+            }).catch(function (err) {
+                console.log("error loading floor in the database:");
+                console.log(err);
+            });
+    }
+
+    // This functions retrieves a map/image according to the floor number given as an argument. The DOM element 'map' is also passed as an argument to shyncronously change the src attribute so that the image can be loaded.
+    function retrieveMap(floor, DOMmap) {
+        _dbrooms.getAttachment('floor'+floor, 'attachment'+floor).then(function (blob) {
+            // It returns the data URL for the retrieved image:
+            DOMmap.src = blobUtil.createObjectURL(blob);
+            console.log("DOMmap src = "+ DOMmap.src);
+        }).catch(function (err) {
+            hyper.log("error retrieving specific floor from database:");
+            hyper.log(err);
+        });
+    }
+
+    function retrieveMap2(floor) {
+        if (floor == 0) {
+            readImageFile2(["img/5_planta_cinco.png"], loadMaps2);
+        }
+    }
+
+    function loadMaps2() {
+        console.log("_reva (desde loadMaps2)="+_reva);
+        var map = document.getElementById("map");
+        map.src = _reva;
     }
 
     // This function creates design documents which are used for second indexers for queries against the database

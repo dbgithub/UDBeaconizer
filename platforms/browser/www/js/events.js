@@ -125,43 +125,16 @@ function loadMap() {
     var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     localStorage.removeItem('_room');
-    // Info about canvas at:
-    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage
-    // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Using_images
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image#What_is_a_.22tainted.22_canvas.3F
-    // W3School:
-    // http://www.w3schools.com/tags/ref_canvas.asp
+    var scrollableContent = document.getElementById("scrollable_content");
     var map = document.getElementById("map");
-    switch(room[1]) { // Before this I used to use: (room[1]).charAt(0) in order to figure out the floor number
-        case '0':
-        map.src = "img/0_planta_cero.png";
-        map.addEventListener("load", function() {
-            // map.style.position = "relative";
-            // map.style.top = -map.clientHeight * 0.5 * 0.5 + "px";
-            // map.style.left = -map.clientWidth * 0.5 + "px";
-            // map.style.width = "100%";
-            // map.style.marginLeft = "auto";
-            // map.style.marginRight = "auto";
-        }, false);
-        break;
-        case '1':
-        map.src = "img/1_planta_uno.png"
-        break;
-        case '2':
-        map.src = "img/2_planta_dos.png"
-        break;
-        case '3':
-        map.src = "img/3_planta_tres.png"
-        break;
-        case '4':
-        map.src = "img/4_planta_cuatro.png"
-        break;
-        case '5':
-        map.src = "img/5_planta_cinco.png"
-        break;
-        default:
-        break;
-    }
+
+    setTimeout(function() {
+        retrieveMap2(room[1]); // If I take this call out of setTimeout function, JavaScripts yields errors. The DOM element map is also passed as an argument
+    },0)
+
+    // map.addEventListener("load", function() {
+    //     // nothing to declare here for the moment
+    // }, false);
 
     /* IScroll 5 */
     document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
@@ -177,15 +150,11 @@ function loadMap() {
         scrollX: true, // It allows to scroll in the X axis
         scrollY: true, // It allows to scroll in the Y axis
         mouseWheel: true, // It listens to mouse wheel event
-        zoomMin:0.1, // Default: 1
+        zoomMin:0.5, // Default: 1
+        zoomMax:1.2,
         freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
         deceleration: 0.0001,
         wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
     });
-    setTimeout(function() {
-        myScroll.zoom(1.5, 0, 0, 2000);
-        myScroll.scrollTo(-200, -100,2000,IScroll.utils.ease.bounce);
-
-    }, 2000);
 
 }

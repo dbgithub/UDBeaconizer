@@ -39,6 +39,7 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script type="text/javascript" src="js/blob-util.min.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
     <script src="js/readFiles.js"></script>
     <script src="js/database.js"></script>
@@ -48,13 +49,18 @@
 
     <script type="text/javascript">
     function goContact(index) {
-        // Estas lineas son temporales porque la idea es hacer una SPA (SinglePageApplication)
+        // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
         localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         loadContactDetails();
         hideLiveSearchResults();
     }
-
+    function goMap(index) {
+        // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
+        localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+        window.location = "map.html";
+    }
     function BackKeyDown()
     {
         //navigator.notification.alert();

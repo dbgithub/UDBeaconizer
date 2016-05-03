@@ -24,6 +24,7 @@ var _dbrooms; // database for rooms
 var _reva; // returned value for any function
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
+var _maps; // unidimensional array of images representing the maps
 var app = {
     // Application Constructor
     initialize: function() {
@@ -54,9 +55,13 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
+        if (window.hyper && window.hyper.log) { console.log = hyper.log }
             createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
                             // If it is not the first time, the database is just fetched
             createDB("rooms");
+            DBinfo();
+            // deleteDB(_dbrooms);
+            // deleteDB(_db);
 
         // Evothings.eddystone.js: Timer that displays list of beacons.
         var timer = null;

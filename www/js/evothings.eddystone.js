@@ -79,7 +79,10 @@
 					+ '</p>';
 				html += htmlBeacon
 			}
-			// document.querySelector('#test_beacons').innerHTML = ;
+			// document.querySelector('#test_beacons').innerHTML = htmlBeacon;
+			// document.getElementById("test_beacons").innerHTML = htmlBeacon;
+			// hyper.log(html);
+
 		}
 
 		function htmlBeaconName(beacon)
@@ -162,5 +165,12 @@
 
 		function showMessage(text)
 		{
+			// hyper.log(text);
 			//document.querySelector('#message').innerHTML = text;
 		}
+
+		///////////////////////////////////////////
+		// MY OWN FUNCTIONS:
+		///////////////////////////////////////////
+
+		
