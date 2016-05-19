@@ -79,13 +79,22 @@ footer img {
     width: auto;
 }
 
-#location_ico {
-    height: 85px; /* This should be equal to height of header - the height of the black divisor */
-    margin: 5px 10px 5px 10px;
+#img_backarrow {
+    height:85px;
+    padding-left: 15px;
+    margin: 5px 10px 0px 0px;
     float: left;
+}
+#img_backarrow:active{
+    background-color: rgba(0, 0, 0, 0.4);;
 }
 
 .div_black-separator {
+    clear: left;
+    position: relative;
+    bottom: 0px;
+    margin-top: auto;
+    margin-bottom: 0px;
     background-color: rgba(51,53,55,1);
     height: 15px;
     width: 100%;
@@ -139,6 +148,10 @@ footer img {
 }
 #div_liveSearchResults li:first-child {
     border-top: 1px solid gray;
+}
+#div_liveSearchResults li:active {
+    background-color: #0053ce;
+    color: #FFF;
 }
 
 .button {

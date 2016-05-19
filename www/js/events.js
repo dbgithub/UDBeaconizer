@@ -30,6 +30,8 @@ function livesearch(text) {
             searchtimer = setTimeout(searchRoom, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } // END inside if
     } else {
+        // More info about Toast plugin at: https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin
+        window.plugins.toast.show('Please, type anything in the search bar', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
         clearTimeout(searchtimer);
         hideLiveSearchResults();
     }// END outside if
@@ -59,9 +61,14 @@ function showRoomsList() {
         if (_searched_rooms.length != 0) {
             var list = "";
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li onclick='goMap("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + (_searched_rooms[j])[0].label + "</li>"
+                list += "<li onclick='goMap("+j+")' ontouchstart='return true;'>" + (_searched_rooms[j])[0].label + "</li>"
             }
             var div = document.getElementById("div_liveSearchResults");
+            if (_searched_rooms.length > 6) {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+            } else {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+            }
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
@@ -79,16 +86,21 @@ function showBothStaffNRooms() {
         var list = "";
         if (_searched_people.length != 0) {
             for (j = 0; j < _searched_people.length; j++) {
-                list += "<li onclick='goContact("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + _searched_people[j].name + "</li>"
+                list += "<li onclick='goContact("+j+")' ontouchstart='return true;'>" + _searched_people[j].name + "</li>"
             }
         }
         if (_searched_rooms.length != 0) {
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li onclick='goMap("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + (_searched_rooms[j])[0].label + "</li>"
+                list += "<li onclick='goMap("+j+")' ontouchstart='return true;'>" + (_searched_rooms[j])[0].label + "</li>"
             }
         }
         if (list != "") {
             var div = document.getElementById("div_liveSearchResults");
+            if (_searched_people.length + _searched_rooms.length > 6) {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+            } else {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+            }
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
@@ -98,18 +110,6 @@ function showBothStaffNRooms() {
     }, 100);
 }
 
-// It highlights the row touched by the user on the live-search-result element
-function highlight(li) {
-    li.style.backgroundColor = "#0053ce";
-    li.style.color = "#FFF";
-}
-
-// It reverts back the highlight of the row touched by the user on the live-search-result element
-function highlightdefault(li) {
-    li.style.backgroundColor = "transparent";
-    li.style.color = "initial";
-}
-
 // This methods is called in the 'onLoad' event handler of the contact.html page
 function loadContactDetails() {
     var person = JSON.parse(localStorage.getItem('_person')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
@@ -117,14 +117,24 @@ function loadContactDetails() {
     localStorage.removeItem('_person');
     var rows = " ";
     var officehours = " - ";
+    var office = "";
+    // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
         rows += "<tr><td>"+ person.officehours[k].start +"</td><td>"+ person.officehours[k].end +" </td></tr>";
     } officehours = "<table>"+rows+"</table>"}
+    // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
+    if (person.office != " ") {
+        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
+        console.log(office);
+        // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
+    } else {
+        office = "-";
+    }
     document.getElementById("p_header").innerHTML = person.name;
     document.getElementById("div_body").innerHTML =
     "<p>POSITION: </p><p>" + ((person.position != " ") ? person.position : "-") + "</p>" +
     "<p>FACULTY: </p><p>" + ((person.faculty != " ") ? person.faculty : "-") + "</p>"+
-    "<p>OFFICE: </p><p>" + ((person.office != " ") ? person.office : "-") + "</p>"+
+    "<p>OFFICE: </p><p>" + office + "</p>"+
     "<p>OFFICE HOURS: </p><p>" + officehours +"</p>" +
     "<p>EMAIL: </p><p>" + ((person.email != " ") ? person.email : "-") + "</p>"+
     "<p>PHONE: </p><p>" + ((person.phone != " ") ? person.phone : "-") + "</p>"+
@@ -136,6 +146,13 @@ function loadContactDetails() {
     "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
 }
 
+// This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
+// and searches for it.
+function linkSearch(x) {
+    document.getElementById("searchbar").value = x;
+    livesearch(x);
+}
+
 // This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
     var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
@@ -145,6 +162,16 @@ function loadMap() {
     setTimeout(function() {
         retrieveMap(room[1]); // If I take this call out of setTimeout function, JavaScripts yields errors.
     },0)
+    _floor = room[1]; // we assign the floor number to this global variable, later on, in order to decide what map to show.
+    locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing poins etc.)
+
+    // We draw the red destination point on the map
+    var svg_circle = document.getElementById("svg_circle_destinationpoint");
+    svg_circle.style.visibility="visible";
+    svg_circle.setAttribute("cx", room[0].x);
+    svg_circle.setAttribute("cy", room[0].y);
+    _destX = room[0].x;
+    _destY = room[0].y;
 
     // map.addEventListener("load", function() {
     //     // nothing to declare here for the moment
@@ -160,7 +187,7 @@ function loadMap() {
     // like this: myScroll.on('scrollEnd', doSomething);
     // more info at: https://github.com/cubiq/iscroll
     var myScroll = new IScroll('#map_wrapper', {
-        zoom: true, // It allos zooming
+        zoom: true, // It allows zooming
         scrollX: true, // It allows to scroll in the X axis
         scrollY: true, // It allows to scroll in the Y axis
         mouseWheel: true, // It listens to mouse wheel event
@@ -170,6 +197,37 @@ function loadMap() {
         deceleration: 0.0001,
         wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
     });
+
+        var map = document.getElementById("map");
+        map.onload= function () {
+            myScroll.scrollTo(-(map.clientWidth)/2, -(map.clientHeight)/2, 0, IScroll.utils.ease.elastic);
+            console.log(map.clientWidth);
+            console.log(map.clientHeight);
+            myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        }
+
+
+    // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
+    // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
+    // and here too: http://api.jquery.com/animate/#animate-properties-options
+    function grow() {
+       $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+        .animate(
+        {r: 35},
+        {duration:1000,step:function(now){
+          $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+       }, complete:function(){shrink();}});
+   }
+
+   function shrink() {
+      $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+      .animate(
+      {r: 18},
+      {duration:1000,step:function(now){
+        $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+     }, complete:function(){grow();}});
+   }
+   grow();
 
 }
 

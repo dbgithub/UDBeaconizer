@@ -5,19 +5,22 @@ header {
     height: 110px; /*  valor que le he asignado yo */
     margin: 0px;
     background-image: url("../img/bg-noisy-grey.jpg");
+    border-bottom: 15px solid rgba(51,53,55,1);
 }
 
 .input_search_bar2 {
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
-    background-color: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8) url("../img/location_ico.png") 10px no-repeat;
+    background-size: auto 85%;
     border-radius: 10px;
     border-style: solid;
     border-color: rgb(41, 41, 41);
     color: white;
-    padding: 12px;
-    margin: 5px auto 5px auto;
+    padding: 12px 12px 12px 80px;
+    margin: 5px auto 0px auto;
     font-size: 45px;
     vertical-align: middle;
+    width: auto;
     height: 85px; /* This should be equal to height of header - the height of the black divisor */
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
@@ -27,7 +30,7 @@ header {
 footer {
     height: 100px;
 }
-footer img {
+footer #img_badge {
     height: 85px;
     padding: 5px;
 }

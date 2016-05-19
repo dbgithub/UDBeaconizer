@@ -24,7 +24,7 @@ function readTxtFile(file, loadStaffList) {
     } // END if
 } // END readTxtFile
 
-function readJsonFile (file, loadRooms) {
+function readJsonFile (file, loadData) {
     // First of all, we check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
         var fjson = new XMLHttpRequest();
@@ -37,7 +37,7 @@ function readJsonFile (file, loadRooms) {
             {
                 _jsondata = JSON.parse(fjson.responseText); // Parse means going from JSON to javascript object
                 // Heads up, the values you can store with JSON can be any of these: http://www.w3schools.com/json/json_syntax.asp
-                loadRooms(); // To ensure that the text file is read first and then the information loaded into the database, we call now this callback function now.
+                loadData(); // To ensure that the text file is read first and then the information loaded into the database, we call now this callback function now.
             }
         }
         fjson.send(null); // 'send' sends a request to a server. In this case, we are not interested

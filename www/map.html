@@ -13,22 +13,28 @@
 </head>
 <body onload="loadMap()">
     <header>
-            <img id="location_ico" src="img/location_ico.png" alt="location icon" />
-            <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
-            <div id="div_liveSearchResults"></div>
-        <div class="div_black-separator"></div>
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="return true;" src="img/back-arrow.png" alt="back arrow" />
+        <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+        <div id="div_liveSearchResults"></div>
     </header>
 
     <section>
         <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
             <div id="scrollable_content"> <!-- This div ('scrollable_content') is necessary becasue IScroll focuses in the first child of the element you indicate in the initialization -->
-                <svg><circle cx="2301" cy="318" r="12" fill="red" /></svg>
+                <svg>
+                    <circle id="svg_circle_sourcepoint" cx="0" cy="0" r="18" fill="red" />
+                    <circle id="svg_circle_destinationpoint" cx="0" cy="0" r="18" fill="orange" />
+                </svg>
                 <img id="map" src="" alt="map">
             </div>
         </div>
     </section>
-
+    <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
     <footer>
+        <div id="div_distanceTillDestination">
+            <img src="./img/destination_ico.png" alt="target" />
+            <p id="p_distanceTillDest"></p>
+        </div>
         <div class="div_black-separator"></div>
         <img id="img_badge" src="./img/logo_UD-badge.png" alt="UD badge">
     </footer>
@@ -37,6 +43,7 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="js/blob-util.min.js"></script>
     <script type="text/javascript" src="js/iscroll-zoom.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
@@ -48,6 +55,7 @@
 
     <script type="text/javascript">
     function goContact(index) {
+        evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
         localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         window.location = "contact.html";
@@ -57,12 +65,6 @@
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         loadMap();
         hideLiveSearchResults();
-    }
-    function BackKeyDown()
-    {
-        //navigator.notification.alert();
-        navigator.app.exitApp();  // For Exit Application
-        navigator.app.backHistory(); // Going back one step
     }
     </script>
 </body>

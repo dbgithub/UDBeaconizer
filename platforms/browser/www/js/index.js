@@ -21,10 +21,17 @@ var _tuples; // text lines read from stafflist '.txt'
 var _jsondata // json documents read from rooms '.json' file
 var _db; // database for staff
 var _dbrooms; // database for rooms
+var _dbbeacons; // database for beacons
 var _reva; // returned value for any function
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
 var _maps; // unidimensional array of images representing the maps
+var _sortedList; // a list of beacons sorted by signal strenth
+var _floor // the floor number corresponding to the room or place the user is searching for
+var _b1X, _b1Y; // X and Y coordinates of beacon 1
+var _b2X; // X coordinate of beacon 2, Y coordinate it's not needed for calculations
+var _b3X, _b3Y; // X and Y coordinates of beacon 3
+var _destX, _destY; // X and Y coordinates of the destination point over the map
 var app = {
     // Application Constructor
     initialize: function() {
@@ -51,33 +58,40 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onBackButton: function() {
         // app.receivedEvent('backbutton'); ESTO CREO QUE SE PUED QUITAR
+        // navigator.app.exitApp();  // For Exit Application
+        evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
         navigator.app.backHistory();
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
             createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                            // If it is not the first time, the database is just fetched
-            createDB("rooms");
+                               // If it is not the first time, the database is just fetched
+            createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+                               // If it is not the first time, the database is just fetched
+            createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+                                   // If it is not the first time, the database is just fetched
             DBinfo();
+
             // deleteDB(_dbrooms);
             // deleteDB(_db);
+            // deleteDB(_dbbeacons);
 
-        // Evothings.eddystone.js: Timer that displays list of beacons.
-        var timer = null;
-        // Evothings.eddystone.js: Start tracking beacons!
-        setTimeout(startScan, 500);
-        // Evothings.eddystone.js: Timer that refreshes the display.
-        timer = setInterval(updateBeaconList, 500);
+            // 3 seconds after the app is run, it forces to enable Bluetooth before any real scan is made.
+            // NO ESTOY SEGURO DE MANTENER ESTE CODIGO? ES USEFUL? SI BUSCAN UNA ROOM RAPIDO PASAS A MAP.HTML Y A LOS 3 SEGUNDOS SE TE PARA A BUSQUEDA
+            // setTimeout(function() {
+            //     evothings.ble.startScan(null,null); // more info about the API: https://evothings.com/doc/lib-doc/module-cordova-plugin-ble.html  and its github page: https://github.com/evothings/cordova-ble
+            //     evothings.ble.stopScan();
+            // }, 3000)
 
-        /* Lo que habia al crear la app: */
-        /*var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+        // ESTO ES LO QUE TENIA DESDE UN PRINCIPIO PARA TESTEAR LOS BEACONS EN INDEX.html
+        // AHORA HE DE PASAR TODAS ESTAS LINEAS A UNA FUNCION DE DESPUES DE onload() de MAP.html
+        // // Evothings.eddystone.js: Timer that displays list of beacons.
+        // var timer = null;
+        // // Evothings.eddystone.js: Start tracking beacons!
+        // setTimeout(startScan, 500);
+        // // Evothings.eddystone.js: Timer that refreshes the display.
+        // timer = setInterval(updateBeaconList, 500);
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
-
-        console.log('Received Event: ' + id);*/
     }
 };

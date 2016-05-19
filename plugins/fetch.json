@@ -9,9 +9,8 @@
     },
     "cordova-plugin-eddystone": {
         "source": {
-            "type": "git",
-            "url": "https://github.com/evothings/cordova-eddystone",
-            "subdir": "."
+            "type": "registry",
+            "id": "cordova-plugin-eddystone"
         },
         "is_top_level": true,
         "variables": {}
@@ -23,6 +22,14 @@
             "subdir": "."
         },
         "is_top_level": false,
+        "variables": {}
+    },
+    "cordova-plugin-x-toast": {
+        "source": {
+            "type": "registry",
+            "id": "cordova-plugin-x-toast"
+        },
+        "is_top_level": true,
         "variables": {}
     }
 }

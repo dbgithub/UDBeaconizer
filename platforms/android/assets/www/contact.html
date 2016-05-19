@@ -13,12 +13,10 @@
 </head>
 <body onload="loadContactDetails()">
     <header>
-            <img id="location_ico" src="img/location_ico.png" alt="location icon" />
-            <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
-            <div id="div_liveSearchResults"></div>
-        <div class="div_black-separator"></div>
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="return true;" src="img/back-arrow.png" alt="back arrow" />
+        <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+        <div id="div_liveSearchResults"></div>
     </header>
-
 
     <section>
         <div id="div_header">
@@ -60,12 +58,6 @@
         localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         window.location = "map.html";
-    }
-    function BackKeyDown()
-    {
-        //navigator.notification.alert();
-        navigator.app.exitApp();  // For Exit Application
-        navigator.app.backHistory(); // Going back one step
     }
     </script>
 </body>

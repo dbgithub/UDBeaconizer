@@ -12,13 +12,11 @@
 </head>
 <body>
     <header><h1>What are you looking for?</h1></header>
-    <div id="test_beacons" style="font-size: 50px;"><p>beacons</p></div>
     <section>
             <input id="searchbar" class="input_search_bar" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
             <div id="div_liveSearchResults"></div>
-        <button class="button" onclick="callAnothePage()" ontouchstart="return true;">GO!</button>
+        <button class="button" onclick="go()" ontouchstart="return true;">GO!</button>
     </section>
-
 
     <footer>
         <div class="div_black-separator"></div>
@@ -38,26 +36,20 @@
     </script>
 
     <script type="text/javascript">
-    function callAnothePage() {
-        window.location = "page2.html";
-    }
     function goMap(index) {
         // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
         localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-        evothings.eddystone.stopScan();
         window.location = "map.html";
     }
     function goContact(index) {
         // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
         localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-        evothings.eddystone.stopScan();
         window.location = "contact.html";
     }
     function BackKeyDown()
     {
-        //navigator.notification.alert();
         navigator.app.exitApp();  // For Exit Application
         navigator.app.backHistory(); // Going back one step
     }

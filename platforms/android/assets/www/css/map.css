@@ -16,19 +16,22 @@ header {
     height: 110px; /*  valor que le he asignado yo */
     margin: 0px;
     background-image: url("../img/bg-noisy-grey.jpg");
+    border-bottom: 15px solid rgba(51,53,55,1);
 }
 
 .input_search_bar2 {
     box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
-    background-color: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8) url("../img/location_ico.png") 10px no-repeat;
+    background-size: auto 85%;
     border-radius: 10px;
     border-style: solid;
     border-color: rgb(41, 41, 41);
     color: white;
-    padding: 12px;
-    margin: 5px auto 5px auto;
+    padding: 12px 12px 12px 80px;
+    margin: 5px auto 0px auto;
     font-size: 45px;
     vertical-align: middle;
+    width: auto;
     height: 85px; /* This should be equal to height of header - the height of the black divisor */
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
@@ -38,11 +41,33 @@ header {
 footer {
     height: 100px;
 }
-footer img {
+footer #img_badge {
     height: 85px;
     padding: 5px;
 }
 
+#div_distanceTillDestination {
+    position: fixed;
+    margin-left: auto;
+    margin-right: 0px;
+    right: 0px;
+    bottom: 120px;
+    background-color: rgba(0, 0, 0, 0.56);
+    padding: 3px 12px 3px 3px;
+    width: 180px;
+    height: 70px
+}
+
+#div_distanceTillDestination img {
+    height: inherit;
+    float: left;
+}
+#div_distanceTillDestination p {
+    font-size:40px;
+    color: rgb(255, 0, 0);
+    height: inherit;
+    text-align: center;
+}
 #map_wrapper {
     background-color: #ccc;
     margin-top: 30%;
@@ -56,6 +81,10 @@ footer img {
     position: absolute;
 }
 
+#svg_circle_destinationpoint, #svg_circle_sourcepoint {
+    visibility: hidden;
+}
+
 #scrollable_content {
     background-color: blue;
     position: absolute;
@@ -67,4 +96,8 @@ footer img {
     /*-moz-transform: scale(0.6,0.6);
     -webkit-transform: scale(0.6,0.6);
     transform: scale(0.6,0.6);*/
+}
+
+#test_beacons p {
+    font-size: 19px;
 }

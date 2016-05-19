@@ -23,10 +23,14 @@ function createDB(whichDB) {
         _db = new PouchDB('staffdb'); // Fetching or creating the database for staff.
         hasChanged(null, _db); // It checks whether there have been changes in the database or not.
         createChangesLoadData(_db); // It creates the '.local' document if needed and populates the database.
-    } else {
+    } else if (whichDB === "rooms") {
         _dbrooms = new PouchDB('roomsdb'); // Fetching or creating the database for rooms.
         hasChanged(null, _dbrooms); // It checks whether there have been changes in the database or not.
         createChangesLoadData(_dbrooms); // It creates the '.local' document if needed and populates the database.
+    } else if (whichDB === "beacons") {
+        _dbbeacons = new PouchDB('beaconsdb'); // Fetching or creating the database for rooms.
+        hasChanged(null, _dbbeacons); // It checks whether there have been changes in the database or not.
+        createChangesLoadData(_dbbeacons); // It creates the '.local' document if needed and populates the database.
     }
 }
 
@@ -47,10 +51,13 @@ function createChangesLoadData(db) {
             if (db === _db) { // This is the staff database
                 readTxtFile("stafflist.txt", loadStaffList); // We are passing 'loadStaffList' as a callback function to ensure synchronous operations.
                 hasChanged(false, _db);
-            } else { // This is the rooms database
+            } else if (db === _dbrooms) { // This is the rooms database
                 readJsonFile("rooms.json", loadRooms); // We are passing 'loadRooms' as a callback function to ensure synchronous operations.
                 // The maps/images are not saved in the database for the moment. They are retrieved with an AJAX call.
                 hasChanged(false, _dbrooms);
+            } else if (db === _dbbeacons) {
+                readJsonFile("beacons.json", loadBeacons); // We are passing 'loadBeacons' as a callback function to ensure synchronous operations.
+                hasChanged(false, _dbbeacons);
             }
         }
     }, 2000); // This amount of time avoid JavaScript to behave badly. If I don't set it like that, it starts skipping functions and not working well. The amoung might vary.
@@ -129,7 +136,7 @@ function loadStaffList() {
     }
 }
 
-// This function retrieves a person or several persons based on the given name
+// This function retrieves a person or several persons based on the given name from the database
 function retrievePerson(name) {
     _db.allDocs({
         include_docs: true
@@ -152,7 +159,7 @@ function retrievePerson(name) {
 // This function retrieves a room or several rooms based on the given number.
 // The boolean controls whether to show the results or not. This is done like that because when the searching item contains a number
 // retrieveRoom is exclusively executed, but if the searching item doesn't contain a number retrieveStaff is executed first and
-// is awared of showing the corresponding results.
+// is responsible of showing the corresponding results.
 function retrieveRoom(room, bool) {
     _dbrooms.allDocs({
         include_docs: true,
@@ -196,10 +203,12 @@ function retrieveRoom(room, bool) {
             showRoomsList(); // displays all rooms found with the query
         }
     }).catch(function (err) {
+        console.log("error retrieving a room or several rooms from the database");
         console.log(err);
     });
 }
 
+// This functions loads/saves the rooms document read from a file into the database
 function loadRooms() {
     for (eachIndex in _jsondata) {
         _dbrooms.put(_jsondata[eachIndex]).then(function (response) {
@@ -211,6 +220,7 @@ function loadRooms() {
     }
 }
 
+// This function is part of an AJAX call that retrieves an image/map
 function retrieveMap(floor) {
     switch (floor) {
         case "0":
@@ -235,6 +245,43 @@ function retrieveMap(floor) {
         break;
     }
 }
+
+// This function loads/saves the beacons document read from a file into the database
+function loadBeacons() {
+    for (eachIndex in _jsondata) {
+        _dbbeacons.put(_jsondata[eachIndex]).then(function (response) {
+            console.log("Correctly added JSON document:" + response.id);
+        }).catch(function (err) {
+            console.log("error adding json data:");
+            console.log(err);
+        });
+    }
+}
+
+// This function retrieves a specific beacon from the database and assigns its coordinates to the corresponding global variables.
+// Those global variables are used for trilateration.
+function retrieveBeacon(instance, j) {
+    _dbbeacons.get(instance).then(function(doc) {
+            _beacon = doc;
+            if (j == 0) {
+                // This is the CLOSEST beacon
+                _b1X = _beacon.x; _b1Y = _beacon.y;
+                // console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
+            } else if (j == 1) {
+                // This is the SECOND closest beacon
+                _b2X = _beacon.x;
+                // console.log("(b2X:"+_b2X+")");
+            } else if (j == 2) {
+                // This is the FARTHEST beacon
+                _b3X = _beacon.x; _b3Y = _beacon.y;
+                // console.log("(b3X:"+_b3X+",b3Y:"+_b3Y+")");
+            } // END if
+        }).catch(function (err) {
+            console.log("error retrieving beacon from the database");
+            console.log(err);
+        });
+}
+
 
 // CRUD operations with PouchDB. Testing purposes (to delete in the near future).
 // function addTodo(text) {
@@ -299,6 +346,8 @@ function retrieveMap(floor) {
 //     });
 // }
 // END - CRUD operations with PouchDB. Testing purposes.
+
+
 
 // // This function saves the read images into dbrooms database as attachments
 // function loadMaps() {

@@ -15,6 +15,19 @@ module.exports = [
         "clobbers": [
             "evothings.eddystone"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
+        "id": "cordova-plugin-x-toast.Toast",
+        "pluginId": "cordova-plugin-x-toast",
+        "clobbers": [
+            "window.plugins.toast"
+        ]
+    },
+    {
+        "file": "plugins/cordova-plugin-x-toast/test/tests.js",
+        "id": "cordova-plugin-x-toast.tests",
+        "pluginId": "cordova-plugin-x-toast"
     }
 ];
 module.exports.metadata = 
@@ -22,7 +35,8 @@ module.exports.metadata =
 {
     "cordova-plugin-ble": "1.0.1",
     "cordova-plugin-eddystone": "1.1.0",
-    "cordova-plugin-whitelist": "1.2.1"
+    "cordova-plugin-whitelist": "1.2.1",
+    "cordova-plugin-x-toast": "2.5.1"
 }
 // BOTTOM OF METADATA
 });

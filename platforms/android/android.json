@@ -15,6 +15,10 @@
                         {
                             "xml": "<feature name=\"BLE\"><param name=\"android-package\" value=\"com.evothings.BLE\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -44,6 +48,9 @@
         },
         "cordova-plugin-eddystone": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },
     "dependent_plugins": {},
@@ -66,6 +73,17 @@
             "clobbers": [
                 "evothings.eddystone"
             ]
+        },
+        {
+            "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
+            "id": "cordova-plugin-x-toast.Toast",
+            "clobbers": [
+                "window.plugins.toast"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-x-toast/test/tests.js",
+            "id": "cordova-plugin-x-toast.tests"
         }
     ]
 }
