@@ -221,25 +221,27 @@ function loadRooms() {
 }
 
 // This function is part of an AJAX call that retrieves an image/map
-function retrieveMap(floor) {
+// 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
+function retrieveMap(floor, showAsSecondFloor) {
+    console.log("retrieve map justo ahora ejecutado");
     switch (floor) {
         case "0":
-        readImageFile(["img/0_planta_cero.jpg"], showMap);
+        readImageFile(["img/0_planta_cero.jpg"], showMap, showAsSecondFloor);
         break;
         case "1":
-        readImageFile(["img/1_planta_uno.jpg"], showMap);
+        readImageFile(["img/1_planta_uno.jpg"], showMap, showAsSecondFloor);
         break;
         case "2":
-        readImageFile(["img/2_planta_dos.jpg"], showMap);
+        readImageFile(["img/2_planta_dos.jpg"], showMap, showAsSecondFloor);
         break;
         case "3":
-        readImageFile(["img/3_planta_tres.jpg"], showMap);
+        readImageFile(["img/3_planta_tres.jpg"], showMap, showAsSecondFloor);
         break;
         case "4":
-        readImageFile(["img/4_planta_cuatro.jpg"], showMap);
+        readImageFile(["img/4_planta_cuatro.jpg"], showMap, showAsSecondFloor);
         break;
         case "5":
-        readImageFile(["img/5_planta_cinco.jpg"], showMap);
+        readImageFile(["img/5_planta_cinco.jpg"], showMap, showAsSecondFloor);
         break;
         default:
         break;

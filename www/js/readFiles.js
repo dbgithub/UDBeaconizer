@@ -24,6 +24,7 @@ function readTxtFile(file, loadStaffList) {
     } // END if
 } // END readTxtFile
 
+// This function reads a JSON file from local files:
 function readJsonFile (file, loadData) {
     // First of all, we check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
@@ -47,7 +48,10 @@ function readJsonFile (file, loadData) {
     } // END if
 }
 
-function readImageFile (file, showMap) {
+// This function reads an image file from local files.
+// 'showMap' is the function to be executed after reading the image in order to show the map.
+// 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
+function readImageFile (file, showMap, showAsSecondFloor) {
     // First of all, we check for the various File API support.
     if (window.File && window.FileReader && window.FileList && window.Blob) {
         var fimage = new XMLHttpRequest();
@@ -64,7 +68,7 @@ function readImageFile (file, showMap) {
                 var responsee = blobUtil.createBlob([fimage.response], {type: 'image/png'}); // It creates a Blob out of the response of the HttpRequest. There is no way to make Phonegap to understand Blob type if it is not with the plugin "blob-util"
                 _reva = blobUtil.createObjectURL(responsee);
                 setTimeout(function() {
-                    showMap(); //After ensuring we achieved correctly the URL we don't show the image
+                    showMap(showAsSecondFloor); // Now we show the image as a unique map or as a double-map depending on the boolean.
                 }, 0)
 
                 //More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:

@@ -1,8 +1,8 @@
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
-    -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
+    -webkit-touch-callout: none;                /* prevent the context menu when you tap and hold over a link */
     -webkit-text-size-adjust: none;             /* prevent webkit from resizing text to fit */
-    -webkit-user-select: none;                  /* prevent copy paste, to allow, change 'none' to 'text' */
+    -webkit-user-select: none;                  /* prevent copy paste etc. To allow, change 'none' to 'text' */
     padding: 0px;
     margin: 0px;
     -webkit-box-sizing: border-box; /* It changes how the Width and Height of the elements are calculated */
@@ -23,9 +23,6 @@ header {
 section {
     margin: 0 5% 0 5%;
     padding-bottom: 190px;  /* This value is calculated as: footer's height + some free space so that it looks nice (e.g 40px) */
-                            /* Remember to take a look (change) at the following values: */
-                            /* · footer's height */
-                            /* · section's padding bottom */
 }
 
 h1 {
@@ -39,47 +36,28 @@ h1 {
 footer {
     background-image: url("../img/bg-gray-triangles.png");
     background-repeat: repeat;
-    background-position: left top;
     background-attachment:fixed;
+    border-top: 15px solid rgba(51,53,55,1);
     text-align: center;
     vertical-align: middle;
     position: fixed;
     bottom: 0px;
     width: 100%;
-    height: 150px;  /* Change this value as you desire */
-                    /* Remember to take a look (change) at the following values: */
-                    /* · img's height within footer */
-                    /* · section's padding bottom */
+    height: 150px;  /* Change this value as you desire. Remember to take a look (change) section's padding bottom value: */
 }
 
-footer img {
+footer > img { /* la flechita significa todas las 'img' con parent 'footer' */
     padding: 12px;
-    height: 135px ; /* This height is calculated as: footer's height - divBlackSeparator's height */
-                    /* Remember to take a look (change) at the following values: */
-                    /* · footer's height */
-                    /* · section's padding bottom */
-    width: auto;
+    height: 100%;
 }
 
 #img_backarrow {
-    height:85px;
-    padding-left: 15px;
-    margin: 5px 10px 0px 0px;
+    height: 100%;
+    padding: 5px 10px 5px 10px;
     float: left;
 }
 #img_backarrow:active{
-    background-color: rgba(0, 0, 0, 0.4);;
-}
-
-.div_black-separator {
-    clear: left;
-    position: relative;
-    bottom: 0px;
-    margin-top: auto;
-    margin-bottom: 0px;
-    background-color: rgba(51,53,55,1);
-    height: 15px;
-    width: 100%;
+    background-color: rgba(88, 87, 87, 1);
 }
 
 .input_search_bar {
@@ -96,6 +74,26 @@ footer img {
     display: block;
     width: 100%;
     height: 100px;
+    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    user-select: text; /* allows copy, paste and manipulating text within text field*/
+}
+.input_search_bar2 {
+    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.8) url("../img/location_ico.png") 10px no-repeat;
+    background-size: auto 85%;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(41, 41, 41);
+    color: white;
+    padding: 12px 12px 12px 80px;
+    margin-left: 5px;
+    margin-right: 5px;
+    font-size: 45px;
+    vertical-align: middle;
+    width: 85%;
+    /*float: left;*/ /* No tengo todas conmigo de que esto lo vaya a utilizar */
+    height: 100%; /* This should be equal to height of header - the height of the black divisor */
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
     user-select: text; /* allows copy, paste and manipulating text within text field*/

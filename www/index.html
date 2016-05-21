@@ -13,14 +13,13 @@
 <body>
     <header><h1>What are you looking for?</h1></header>
     <section>
-            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
             <div id="div_liveSearchResults"></div>
         <button class="button" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
     </section>
 
     <footer>
-        <div class="div_black-separator"></div>
-        <img id="img_logo" src="./img/logo_UD-standard.svg" alt="logo">
+        <img src="./img/logo_UD-standard.svg" alt="logo">
     </footer>
 
     <script type="text/javascript" src="cordova.js"></script>

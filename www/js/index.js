@@ -32,6 +32,7 @@ var _b1X, _b1Y; // X and Y coordinates of beacon 1
 var _b2X; // X coordinate of beacon 2, Y coordinate it's not needed for calculations
 var _b3X, _b3Y; // X and Y coordinates of beacon 3
 var _destX, _destY; // X and Y coordinates of the destination point over the map
+var _stopLoop = false; // This bool prevents the application from retrieving and loading the double-map each 500ms (which is the beacons' list refresh rate)
 var app = {
     // Application Constructor
     initialize: function() {
@@ -58,9 +59,10 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onBackButton: function() {
         // app.receivedEvent('backbutton'); ESTO CREO QUE SE PUED QUITAR
-        // navigator.app.exitApp();  // For Exit Application
+        // navigator.app.exitApp();  // To Exit Application
+        // navigator.app.backHistory(); // To go back
         evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
-        navigator.app.backHistory();
+        window.location = "index.html";
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

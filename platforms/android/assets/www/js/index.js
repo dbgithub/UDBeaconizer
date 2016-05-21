@@ -58,9 +58,10 @@ var app = {
     // function, we must explicitly call 'app.receivedEvent(...);'
     onBackButton: function() {
         // app.receivedEvent('backbutton'); ESTO CREO QUE SE PUED QUITAR
-        // navigator.app.exitApp();  // For Exit Application
+        // navigator.app.exitApp();  // To Exit Application
+        // navigator.app.backHistory(); // To go back
         evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
-        navigator.app.backHistory();
+        window.location = "index.html";
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

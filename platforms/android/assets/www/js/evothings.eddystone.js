@@ -48,7 +48,7 @@
 		function updateBeaconList()
 		{
 			removeOldBeacons();
-			displayBeacons();
+			// displayBeacons();
 			applyTrilateration();
 		}
 
@@ -261,11 +261,16 @@
 			// Now we have to translate the beacons matching them with the reality. The only thing to do here is to add the values of the coordinates of the original beacon we placed on (0,0)
 			var real_X = parseFloat(_b1X) + parseFloat(X); // This represents the X coordinate of the locatin of the person (device)
 			var real_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
-			// Now we draw the location point where the user is at:
+
+			// Now we draw the location point where the user is at + we draw the corresponding label too:
 			var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
+			var label_you = document.getElementById("p_you");
 		    svg_circle_source.style.visibility="visible";
 		    svg_circle_source.setAttribute("cx", parseInt(real_X));
 		    svg_circle_source.setAttribute("cy", parseInt(real_Y));
+			label_you.style.left=real_X + 25 +"px";
+			label_you.style.top=real_Y + 25 +"px";
+			label_you.style.visibility="visible";
 			// console.log("(X = "+X+",Y = "+Y+")");
 			// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
 			// console.log("(realX = "+real_X+",realY = "+real_Y+")");

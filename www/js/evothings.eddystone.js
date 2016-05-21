@@ -196,6 +196,7 @@
 		// MY OWN FUNCTIONS:
 		///////////////////////////////////////////
 
+		// This function triggers all the business logic related to locating the user in a given floor.
 		function locateUser() {
 			// Evothings.eddystone.js: Timer that will be used to display list of beacons.
 	        var timer = null;
@@ -222,9 +223,18 @@
 			return Math.round((sum/_sortedList.length).toFixed(4)); // current floor
 		}
 
+		// This function applies the trilateration technique based on the location of at least three beacons and the floor which the user is at.
 		function applyTrilateration() {
 			var currentfloor = estimateFloor();
 			var nearestbeacons = [];
+
+			// We check whether the floor the user is at is equal to the floor of the room we are searching.
+			// If both floors are different, then, we will let the user switch between both floors so as to be able
+			// to see the room's location as well as user's location. Thus, you will be informed on how to get your room.
+			// We look also at '_stopLoop' variable to prevent unnecesary work (e.g.loading the map each 500ms)
+			if (_floor != currentfloor && !_stopLoop) {
+				duplicateMaps(currentfloor);
+			}
 
 			for (var i = 0; i < _sortedList.length; ++i)
 			{
@@ -232,7 +242,7 @@
 				if (nearestbeacons.length < 3) {
 					if (getFloor(uint8ArrayToString(beacon.bid)) == currentfloor) {
 						nearestbeacons.push(beacon);
-						// console.log("nearest beacon inserted:" + uint8ArrayToString(beacon.bid));
+						console.log("nearest beacon inserted:" + uint8ArrayToString(beacon.bid));
 					} // END if
 				} else {
 					break;
@@ -261,14 +271,19 @@
 			// Now we have to translate the beacons matching them with the reality. The only thing to do here is to add the values of the coordinates of the original beacon we placed on (0,0)
 			var real_X = parseFloat(_b1X) + parseFloat(X); // This represents the X coordinate of the locatin of the person (device)
 			var real_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
-			// Now we draw the location point where the user is at:
+
+			// Now we draw the location point where the user is at + we draw the corresponding label too:
 			var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
+			var label_you = document.getElementById("p_you");
 		    svg_circle_source.style.visibility="visible";
 		    svg_circle_source.setAttribute("cx", parseInt(real_X));
 		    svg_circle_source.setAttribute("cy", parseInt(real_Y));
+			label_you.style.left=real_X + 25 +"px";
+			label_you.style.top=real_Y + 25 +"px";
+			label_you.style.visibility="visible";
 			// console.log("(X = "+X+",Y = "+Y+")");
 			// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
-			// console.log("(realX = "+real_X+",realY = "+real_Y+")");
+			console.log("(realX = "+real_X+",realY = "+real_Y+")");
 
 			// We calculate the distance from device's position to destination point. The calculated distance is shown in meters.
 			var p_dist = document.getElementById("p_distanceTillDest");
@@ -278,4 +293,12 @@
 			} else {
 				p_dist.innerHTML = distance + " m";
 			}
+		}
+
+		// When the user is in another floor different to the room's floor, then we have to load two maps to let the user switch between them.
+		function duplicateMaps(currentfloor){
+			setTimeout(function() {
+				_stopLoop = true;
+		        retrieveMap('4', true); // If I take this call out of setTimeout function, JavaScripts yields errors.
+		    },0)
 		}

@@ -30,6 +30,8 @@ function livesearch(text) {
             searchtimer = setTimeout(searchRoom, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
         } // END inside if
     } else {
+        // More info about Toast plugin at: https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin
+        window.plugins.toast.show('Please, type anything in the search bar :)', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
         clearTimeout(searchtimer);
         hideLiveSearchResults();
     }// END outside if
@@ -62,9 +64,15 @@ function showRoomsList() {
                 list += "<li onclick='goMap("+j+")' ontouchstart='return true;'>" + (_searched_rooms[j])[0].label + "</li>"
             }
             var div = document.getElementById("div_liveSearchResults");
+            if (_searched_rooms.length > 6) {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+            } else {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+            }
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
+            window.plugins.toast.show('Not found! Please, try again :)', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
             console.log("WARNING: no results found in the database");
             hideLiveSearchResults();
         }
@@ -89,9 +97,15 @@ function showBothStaffNRooms() {
         }
         if (list != "") {
             var div = document.getElementById("div_liveSearchResults");
+            if (_searched_people.length + _searched_rooms.length > 6) {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+            } else {
+                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+            }
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
+            window.plugins.toast.show('Not found! Please, try again :)', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
             console.log("WARNING: no results found in the database");
             hideLiveSearchResults();
         }
@@ -153,11 +167,16 @@ function loadMap() {
     _floor = room[1]; // we assign the floor number to this global variable, later on, in order to decide what map to show.
     locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing poins etc.)
 
-    // We draw the red destination point on the map
+    // We draw the red destination point on the map + we draw the label corresponding too
     var svg_circle = document.getElementById("svg_circle_destinationpoint");
+    var label_dest = document.getElementById("p_dest_label");
     svg_circle.style.visibility="visible";
     svg_circle.setAttribute("cx", room[0].x);
     svg_circle.setAttribute("cy", room[0].y);
+    label_dest.style.left= parseInt(room[0].x) + 25 +"px";
+    label_dest.style.top= parseInt(room[0].y) + 25 +"px";
+    label_dest.innerHTML=room[0].label;
+    label_dest.style.visibility="visible";
     _destX = room[0].x;
     _destY = room[0].y;
 
@@ -175,7 +194,7 @@ function loadMap() {
     // like this: myScroll.on('scrollEnd', doSomething);
     // more info at: https://github.com/cubiq/iscroll
     var myScroll = new IScroll('#map_wrapper', {
-        zoom: true, // It allos zooming
+        zoom: true, // It allows zooming
         scrollX: true, // It allows to scroll in the X axis
         scrollY: true, // It allows to scroll in the Y axis
         mouseWheel: true, // It listens to mouse wheel event
@@ -185,6 +204,15 @@ function loadMap() {
         deceleration: 0.0001,
         wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
     });
+
+    var map = document.getElementById("map");
+    map.onload= function () {
+        myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
+        console.log("destX:"+_destX);
+        console.log("destY:"+_destY);
+        myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+    }
+
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
@@ -216,16 +244,6 @@ function showMap() {
     map.src = _reva;
 }
 
-function go(){
-    var searchbar = document.getElementById("searchbar");
-    console.log("value:"+searchbar.value);
-    text = searchbar.value.trim().toLowerCase(); // Here we "validate"/filter the input. We avoid "all whitespaces" and empty strings among others.
-    if (text.length == 0 || text == "") {
-        window.plugins.toast.show('Empty search. Please, type anything in the search bar', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
-    } else {
-        livesearch(text);
-    }
-}
 // // NOT USED ANYMORE, BUT WHO KNOWS....
 // // Shows the list of people (staff) found in the database according to the input text
 // function showStaffList() {

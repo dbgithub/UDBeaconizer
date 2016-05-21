@@ -5,7 +5,7 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, target-densitydpi=device-dpi" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
     <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <title>UD Beaconizer</title>
@@ -13,14 +13,13 @@
 <body>
     <header><h1>What are you looking for?</h1></header>
     <section>
-            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
             <div id="div_liveSearchResults"></div>
-        <button class="button" onclick="go()" ontouchstart="return true;">GO!</button>
+        <button class="button" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
     </section>
 
     <footer>
-        <div class="div_black-separator"></div>
-        <img id="img_logo" src="./img/logo_UD-standard.svg" alt="logo">
+        <img src="./img/logo_UD-standard.svg" alt="logo">
     </footer>
 
     <script type="text/javascript" src="cordova.js"></script>

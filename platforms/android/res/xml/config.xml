@@ -26,7 +26,7 @@
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
     <preference name="fullscreen" value="false" />
-    <preference name="android-windowSoftInputMode" value="stateAlwaysHidden" />
+    <preference name="android-windowSoftInputMode" value="adjustPan|stateAlwaysHidden" />
     <preference name="webviewbounce" value="true" />
     <preference name="prerendered-icon" value="true" />
     <preference name="stay-in-webview" value="false" />
