@@ -227,13 +227,16 @@
 		function applyTrilateration() {
 			var currentfloor = estimateFloor();
 			var nearestbeacons = [];
-
 			// We check whether the floor the user is at is equal to the floor of the room we are searching.
 			// If both floors are different, then, we will let the user switch between both floors so as to be able
 			// to see the room's location as well as user's location. Thus, you will be informed on how to get your room.
 			// We look also at '_stopLoop' variable to prevent unnecesary work (e.g.loading the map each 500ms)
-			if (_floor != currentfloor && !_stopLoop) {
+			if (_floor != currentfloor && !_stopLoop) { // This will occur if the user and the room are in different floors
+				$("footer > img:first-child").fadeToggle(2500);
 				duplicateMaps(currentfloor);
+			} else if (_floor == currentfloor && _stopLoop) { // This will occur when the user and the room are eventually in the same floor.
+				_stopLoop = false;
+				removeDuplicatedMaps();
 			}
 
 			for (var i = 0; i < _sortedList.length; ++i)
@@ -299,6 +302,9 @@
 		function duplicateMaps(currentfloor){
 			setTimeout(function() {
 				_stopLoop = true;
-		        retrieveMap('4', true); // If I take this call out of setTimeout function, JavaScripts yields errors.
+				// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
+				// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
+				// if (currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
+		        retrieveMap(currentfloor, true); // If I take this call out of setTimeout function, JavaScripts yields errors.
 		    },0)
 		}

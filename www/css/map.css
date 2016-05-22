@@ -43,6 +43,7 @@ footer > img:first-child { /* la flechita significa todas las 'img' con parent '
     height: auto;
     bottom: 120px;
     left: 0px;
+    display: none; /* we set display none because it will be shown just in the necessary cases */
 }
 footer > img:first-child:active { /* la flechita significa todas las 'img' con parent 'footer' */
     background-color: rgba(0, 0, 255, 0.9);
@@ -112,7 +113,7 @@ footer > img:first-child:active { /* la flechita significa todas las 'img' con p
     display: none;
 }
 
-#p_you {
+#p_you, #p_upstairs_downstairs {
     background-color: red;
     padding: 9px 12px 9px 12px;
     border-radius: 7px;

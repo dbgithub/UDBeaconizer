@@ -261,11 +261,13 @@ function switchMaps() {
     var dest_point = document.getElementById("svg_circle_destinationpoint");
     var you = document.getElementById("p_you");
     var dest_label = document.getElementById("p_dest_label");
+    // var upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
     if (map2.style.display != "inline") {
         map1.style.display = "none";
         map2.style.display = "inline";
         you.style.visibility = "visible";
         dest_label.style.visibility = "hidden";
+        // upstairs_downstairs.style.visibility = "visible";
         source_point.style.visibility = "visible";
         dest_point.style.visibility = "hidden";
     } else {
@@ -278,6 +280,23 @@ function switchMaps() {
     }
 }
 
+// This functions removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
+// SO, now, we go back to the normal scenario.
+function removeDuplicatedMaps() {
+    var map1 = document.getElementById("map");
+    var map2 = document.getElementById("map_sourcePoint");
+    var source_point = document.getElementById("svg_circle_sourcepoint");
+    var dest_point = document.getElementById("svg_circle_destinationpoint");
+    var you = document.getElementById("p_you");
+    var dest_label = document.getElementById("p_dest_label");
+    $("footer > img:first-child").fadeOut(2500);
+    map1.style.display = "inline";
+    map2.style.display = "none";
+    you.style.visibility = "visible";
+    dest_label.style.visibility = "visible";
+    source_point.style.visibility = "visible";
+    dest_point.style.visibility = "visible";
+}
 // This function is called when the user presses a certain object on the screen which triggers an action.
 // When the user maintains the pressure over that object a tooltip will appear explaining the meaning of that button, object or whatever.
 function showTooltip(string){
