@@ -1,39 +1,152 @@
 // Deletes the database given as an argument
-function deleteDB(db) {
-    if (db.info().doc_count != 0) { // it checks if it is not already empty
-        db.destroy().then(function (response) {
-            // success
-            console.log("Database deleted/removed successfully:");
-        }).catch(function (err) { // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
-            console.log("error deleting the database:");
-            console.log(err); // esto equivale a borrar la DB, es temporal hasta encontrar una mejor solucion
-        });
-    }
+function deleteDB(dbname) {
+    dbase = new PouchDB(dbname);
+    dbase.destroy().then(function (response) {
+        // success
+        console.log("Database deleted/removed successfully");
+    }).catch(function (err) {
+        console.log("error deleting the database:");
+        console.log(err);
+    });
 }
 
 // This function creates/fetches databases.
-// There exists a local document within the database that says whether there have been changes or not.
-// According to that response, we might want to update the local database in the device.
+// According to the sequence number (the version) of the local document of the database, we might want to update/sync the local database in the device.
 function createDB(whichDB) {
     console.log("Preferred adapters: "+ PouchDB.preferredAdapters); // Displays the list of adapters in order of preference for the browser. PouchDB tries using the first adapter, if not, tries the second one and etc.
-    // We want to insert metadata information in the database as a '.local' document.
-    // 'hasCHanged' is to check whether there have been changes in the DB or not.
-    // First, we should check whether we are fetching the DB or creating for first time.
     if (whichDB === "staff") {
         _db = new PouchDB('staffdb'); // Fetching or creating the database for staff.
-        hasChanged(null, _db); // It checks whether there have been changes in the database or not.
-        createChangesLoadData(_db); // It creates the '.local' document if needed and populates the database.
+        _db.info().then(function (result) {
+            // handle result
+            if (result.doc_count == 0) {syncDB(_db, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' SHOULD BE: 'staffdb'; localhost 500 error problem!
+        }).catch(function (err) {
+            console.log("error getting info about database:");
+            console.log(err);
+        });
+        // hasChanged(null, _db); // It checks whether there have been changes in the database or not.
+        // createChangesLoadData(_db); // It creates the '.local' document if needed and populates the database.
     } else if (whichDB === "rooms") {
         _dbrooms = new PouchDB('roomsdb'); // Fetching or creating the database for rooms.
-        hasChanged(null, _dbrooms); // It checks whether there have been changes in the database or not.
-        createChangesLoadData(_dbrooms); // It creates the '.local' document if needed and populates the database.
+        _dbrooms.info().then(function (result) {
+            // handle result
+            if (result.doc_count == 0) {syncDB(_dbrooms, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' SHOULD BE: 'roomsdb'; localhost 500 error problem!
+        }).catch(function (err) {
+            console.log("error getting info about database:");
+            console.log(err);
+        });
+        // hasChanged(null, _dbrooms); // It checks whether there have been changes in the database or not.
+        // createChangesLoadData(_dbrooms); // It creates the '.local' document if needed and populates the database.
     } else if (whichDB === "beacons") {
         _dbbeacons = new PouchDB('beaconsdb'); // Fetching or creating the database for rooms.
-        hasChanged(null, _dbbeacons); // It checks whether there have been changes in the database or not.
-        createChangesLoadData(_dbbeacons); // It creates the '.local' document if needed and populates the database.
+        _dbbeacons.info().then(function (result) {
+            // handle result
+            if (result.doc_count == 0) {syncDB(_dbbeacons, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' SHOULD BE: 'beaconsdb'; localhost 500 error problem!
+        }).catch(function (err) {
+            console.log("error getting info about database:");
+            console.log(err);
+        });
+        // hasChanged(null, _dbbeacons); // It checks whether there have been changes in the database or not.
+        // createChangesLoadData(_dbbeacons); // It creates the '.local' document if needed and populates the database.
     }
 }
 
+function syncDB(db, dbname) {
+    console.log("domain:"+_db_domain);
+    console.log("port:"+_db_port);
+    console.log("dbname:"+dbname);
+    // var remotedb = new PouchDB('http://'+"10.166.50.143"+':'+"5984"+'/'+dbname+'?auth=admin');
+
+
+    // $.ajax({type:"GET", url: 'http://'+"10.166.50.143"+':'+"8888"+'/'+'staff'+'?auth=admin', success: function(result){
+    //        console.log("AJAX");
+    //        console.log(result);
+    //     //    result.info().then(function (result) {
+    //     //        var str =
+    //     //        "DB name: " + result.db_name + "\n" +
+    //     //        "doc count: "+ result.doc_count + "\n" +
+    //     //        "attachment format: " + result.idb_attachment_format + "\n" +
+    //     //        "adapter: " + result.adapter + "\n" +
+    //     //        "sqlite plugin: " + result.sqlite_plugin + "\n" +
+    //     //        "websql encoding: " + result.websql_encoding;
+    //     //        console.log(str)
+    //     //    }).catch(function (err) {
+    //     //        console.log("error showing info of the database");
+    //     //        console.log(err);
+    //     //    });
+    //    }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+
+
+
+
+
+
+
+    // db.replicate.from(remotedb).on('change', function (info) {
+    //     console.log("on change:");
+    //     console.log(info);
+    //     // handle change
+    // }).on('paused', function (err) {
+    //     console.log("on paused:");
+    //     console.log(err);
+    //     // replication paused (e.g. replication up to date, user went offline)
+    // }).on('active', function () {
+    //     console.log("on active");
+    //     // replicate resumed (e.g. new changes replicating, user went back online)
+    // }).on('denied', function (err) {
+    //     console.log("on denied:");
+    //     console.log(err);
+    //     // a document failed to replicate (e.g. due to permissions)
+    // }).on('complete', function () {
+    //     console.log("Replication from remote database (master) to local "+dbname+" database successfully DONE!");
+    // }).on('error', function (err) {
+    //     console.log("error replicating (sync) databases");
+    //     console.log(err);
+    // });
+
+    // Insert the 'sequence version' local document in the local database:
+    var seq_num;
+    $.ajax({type:"GET", url: 'http://'+"192.168.1.51"+':'+"8888"+'/'+'staff/version'+'?auth=admin', success: function(result){
+           console.log("AJAX-get-sequence-version");
+           seq_num = result;
+           console.log(result);
+       }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+
+    db.put({
+        _id: '_local/sequence_number_version',
+        seq_version: seq_num
+    }).then(function (response) {
+        console.log("'_local/sequence_number_version' document created.");
+    });
+}
+
+function checkChanges(db, dbname) {
+    var seq_num;
+    $.ajax({type:"GET", url: 'http://'+"192.168.1.51"+':'+"8888"+'/'+'staff/version'+'?auth=admin', success: function(result){
+           console.log("AJAX-check changes");
+           seq_num = result;
+           console.log(result);
+       }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+
+       db.get('_local/sequence_number_version').then(function (result) {
+           if (result.seq_version < seq_num) {
+               // NOW WE HAVE TO SYN DATABASES:
+               syncDB(db, dbname);
+               // Now we update the sequence number version:
+               db.put({
+                   _id: '_local/sequence_number_version',
+                   _rev: result._rev,
+                   seq_version: result.seq_version + number
+               }).then(function (response) {
+                   console.log("'_local/sequence_number_version' corrently updated.");
+               });
+           }
+       }).catch(function (err) {
+           console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
+           console.log(err);
+       });
+}
+
+// // TO DELETE?????? NOT USEFULL ANYMORE??????
 // This function creates a '.local' document in the database in order to control whether the DBs changes or not.
 // Afterwards, depending on the database given as the argument, we load the corresponding data in each database.
 function createChangesLoadData(db) {
@@ -64,8 +177,8 @@ function createChangesLoadData(db) {
 }
 
 // Shows databse info
-function DBinfo() {
-    _dbrooms.info().then(function (result) {
+function DBinfo(db) {
+    db.info().then(function (result) {
         var str =
         "DB name: " + result.db_name + "\n" +
         "doc count: "+ result.doc_count + "\n" +
@@ -80,6 +193,7 @@ function DBinfo() {
     });
 }
 
+// // TO DELETE?????? NOT USEFULL ANYMORE??????
 // This function checks whether there has been any change in the DB or not.
 // This function changes the value of the state of the changes variable. The desired value is passed as an argument.
 function hasChanged(change, db) {
@@ -104,6 +218,7 @@ function hasChanged(change, db) {
     });
 }
 
+// TO DELETE?????? NOT USEFULL ANYMORE??????
 // This function saves the staff data in the browser's database as JSON documents
 function loadStaffList() {
     var temp;
@@ -208,6 +323,7 @@ function retrieveRoom(room, bool) {
     });
 }
 
+// TO DELETE?????? NOT USEFULL ANYMORE??????
 // This functions loads/saves the rooms document read from a file into the database
 function loadRooms() {
     for (eachIndex in _jsondata) {
@@ -223,7 +339,6 @@ function loadRooms() {
 // This function is part of an AJAX call that retrieves an image/map
 // 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
 function retrieveMap(floor, showAsSecondFloor) {
-    console.log("retrieve map justo ahora ejecutado");
     switch (floor) {
         case "0":
         readImageFile(["img/0_planta_cero.jpg"], showMap, showAsSecondFloor);
@@ -248,6 +363,7 @@ function retrieveMap(floor, showAsSecondFloor) {
     }
 }
 
+// TO DELETE?????? NOT USEFULL ANYMORE??????
 // This function loads/saves the beacons document read from a file into the database
 function loadBeacons() {
     for (eachIndex in _jsondata) {

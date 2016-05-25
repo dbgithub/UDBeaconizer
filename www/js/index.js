@@ -17,8 +17,10 @@
  * under the License.
  */
 // GLOBAL VARIABLES for all javascript files:
-var _tuples; // text lines read from stafflist '.txt'
-var _jsondata // json documents read from rooms '.json' file
+var _db_domain = "localhost";
+var _db_port = "5984";
+var _tuples; // TO DELETE?????? NOT USEFULL ANYMORE?????? text lines read from stafflist '.txt'
+var _jsondata // TO DELETE?????? NOT USEFULL ANYMORE?????? json documents read from rooms '.json' file
 var _db; // database for staff
 var _dbrooms; // database for rooms
 var _dbbeacons; // database for beacons
@@ -33,6 +35,7 @@ var _b2X; // X coordinate of beacon 2, Y coordinate it's not needed for calculat
 var _b3X, _b3Y; // X and Y coordinates of beacon 3
 var _destX, _destY; // X and Y coordinates of the destination point over the map
 var _stopLoop = false; // This bool prevents the application from retrieving and loading the double-map each 500ms (which is the beacons' list refresh rate)
+var _currentfloor; // This int indicates the current floor of the user
 var app = {
     // Application Constructor
     initialize: function() {
@@ -67,17 +70,62 @@ var app = {
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
-            createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                               // If it is not the first time, the database is just fetched
-            createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                               // If it is not the first time, the database is just fetched
-            createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                                   // If it is not the first time, the database is just fetched
-            DBinfo();
 
-            // deleteDB(_dbrooms);
-            // deleteDB(_db);
-            // deleteDB(_dbbeacons);
+
+        // var remotedb = new PouchDB('http://'+"192.168.1.51"+':'+"5984"+'/'+"staffdb"+'?auth=admin');
+        // console.log(remotedb);
+        // remotedb.info().then(function (result) {
+        //     var str =
+        //     "DB name: " + result.db_name + "\n" +
+        //     "doc count: "+ result.doc_count + "\n" +
+        //     "attachment format: " + result.idb_attachment_format + "\n" +
+        //     "adapter: " + result.adapter + "\n" +
+        //     "sqlite plugin: " + result.sqlite_plugin + "\n" +
+        //     "websql encoding: " + result.websql_encoding;
+        //     console.log(str)
+        // }).catch(function (err) {
+        //     console.log("error showing info of the database");
+        //     console.log(err);
+        // });
+
+
+        $.ajax({type:"GET", url: 'http://'+"192.168.1.51"+':'+"8888"+'/'+'staff'+'?auth=admin', success: function(result){
+               console.log("AJAX");
+               console.log(result);
+            //    result.info().then(function (result) {
+            //        var str =
+            //        "DB name: " + result.db_name + "\n" +
+            //        "doc count: "+ result.doc_count + "\n" +
+            //        "attachment format: " + result.idb_attachment_format + "\n" +
+            //        "adapter: " + result.adapter + "\n" +
+            //        "sqlite plugin: " + result.sqlite_plugin + "\n" +
+            //        "websql encoding: " + result.websql_encoding;
+            //        console.log(str)
+            //    }).catch(function (err) {
+            //        console.log("error showing info of the database");
+            //        console.log(err);
+            //    });
+           }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+
+
+
+
+
+
+
+
+            // createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+                               // If it is not the first time, the database is just fetched
+            // createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+            //                    // If it is not the first time, the database is just fetched
+            // createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+                                   // If it is not the first time, the database is just fetched
+            // DBinfo(_db);
+            // DBinfo(_dbrooms);
+            // DBinfo(_dbbeacons);
+            // deleteDB("staffdb");
+            // deleteDB("roomsdb");
+            // deleteDB("beaconsdb");
 
             // 3 seconds after the app is run, it forces to enable Bluetooth before any real scan is made.
             // NO ESTOY SEGURO DE MANTENER ESTE CODIGO? ES USEFUL? SI BUSCAN UNA ROOM RAPIDO PASAS A MAP.HTML Y A LOS 3 SEGUNDOS SE TE PARA A BUSQUEDA
@@ -85,15 +133,6 @@ var app = {
             //     evothings.ble.startScan(null,null); // more info about the API: https://evothings.com/doc/lib-doc/module-cordova-plugin-ble.html  and its github page: https://github.com/evothings/cordova-ble
             //     evothings.ble.stopScan();
             // }, 3000)
-
-        // ESTO ES LO QUE TENIA DESDE UN PRINCIPIO PARA TESTEAR LOS BEACONS EN INDEX.html
-        // AHORA HE DE PASAR TODAS ESTAS LINEAS A UNA FUNCION DE DESPUES DE onload() de MAP.html
-        // // Evothings.eddystone.js: Timer that displays list of beacons.
-        // var timer = null;
-        // // Evothings.eddystone.js: Start tracking beacons!
-        // setTimeout(startScan, 500);
-        // // Evothings.eddystone.js: Timer that refreshes the display.
-        // timer = setInterval(updateBeaconList, 500);
 
     }
 };

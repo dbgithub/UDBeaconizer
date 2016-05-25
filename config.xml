@@ -111,6 +111,10 @@
     <access origin="*" />
 
     <plugin name="cordova-plugin-whitelist" version="1" />
+    <allow-navigation href="http://*" /> <!-- TO DELETE? -->
+    <allow-navigation href="https://*" /> <!-- TO DELETE? -->
+    <allow-navigation href="*" /> <!-- TO DELETE? -->
+    <allow-intent href="*" />  <!-- TO DELETE? -->
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />

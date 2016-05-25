@@ -13,20 +13,20 @@
 <body>
     <header><h1>What are you looking for?</h1></header>
     <section>
-            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+            <input id="searchbar" class="input_search_bar" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
             <div id="div_liveSearchResults"></div>
-        <button class="button" onclick="go()" ontouchstart="return true;">GO!</button>
+        <button class="button" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
     </section>
 
     <footer>
-        <div class="div_black-separator"></div>
-        <img id="img_logo" src="./img/logo_UD-standard.svg" alt="logo">
+        <img src="./img/logo_UD-standard.svg" alt="logo">
     </footer>
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script> <!-- quitar esto de aqui -->
     <script type="text/javascript" src="js/blob-util.min.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
     <script src="js/readFiles.js"></script>
@@ -47,11 +47,6 @@
         localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
         window.location = "contact.html";
-    }
-    function BackKeyDown()
-    {
-        navigator.app.exitApp();  // For Exit Application
-        navigator.app.backHistory(); // Going back one step
     }
     </script>
 </body>

@@ -13,8 +13,8 @@
 </head>
 <body onload="loadContactDetails()">
     <header>
-        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="return true;" src="img/back-arrow.png" alt="back arrow" />
-        <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showTooltip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
+        <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
         <div id="div_liveSearchResults"></div>
     </header>
 
@@ -29,8 +29,7 @@
     </section>
 
     <footer>
-        <div class="div_black-separator"></div>
-        <img id="img_badge" src="./img/logo_UD-badge.png" alt="UD badge">
+        <img src="./img/logo_UD-badge.png" alt="UD badge">
     </footer>
 
     <script type="text/javascript" src="cordova.js"></script>

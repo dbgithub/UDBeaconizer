@@ -13,7 +13,7 @@
 </head>
 <body onload="loadMap()">
     <header>
-        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="return true;" src="img/back-arrow.png" alt="back arrow" />
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showTooltip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
         <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
         <div id="div_liveSearchResults"></div>
     </header>
@@ -27,14 +27,17 @@
                 </svg>
                 <p id="p_you">YOU</p>
                 <p id="p_dest_label">destination</p>
+                <!-- <p id="p_upstairs_downstairs"></p> -->
                 <img id="map" src="" alt="map">
+                <img id="map_sourcePoint" src="" alt="map">
             </div>
         </div>
     </section>
     <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
     <footer>
+        <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showTooltip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
         <div id="div_distanceTillDestination">
-            <img src="./img/destination_ico.png" alt="target" />
+            <img src="./img/destination_ico.png" alt="distace to target" />
             <p id="p_distanceTillDest"></p>
         </div>
         <img src="./img/logo_UD-badge.png" alt="UD badge">

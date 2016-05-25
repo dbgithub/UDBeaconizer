@@ -2,11 +2,16 @@ body {
     background-image: none;
 }
 section {
-    margin: 115px 0px 115px 0px;
+    /*background-color: red; */ /* The color is for debuggin purposes */
+    margin-left: 0px;
+    margin-right: 0px;
     padding-bottom: 0px;
-    background-color: red;
     overflow: visible;
     width: 100%;
+    position: relative; /* This CSS property is used to center the wrapper for the map */
+    top: 50%; /* This CSS property is used to center the wrapper for the map */
+    margin-top: -175px; /* The value has to be half of the height of the Wrapper. This CSS property is used to center the wrapper for the map */
+    z-index: -2;
 }
 
 header {
@@ -15,35 +20,37 @@ header {
     width: 100%;
     height: 110px; /*  valor que le he asignado yo */
     margin: 0px;
+    padding: 5px;
     background-image: url("../img/bg-noisy-grey.jpg");
     border-bottom: 15px solid rgba(51,53,55,1);
 }
 
-.input_search_bar2 {
-    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
-    background: rgba(0, 0, 0, 0.8) url("../img/location_ico.png") 10px no-repeat;
-    background-size: auto 85%;
-    border-radius: 10px;
-    border-style: solid;
-    border-color: rgb(41, 41, 41);
-    color: white;
-    padding: 12px 12px 12px 80px;
-    margin: 5px auto 0px auto;
-    font-size: 45px;
-    vertical-align: middle;
-    width: auto;
-    height: 85px; /* This should be equal to height of header - the height of the black divisor */
-    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
-    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
-    user-select: text; /* allows copy, paste and manipulating text within text field*/
-}
-
 footer {
     height: 100px;
+    border-top: 8px solid rgba(51,53,55,1);
 }
-footer #img_badge {
-    height: 85px;
+footer > img:last-child { /* la flechita significa todas las 'img' con parent 'footer' */
     padding: 5px;
+    height: 100%;
+}
+
+footer > img:first-child { /* la flechita significa todas las 'img' con parent 'footer' */
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.56);
+    margin-left: 20px;
+    padding: 11px;
+    width: 100px;
+    height: auto;
+    bottom: 120px;
+    left: 0px;
+    display: none; /* we set display none because it will be shown just in the necessary cases */
+}
+footer > img:first-child:active { /* la flechita significa todas las 'img' con parent 'footer' */
+    background-color: rgba(0, 0, 255, 0.9);
+}
+
+#div_liveSearchResults {
+    top: 110px;
 }
 
 #div_distanceTillDestination {
@@ -53,29 +60,33 @@ footer #img_badge {
     right: 0px;
     bottom: 120px;
     background-color: rgba(0, 0, 0, 0.56);
-    padding: 3px 12px 3px 3px;
-    width: 180px;
-    height: 70px
+    padding: 5px 12px 5px 5px;
+    width: 200px;
+    height: 70px;
 }
 
 #div_distanceTillDestination img {
-    height: inherit;
+    height: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 5px;
     float: left;
 }
 #div_distanceTillDestination p {
+    display: inline-block;
     font-size:40px;
     color: rgb(255, 0, 0);
-    height: inherit;
+    height: 100%;
     text-align: center;
 }
 #map_wrapper {
-    background-color: #ccc;
-    margin-top: 30%;
-    height: 50px;
-    width: 50px;
+    /* background-color: #ccc; */ /* The color is for debuggin purposes */
+    height: 350px;
+    width: 350px;
     margin-left: auto;
     margin-right: auto;
     overflow: visible;
+    z-index: -2;
 }
 #map_wrapper svg {
     position: absolute;
@@ -86,7 +97,8 @@ footer #img_badge {
 }
 
 #scrollable_content {
-    background-color: blue;
+    z-index: -1;
+    /*background-color: blue;*/ /* The color is for debuggin purposes */
     position: absolute;
     width: auto;
     height: auto;
@@ -97,7 +109,36 @@ footer #img_badge {
     -webkit-transform: scale(0.6,0.6);
     transform: scale(0.6,0.6);*/
 }
+#map_sourcePoint {
+    display: none;
+}
 
+#p_you, #p_upstairs_downstairs {
+    background-color: red;
+    padding: 9px 12px 9px 12px;
+    border-radius: 7px;
+    color: white;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.9);
+    display: inline;
+    font-size:45px;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+#p_dest_label {
+    background-color: darkorange;
+    padding: 9px 12px 9px 12px;
+    border-radius: 7px;
+    color: white;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.9);
+    display: inline;
+    font-size:45px;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+/* To delete: */
 #test_beacons p {
     font-size: 19px;
 }

@@ -13,8 +13,8 @@
 </head>
 <body onload="loadMap()">
     <header>
-        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="return true;" src="img/back-arrow.png" alt="back arrow" />
-        <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" onkeyup="livesearch(this.value)" value="">
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showTooltip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
+        <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
         <div id="div_liveSearchResults"></div>
     </header>
 
@@ -25,18 +25,22 @@
                     <circle id="svg_circle_sourcepoint" cx="0" cy="0" r="18" fill="red" />
                     <circle id="svg_circle_destinationpoint" cx="0" cy="0" r="18" fill="orange" />
                 </svg>
+                <p id="p_you">YOU</p>
+                <p id="p_dest_label">destination</p>
+                <!-- <p id="p_upstairs_downstairs"></p> -->
                 <img id="map" src="" alt="map">
+                <img id="map_sourcePoint" src="" alt="map">
             </div>
         </div>
     </section>
-    <div id="test_beacons" style="font-size: 50px;"><p>beacons</p></div>
+    <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
     <footer>
+        <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showTooltip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
         <div id="div_distanceTillDestination">
-            <img src="./img/destination_ico.png" alt="target" />
+            <img src="./img/destination_ico.png" alt="distace to target" />
             <p id="p_distanceTillDest"></p>
         </div>
-        <div class="div_black-separator"></div>
-        <img id="img_badge" src="./img/logo_UD-badge.png" alt="UD badge">
+        <img src="./img/logo_UD-badge.png" alt="UD badge">
     </footer>
 
     <script type="text/javascript" src="cordova.js"></script>

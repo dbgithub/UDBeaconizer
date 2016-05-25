@@ -242,14 +242,23 @@ function loadMap() {
 // Shows/depicts/loads the image within the DOM element.
 // 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
 function showMap(showAsSecondFloor) {
+    var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
+    var label_you = document.getElementById("p_you");
+
     if (!showAsSecondFloor) {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
         map.src = _reva;
+        // We show the corresponding label and the svg:
+        svg_circle_source.style.visibility="visible";
+        label_you.style.visibility="visible";
     } else {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
         var map_sourcePoint = document.getElementById("map_sourcePoint");
         map_sourcePoint.src = _reva;
+        // We hide the label and the svg which is not needed for the moment:
+        svg_circle_source.style.visibility="hidden";
+        label_you.style.visibility="hidden";
     }
 }
 
