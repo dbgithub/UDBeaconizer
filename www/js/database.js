@@ -40,7 +40,7 @@ function createDB(whichDB) {
         _dbbeacons = new PouchDB('beaconsdb'); // Fetching or creating the database for rooms.
         _dbbeacons.info().then(function (result) {
             // handle result
-            if (result.doc_count == 0) {syncDB(_dbbeacons, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' SHOULD BE: 'beaconsdb'; localhost 500 error problem!
+            if (result.doc_count == 0) {syncDB(_dbbeacons, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' in syncDB SHOULD BE: 'beaconsdb'; localhost 500 error problem!
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
@@ -51,6 +51,9 @@ function createDB(whichDB) {
 }
 
 function syncDB(db, dbname) {
+    if (dbname == "staff") {
+        db.put({"_id":"002", "name":"aitor"});
+    }
     console.log("domain:"+_db_domain);
     console.log("port:"+_db_port);
     console.log("dbname:"+dbname);
@@ -102,48 +105,20 @@ function syncDB(db, dbname) {
     //     console.log("error replicating (sync) databases");
     //     console.log(err);
     // });
-
-    // Insert the 'sequence version' local document in the local database:
-    var seq_num;
-    $.ajax({type:"GET", url: 'http://'+"192.168.1.51"+':'+"8888"+'/'+'staff/version'+'?auth=admin', success: function(result){
-           console.log("AJAX-get-sequence-version");
-           seq_num = result;
-           console.log(result);
-       }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
-
-    db.put({
-        _id: '_local/sequence_number_version',
-        seq_version: seq_num
-    }).then(function (response) {
-        console.log("'_local/sequence_number_version' document created.");
-    });
 }
 
 function checkChanges(db, dbname) {
-    var seq_num;
-    $.ajax({type:"GET", url: 'http://'+"192.168.1.51"+':'+"8888"+'/'+'staff/version'+'?auth=admin', success: function(result){
+    $.ajax({type:"GET", url: 'http://'+"10.48.1.39"+':'+"8888"+'/'+dbname+'/version'+'?auth=admin', success: function(result){
            console.log("AJAX-check changes");
-           seq_num = result;
-           console.log(result);
-       }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+           console.log("Result on client-side:" + result);
+           db.info().then(function (result2) {
+               if (result2.update_seq < result) {syncDB(db, dbname);} // 'whichDB' in syncDB SHOULD BE: 'beaconsdb'; localhost 500 error problem! // If the local sequence number is lower than the sequence number in the server, we sync databases.
+           }).catch(function (err) {
+               console.log("error showing info of the database");
+               console.log(err);
+           });
+       }, error: function(xhr,status,error) {console.log(error +":"+status);}});
 
-       db.get('_local/sequence_number_version').then(function (result) {
-           if (result.seq_version < seq_num) {
-               // NOW WE HAVE TO SYN DATABASES:
-               syncDB(db, dbname);
-               // Now we update the sequence number version:
-               db.put({
-                   _id: '_local/sequence_number_version',
-                   _rev: result._rev,
-                   seq_version: result.seq_version + number
-               }).then(function (response) {
-                   console.log("'_local/sequence_number_version' corrently updated.");
-               });
-           }
-       }).catch(function (err) {
-           console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
-           console.log(err);
-       });
 }
 
 // // TO DELETE?????? NOT USEFULL ANYMORE??????
