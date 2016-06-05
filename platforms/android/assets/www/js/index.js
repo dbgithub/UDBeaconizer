@@ -17,8 +17,12 @@
  * under the License.
  */
 // GLOBAL VARIABLES for all javascript files:
-var _db_domain = "localhost";
-var _db_port = "5984";
+var _domain = "asgard.deusto.es";
+var _db_port = "53984";
+var _server_port = "53080";
+var _staffdb_name='staffdb';
+var _roomsdb_name='roomsdb';
+var _beacons_name='beaconsdb';
 var _tuples; // TO DELETE?????? NOT USEFULL ANYMORE?????? text lines read from stafflist '.txt'
 var _jsondata // TO DELETE?????? NOT USEFULL ANYMORE?????? json documents read from rooms '.json' file
 var _db; // database for staff
@@ -70,25 +74,41 @@ var app = {
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
-            // createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                               // If it is not the first time, the database is just fetched
-            // createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-            //                    // If it is not the first time, the database is just fetched
-            // createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-                                   // If it is not the first time, the database is just fetched
-            // DBinfo(_db);
-            // DBinfo(_dbrooms);
-            // DBinfo(_dbbeacons);
-            // deleteDB("staffdb");
-            // deleteDB("roomsdb");
-            // deleteDB("beaconsdb");
 
-            // 3 seconds after the app is run, it forces to enable Bluetooth before any real scan is made.
-            // NO ESTOY SEGURO DE MANTENER ESTE CODIGO? ES USEFUL? SI BUSCAN UNA ROOM RAPIDO PASAS A MAP.HTML Y A LOS 3 SEGUNDOS SE TE PARA A BUSQUEDA
-            // setTimeout(function() {
-            //     evothings.ble.startScan(null,null); // more info about the API: https://evothings.com/doc/lib-doc/module-cordova-plugin-ble.html  and its github page: https://github.com/evothings/cordova-ble
-            //     evothings.ble.stopScan();
-            // }, 3000)
+        // TO DELETE:
+        $.ajax({type:"GET", url: 'http://asgard.deusto.es:53984/staffdb', success: function(result){
+            console.log("AJAX");
+            console.log(result);
+        }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+        // TO DELETE:
+        $.ajax({type:"GET", url: 'http://asgard.deusto.es:53080/staff/version?auth=admin', success: function(result){
+            console.log("AJAX");
+            console.log(result);
+        }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
+
+        //createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+        // If it is not the first time, the database is just fetched
+        createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+        // If it is not the first time, the database is just fetched
+        //createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+        // If it is not the first time, the database is just fetched
+        requestImages();
+        // DBinfo(_db);
+        DBinfo(_dbrooms);
+        // DBinfo(_dbbeacons);
+        setTimeout(function() {
+            getAttachment(5);
+        },8000)
+        // deleteDB("staffdb");
+        // deleteDB("roomsdb");
+        // deleteDB("beaconsdb");
+
+        // 3 seconds after the app is run, it forces to enable Bluetooth before any real scan is made.
+        // NO ESTOY SEGURO DE MANTENER ESTE CODIGO? ES USEFUL? SI BUSCAN UNA ROOM RAPIDO PASAS A MAP.HTML Y A LOS 3 SEGUNDOS SE TE PARA A BUSQUEDA
+        // setTimeout(function() {
+        //     evothings.ble.startScan(null,null); // more info about the API: https://evothings.com/doc/lib-doc/module-cordova-plugin-ble.html  and its github page: https://github.com/evothings/cordova-ble
+        //     evothings.ble.stopScan();
+        // }, 3000)
 
     }
 };

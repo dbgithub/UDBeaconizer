@@ -11,115 +11,216 @@ function deleteDB(dbname) {
 }
 
 // This function creates/fetches databases.
-// According to the sequence number (the version) of the local document of the database, we might want to update/sync the local database in the device.
+// It syncs the local database with the remote database in case is needed.
+// The local database checks for changes in the remote database looking for updates.
 function createDB(whichDB) {
     console.log("Preferred adapters: "+ PouchDB.preferredAdapters); // Displays the list of adapters in order of preference for the browser. PouchDB tries using the first adapter, if not, tries the second one and etc.
     if (whichDB === "staff") {
-        _db = new PouchDB('staffdb'); // Fetching or creating the database for staff.
+        _db = new PouchDB(_staffdb_name); // Fetching or creating the database for staff.
         _db.info().then(function (result) {
-            // handle result
-            if (result.doc_count == 0) {syncDB(_db, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' SHOULD BE: 'staffdb'; localhost 500 error problem!
+            // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+            if (result.doc_count == 0) {createLocalDocument(_db); syncDB(_db, _staffdb_name);} else {checkChanges(_db, whichDB, _staffdb_name);}
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
         });
-        // hasChanged(null, _db); // It checks whether there have been changes in the database or not.
-        // createChangesLoadData(_db); // It creates the '.local' document if needed and populates the database.
     } else if (whichDB === "rooms") {
-        _dbrooms = new PouchDB('roomsdb'); // Fetching or creating the database for rooms.
+        _dbrooms = new PouchDB(_roomsdb_name); // Fetching or creating the database for rooms.
         _dbrooms.info().then(function (result) {
-            // handle result
-            if (result.doc_count == 0) {syncDB(_dbrooms, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' SHOULD BE: 'roomsdb'; localhost 500 error problem!
+            // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+            if (result.doc_count == 0) {_firstTime = true; createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkChanges(_dbrooms, whichDB, _roomsdb_name); checkMapChanges(0, whichDB, checkMapChanges);}
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
         });
-        // hasChanged(null, _dbrooms); // It checks whether there have been changes in the database or not.
-        // createChangesLoadData(_dbrooms); // It creates the '.local' document if needed and populates the database.
     } else if (whichDB === "beacons") {
-        _dbbeacons = new PouchDB('beaconsdb'); // Fetching or creating the database for rooms.
+        _dbbeacons = new PouchDB(_beacons_name); // Fetching or creating the database for rooms.
         _dbbeacons.info().then(function (result) {
-            // handle result
-            if (result.doc_count == 0) {syncDB(_dbbeacons, whichDB);} else {checkChanges(_db, whichDB);} // 'whichDB' in syncDB SHOULD BE: 'beaconsdb'; localhost 500 error problem!
+            // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+            if (result.doc_count == 0) {createLocalDocument(_dbbeacons); syncDB(_dbbeacons, _beacons_name);} else {checkChanges(_dbbeacons, whichDB, _beacons_name);}
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
         });
-        // hasChanged(null, _dbbeacons); // It checks whether there have been changes in the database or not.
-        // createChangesLoadData(_dbbeacons); // It creates the '.local' document if needed and populates the database.
     }
 }
 
+// This function syncs the local database with the remote database.
+// Afterwards, the local document within the local database is updated to keep up with the remote update sequence number.
 function syncDB(db, dbname) {
-    if (dbname == "staff") {
-        db.put({"_id":"002", "name":"aitor"});
-    }
-    console.log("domain:"+_db_domain);
-    console.log("port:"+_db_port);
-    console.log("dbname:"+dbname);
-    // var remotedb = new PouchDB('http://'+"10.166.50.143"+':'+"5984"+'/'+dbname+'?auth=admin');
-
-
-    // $.ajax({type:"GET", url: 'http://'+"10.166.50.143"+':'+"8888"+'/'+'staff'+'?auth=admin', success: function(result){
-    //        console.log("AJAX");
-    //        console.log(result);
-    //     //    result.info().then(function (result) {
-    //     //        var str =
-    //     //        "DB name: " + result.db_name + "\n" +
-    //     //        "doc count: "+ result.doc_count + "\n" +
-    //     //        "attachment format: " + result.idb_attachment_format + "\n" +
-    //     //        "adapter: " + result.adapter + "\n" +
-    //     //        "sqlite plugin: " + result.sqlite_plugin + "\n" +
-    //     //        "websql encoding: " + result.websql_encoding;
-    //     //        console.log(str)
-    //     //    }).catch(function (err) {
-    //     //        console.log("error showing info of the database");
-    //     //        console.log(err);
-    //     //    });
-    //    }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
-
-
-
-
-
-
-
-    // db.replicate.from(remotedb).on('change', function (info) {
-    //     console.log("on change:");
-    //     console.log(info);
-    //     // handle change
-    // }).on('paused', function (err) {
-    //     console.log("on paused:");
-    //     console.log(err);
-    //     // replication paused (e.g. replication up to date, user went offline)
-    // }).on('active', function () {
-    //     console.log("on active");
-    //     // replicate resumed (e.g. new changes replicating, user went back online)
-    // }).on('denied', function (err) {
-    //     console.log("on denied:");
-    //     console.log(err);
-    //     // a document failed to replicate (e.g. due to permissions)
-    // }).on('complete', function () {
-    //     console.log("Replication from remote database (master) to local "+dbname+" database successfully DONE!");
-    // }).on('error', function (err) {
-    //     console.log("error replicating (sync) databases");
-    //     console.log(err);
-    // });
+    var remotedb = new PouchDB('http://'+_domain+':'+_db_port+'/'+dbname); // We fetch here the remote database
+    // Now we replicate the content from the remote database to the local database in order to ensure the same data is in both databases.
+    db.replicate.from(remotedb).on('change', function (info) {
+        console.log("[replicating...] on change:");
+        console.log(info);
+    }).on('paused', function (err) {
+        console.log("[replicating...] on paused:");
+        console.log(err);
+        console.log("(the user might have gone offline)");
+    }).on('active', function () {
+        console.log("[replicating...] on active");
+        console.log("(the user went back online)");
+    }).on('denied', function (err) {
+        console.log("[replicating...] on denied:");
+        console.log(err);
+        console.log("(a document might have failed to replicate due to permissions)");
+    }).on('complete', function (info) {
+        console.log("Replication from remote database to local '"+dbname+"' database successfully DONE!");
+        updateLocalDocument(db, info.last_seq); // 'info.last_seq' corresponds to the 'update_seq' of the remote database
+        if (dbname == _roomsdb_name && _firstTime == true) {requestMapImages(0, requestMapImages, null); _firstTime = false;}
+    }).on('error', function (err) {
+        console.log("[replicating...] on error");
+        console.log(err);
+    });
 }
 
-function checkChanges(db, dbname) {
-    $.ajax({type:"GET", url: 'http://'+"10.48.1.39"+':'+"8888"+'/'+dbname+'/version'+'?auth=admin', success: function(result){
-           console.log("AJAX-check changes");
-           console.log("Result on client-side:" + result);
-           db.info().then(function (result2) {
-               if (result2.update_seq < result) {syncDB(db, dbname);} // 'whichDB' in syncDB SHOULD BE: 'beaconsdb'; localhost 500 error problem! // If the local sequence number is lower than the sequence number in the server, we sync databases.
-           }).catch(function (err) {
-               console.log("error showing info of the database");
-               console.log(err);
-           });
-       }, error: function(xhr,status,error) {console.log(error +":"+status);}});
-
+// This function checks for changes in the local database.
+// It compares the 'update_seq' of the remote database with the 'sequence_number_version' of the local document of the local database.
+// 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
+function checkChanges(db, dbalias, dbname) {
+    $.ajax({type:"GET", url: 'http://'+_domain+':'+_server_port+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
+        db.get('_local/sequence_number_version').then(function (result2) {
+            console.log("sequence_number_version (local)="+result2.seq_version);
+            console.log("update_seq (remote)="+result);
+            if (result2.seq_version < result) {syncDB(db, dbname);} // If the local sequence number is smaller than the 'update_seq' in the server, we sync databases.
+        }).catch(function (err) {
+            console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
+            console.log(err);
+        });
+    }, error: function(xhr,status,error) {console.log(error +":"+status);}});
 }
+
+// This function checks for changes in the local database corresponding to maps' images.
+// 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
+function checkMapChanges(floor, dbalias, callback, firstTime) {
+    $.ajax({type:"GET", url: 'http://'+_domain+':'+_server_port+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
+        setTimeout(function() {
+            _dbrooms.get(floor.toString()).then(function (result2) {
+                console.log("map.version (local)="+result2.map.v);
+                console.log("map.version (remote)="+result);
+                if (result2.map.v < result) {requestMapImages(floor, null, result);}
+                if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} // We call recursively once again
+            }).catch(function (err) {
+                console.log("error retrieving 'map.version' (local)");
+                console.log(err);
+            });
+        },0);
+    }, error: function(xhr,status,error) {console.log(error +":"+status);}});
+}
+
+// This function creates a local document which is a metadata document.
+// This document stores the sequence number (number of changes over the database) of the database after loading the initial data.
+// This sequence number is used as a version number of the database, pretty much the same as the vanilla "update_seq".
+// This local document and the sequence number is only stored in local databases, not in remote databases. The latter ones have their own "update_seq".
+// The problem is that when replication is done, the local database doesn't track the changes done by replicate which doesn't update "update_seq" number either.
+function createLocalDocument(db) {
+    db.info().then(function (result) {
+        db.put({
+            _id: '_local/sequence_number_version',
+            seq_version: result.doc_count
+        }).then(function (response) {
+            console.log("'_local/sequence_number_version' document created.");
+        });
+    }).catch(function (err) {
+        console.log("error retrieving info of the database");
+        console.log(err);
+    });
+}
+
+// This function updates the local sequence number of the local database.
+function updateLocalDocument(db, new_seq) {
+    db.get('_local/sequence_number_version').then(function (result) {
+        db.put({
+            _id: '_local/sequence_number_version',
+            _rev: result._rev,
+            seq_version: new_seq
+        }).then(function (response) {
+            console.log(response.seq_version);
+            console.log("'_local/sequence_number_version' corrently updated.");
+        });
+    }).catch(function (err) {
+        console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
+        console.log(err);
+    });
+}
+
+function requestMapImages(floor, callback, new_version){
+    var mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"];
+        console.log("hello loop (k="+floor+")");
+        var fimage = new XMLHttpRequest();
+        fimage.open("GET", 'http://'+_domain+':'+_server_port+'/maps/'+mapNames[floor], true); // 'true' means asynchronous
+        // fimage.setRequestHeader("Content-Type","image/png"); // This is not necessary
+        fimage.responseType = "arraybuffer"; // If we had used 'blob' it wouldn't have worked in Phonegap, I don't knnow why. There is no way to make Phonegap to understand Blob type if it is not with the plugin "blob-util"
+        fimage.onreadystatechange = function () // once the request finished this function is executed
+        // more info at: http://www.w3schools.com/Ajax/ajax_xmlhttprequest_onreadystatechange.asp
+        {
+            if(fimage.readyState == 4) // aqui tendria que añadir: ""&& fimage.status == 200", pero en el browser del atom no funciona
+            {
+                // var response = fimage.response; // This doesn't work on Phonegap, but it does in Desktop browsers.
+                // var response = new Blob([fimage.response], {type: "image/png"}); // This doesn't work on Phonegap, but it does in Desktop browsers.
+                var blob = blobUtil.createBlob([fimage.response], {type: 'image/jpeg'}); // We convert the read image into blob
+                blobUtil.blobToBase64String(blob).then(function (base64String) { // We convert the blob into base64
+                    console.log(base64String);
+                    saveMapImage(floor, base64String, new_version); // Now we save the image in the local database as a base64 string
+                    if (floor < (mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again
+                }).catch(function (err) {
+                    console.log("error converting from blob to base64");
+                    console.log(err);
+                });
+                //More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:
+                //blob-util github page: https://github.com/nolanlawson/blob-util#blobToBinaryString
+                // http://bl.ocks.org/nolanlawson/edaf09b84185418a55d9 (storing and reading Blob type images)
+                // https://hacks.mozilla.org/2012/02/saving-images-and-files-in-localstorage/ (storing any kind of file)
+                // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest (XMLHttpRequest)
+                // https://msdn.microsoft.com/en-us/library/windows/apps/hh871381.aspx (requesting an image from a server using responseType)
+            }
+        }
+        fimage.send(null);
+}
+
+// This function saves in the local database the image retrieved from the server in base64 format.
+// The map image is saved with the corresponding data of floors. Each floor will have another item/value called "map"
+function saveMapImage(floor, base64, new_version) {
+    _dbrooms.get(floor.toString()).then(function (doc) {
+        var ver;
+        if (new_version != null) {ver = new_version; } else {ver = doc.map.v;}
+        _dbrooms.put({
+            _id: doc._id,
+            _rev: doc._rev,
+            map: {
+                image: base64,
+                v: ver
+            }
+        }).then(function (response) {
+            console.log("Floor map image inserted SUCCESSFULLY! (floor"+floor+")");
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }).catch(function (err) {
+        console.log("error getting floor");
+        console.log(err);
+    });
+}
+
+function getAttachment(floor){
+    console.log("HOLA??? (floor= "+floor+")");
+    _dbrooms.get(floor.toString()).then(function (doc) {
+        console.log(doc._id);
+        console.log(doc._rev);
+        console.log(doc.map.image);
+        blobUtil.base64StringToBlob(doc.map.image).then(function (blob) {
+            // successlog
+            console.log(blob);
+            var imagen = blobUtil.createObjectURL(blob);
+            console.log(imagen);
+            var mybody = document.getElementById("imgprueba");
+            mybody.src=imagen;
+        }).catch(function (err) {
+            // error
+        });
+    });
+}
+
 
 // // TO DELETE?????? NOT USEFULL ANYMORE??????
 // This function creates a '.local' document in the database in order to control whether the DBs changes or not.
@@ -157,6 +258,7 @@ function DBinfo(db) {
         var str =
         "DB name: " + result.db_name + "\n" +
         "doc count: "+ result.doc_count + "\n" +
+        "update seq:" + result.update_seq + "\n" +
         "attachment format: " + result.idb_attachment_format + "\n" +
         "adapter: " + result.adapter + "\n" +
         "sqlite plugin: " + result.sqlite_plugin + "\n" +
