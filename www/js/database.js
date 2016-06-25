@@ -28,7 +28,9 @@ function createDB(whichDB) {
         _dbrooms = new PouchDB(_roomsdb_name); // Fetching or creating the database for rooms.
         _dbrooms.info().then(function (result) {
             // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
-            if (result.doc_count == 0) {_firstTime = true; createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkChanges(_dbrooms, whichDB, _roomsdb_name); checkMapChanges(0, whichDB, checkMapChanges);}
+            if (result.doc_count == 0) {_firstTime = true; createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkMapChanges(0, whichDB, checkMapChanges);} // "CheckChanges" is callled within the "CheckMapchanges" function to
+                                                                                                                                                                                // avoid updating the rooms database before the map images were able to
+                                                                                                                                                                                // be updated.
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
@@ -48,7 +50,7 @@ function createDB(whichDB) {
 // This function syncs the local database with the remote database.
 // Afterwards, the local document within the local database is updated to keep up with the remote update sequence number.
 function syncDB(db, dbname) {
-    var remotedb = new PouchDB('http://'+_domain+':'+_db_port+'/'+dbname); // We fetch here the remote database
+    var remotedb = new PouchDB(_database_domain+'/'+dbname); // We fetch here the remote database
     // Now we replicate the content from the remote database to the local database in order to ensure the same data is in both databases.
     db.replicate.from(remotedb).on('change', function (info) {
         console.log("[replicating...] on change:");
@@ -78,7 +80,7 @@ function syncDB(db, dbname) {
 // It compares the 'update_seq' of the remote database with the 'sequence_number_version' of the local document of the local database.
 // 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
 function checkChanges(db, dbalias, dbname) {
-    $.ajax({type:"GET", url: 'http://'+_domain+':'+_server_port+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
+    $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
         db.get('_local/sequence_number_version').then(function (result2) {
             console.log("sequence_number_version (local)="+result2.seq_version);
             console.log("update_seq (remote)="+result);
@@ -92,14 +94,17 @@ function checkChanges(db, dbalias, dbname) {
 
 // This function checks for changes in the local database corresponding to maps' images.
 // 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
-function checkMapChanges(floor, dbalias, callback, firstTime) {
-    $.ajax({type:"GET", url: 'http://'+_domain+':'+_server_port+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
+function checkMapChanges(floor, dbalias, callback) {
+    $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
         setTimeout(function() {
-            _dbrooms.get(floor.toString()).then(function (result2) {
-                console.log("map.version (local)="+result2.map.v);
-                console.log("map.version (remote)="+result);
-                if (result2.map.v < result) {requestMapImages(floor, null, result);}
-                if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} // We call recursively once again
+            _dbrooms.get("map"+floor.toString()).then(function (result2) {
+                console.log("map version (local)="+result2.v);
+                console.log("map version (remote)="+result);
+                if (result2.v < result) {requestMapImages(floor, null, result);}
+                if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} else {checkChanges(_dbrooms, dbalias, _roomsdb_name);} // We call recursively once again. Watch out! "CheckChanges"
+                                                                                                                                    // is called now because otherwise, if it was called in "createDB"
+                                                                                                                                    // function the local rooms database tended to be updated
+                                                                                                                                    // before the map images were able to be updated first.
             }).catch(function (err) {
                 console.log("error retrieving 'map.version' (local)");
                 console.log(err);
@@ -144,11 +149,13 @@ function updateLocalDocument(db, new_seq) {
     });
 }
 
+// This function recursively retrieves all floor images from the remote database starting from the floor given by the parameter.
+// It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
 function requestMapImages(floor, callback, new_version){
     var mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"];
         console.log("hello loop (k="+floor+")");
         var fimage = new XMLHttpRequest();
-        fimage.open("GET", 'http://'+_domain+':'+_server_port+'/maps/'+mapNames[floor], true); // 'true' means asynchronous
+        fimage.open("GET", _server_domain+'/maps/'+mapNames[floor], true); // 'true' means asynchronous
         // fimage.setRequestHeader("Content-Type","image/png"); // This is not necessary
         fimage.responseType = "arraybuffer"; // If we had used 'blob' it wouldn't have worked in Phonegap, I don't knnow why. There is no way to make Phonegap to understand Blob type if it is not with the plugin "blob-util"
         fimage.onreadystatechange = function () // once the request finished this function is executed
@@ -162,7 +169,7 @@ function requestMapImages(floor, callback, new_version){
                 blobUtil.blobToBase64String(blob).then(function (base64String) { // We convert the blob into base64
                     console.log(base64String);
                     saveMapImage(floor, base64String, new_version); // Now we save the image in the local database as a base64 string
-                    if (floor < (mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again
+                    if (floor < (mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again until we finish retrieving all floor maps from remote database.
                 }).catch(function (err) {
                     console.log("error converting from blob to base64");
                     console.log(err);
@@ -178,19 +185,19 @@ function requestMapImages(floor, callback, new_version){
         fimage.send(null);
 }
 
-// This function saves in the local database the image retrieved from the server in base64 format.
-// The map image is saved with the corresponding data of floors. Each floor will have another item/value called "map"
+// This function saves the image as base64 string in the local database in the corresponding field as it appears in rooms.json file.
+// Map images are saved separated from the information of each floor in the database. The document contains an image field where the image is saved as a string.
+// The images are not saved as attachements!
+// It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
 function saveMapImage(floor, base64, new_version) {
-    _dbrooms.get(floor.toString()).then(function (doc) {
+    _dbrooms.get("map"+floor.toString()).then(function (doc) {
         var ver;
-        if (new_version != null) {ver = new_version; } else {ver = doc.map.v;}
+        if (new_version != null) {ver = new_version; } else {ver = doc.v;}
         _dbrooms.put({
             _id: doc._id,
             _rev: doc._rev,
-            map: {
-                image: base64,
-                v: ver
-            }
+            image: base64,
+            v: ver
         }).then(function (response) {
             console.log("Floor map image inserted SUCCESSFULLY! (floor"+floor+")");
         }).catch(function (err) {
@@ -204,11 +211,11 @@ function saveMapImage(floor, base64, new_version) {
 
 function getAttachment(floor){
     console.log("HOLA??? (floor= "+floor+")");
-    _dbrooms.get(floor.toString()).then(function (doc) {
+    _dbrooms.get("map"+floor.toString()).then(function (doc) {
         console.log(doc._id);
         console.log(doc._rev);
-        console.log(doc.map.image);
-        blobUtil.base64StringToBlob(doc.map.image).then(function (blob) {
+        console.log(doc.image);
+        blobUtil.base64StringToBlob(doc.image).then(function (blob) {
             // successlog
             console.log(blob);
             var imagen = blobUtil.createObjectURL(blob);

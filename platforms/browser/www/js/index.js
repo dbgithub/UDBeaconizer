@@ -20,9 +20,9 @@
 var _domain = "asgard.deusto.es";
 var _db_port = "53984";
 var _server_port = "53080";
-var _staffdb_name='staffdb';
-var _roomsdb_name='roomsdb';
-var _beacons_name='beaconsdb';
+var _staffdb_name='staffdb'; // Real database name in server-side.
+var _roomsdb_name='roomsdb'; // Real database name in server-side.
+var _beacons_name='beaconsdb'; // Real database name in server-side.
 var _tuples; // TO DELETE?????? NOT USEFULL ANYMORE?????? text lines read from stafflist '.txt'
 var _jsondata // TO DELETE?????? NOT USEFULL ANYMORE?????? json documents read from rooms '.json' file
 var _db; // database for staff
@@ -40,6 +40,7 @@ var _b3X, _b3Y; // X and Y coordinates of beacon 3
 var _destX, _destY; // X and Y coordinates of the destination point over the map
 var _stopLoop = false; // This bool prevents the application from retrieving and loading the double-map each 500ms (which is the beacons' list refresh rate)
 var _currentfloor; // This int indicates the current floor of the user
+var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
 var app = {
     // Application Constructor
     initialize: function() {
@@ -73,32 +74,20 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        // if (window.hyper && window.hyper.log) { console.log = hyper.log }
+        if (window.hyper && window.hyper.log) { console.log = hyper.log }
 
-        // TO DELETE:
-        $.ajax({type:"GET", url: 'http://asgard.deusto.es:53984/staffdb', success: function(result){
-            console.log("AJAX");
-            console.log(result);
-        }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
-        // TO DELETE:
-        $.ajax({type:"GET", url: 'http://asgard.deusto.es:53080/staff/version?auth=admin', success: function(result){
-            console.log("AJAX");
-            console.log(result);
-        }, error: function(xhr,status,error) {console.log(status +"|"+error);}});
-
-        //createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+        createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
         createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
-        //createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
+        createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
-        requestImages();
         // DBinfo(_db);
-        DBinfo(_dbrooms);
+        // DBinfo(_dbrooms);
         // DBinfo(_dbbeacons);
-        setTimeout(function() {
-            getAttachment(1);
-        },8000)
+        // setTimeout(function() {
+        //     getAttachment(5);
+        // },5000)
         // deleteDB("staffdb");
         // deleteDB("roomsdb");
         // deleteDB("beaconsdb");

@@ -28,7 +28,7 @@ function createDB(whichDB) {
         _dbrooms = new PouchDB(_roomsdb_name); // Fetching or creating the database for rooms.
         _dbrooms.info().then(function (result) {
             // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
-            if (result.doc_count == 0) {createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkChanges(_db, whichDB, _roomsdb_name);}
+            if (result.doc_count == 0) {_firstTime = true; createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkChanges(_dbrooms, whichDB, _roomsdb_name); checkMapChanges(0, whichDB, checkMapChanges);}
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
@@ -37,7 +37,7 @@ function createDB(whichDB) {
         _dbbeacons = new PouchDB(_beacons_name); // Fetching or creating the database for rooms.
         _dbbeacons.info().then(function (result) {
             // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
-            if (result.doc_count == 0) {createLocalDocument(_dbbeacons); syncDB(_dbbeacons, _beacons_name);} else {checkChanges(_db, whichDB, _beacons_name);}
+            if (result.doc_count == 0) {createLocalDocument(_dbbeacons); syncDB(_dbbeacons, _beacons_name);} else {checkChanges(_dbbeacons, whichDB, _beacons_name);}
         }).catch(function (err) {
             console.log("error getting info about database:");
             console.log(err);
@@ -66,7 +66,8 @@ function syncDB(db, dbname) {
         console.log("(a document might have failed to replicate due to permissions)");
     }).on('complete', function (info) {
         console.log("Replication from remote database to local '"+dbname+"' database successfully DONE!");
-        updateLocalDocument(db, info.last_seq) // 'info.last_seq' corresponds to the 'update_seq' of the remote database
+        updateLocalDocument(db, info.last_seq); // 'info.last_seq' corresponds to the 'update_seq' of the remote database
+        if (dbname == _roomsdb_name && _firstTime == true) {requestMapImages(0, requestMapImages, null); _firstTime = false;}
     }).on('error', function (err) {
         console.log("[replicating...] on error");
         console.log(err);
@@ -75,6 +76,7 @@ function syncDB(db, dbname) {
 
 // This function checks for changes in the local database.
 // It compares the 'update_seq' of the remote database with the 'sequence_number_version' of the local document of the local database.
+// 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
 function checkChanges(db, dbalias, dbname) {
     $.ajax({type:"GET", url: 'http://'+_domain+':'+_server_port+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
         db.get('_local/sequence_number_version').then(function (result2) {
@@ -85,6 +87,24 @@ function checkChanges(db, dbalias, dbname) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
             console.log(err);
         });
+    }, error: function(xhr,status,error) {console.log(error +":"+status);}});
+}
+
+// This function checks for changes in the local database corresponding to maps' images.
+// 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
+function checkMapChanges(floor, dbalias, callback) {
+    $.ajax({type:"GET", url: 'http://'+_domain+':'+_server_port+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
+        setTimeout(function() {
+            _dbrooms.get(floor.toString()).then(function (result2) {
+                console.log("map.version (local)="+result2.map.v);
+                console.log("map.version (remote)="+result);
+                if (result2.map.v < result) {requestMapImages(floor, null, result);}
+                if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} // We call recursively once again
+            }).catch(function (err) {
+                console.log("error retrieving 'map.version' (local)");
+                console.log(err);
+            });
+        },0);
     }, error: function(xhr,status,error) {console.log(error +":"+status);}});
 }
 
@@ -115,6 +135,7 @@ function updateLocalDocument(db, new_seq) {
             _rev: result._rev,
             seq_version: new_seq
         }).then(function (response) {
+            console.log(response.seq_version);
             console.log("'_local/sequence_number_version' corrently updated.");
         });
     }).catch(function (err) {
@@ -123,86 +144,84 @@ function updateLocalDocument(db, new_seq) {
     });
 }
 
-function requestImages(){
-    var fimage = new XMLHttpRequest();
-    // fimage.open("GET", 'http://'+"10.48.1.39"+':'+"8888"+'/maps/5_planta_cinco.jpg', true); // 'true' means asynchronous
-    fimage.open("GET", 'http://asgard.deusto.es:53080/maps/5_planta_cinco.jpg', true); // 'true' means asynchronous
-
-    // fimage.setRequestHeader("Content-Type","image/png"); // This is not necessary
-    fimage.responseType = "arraybuffer"; // If we had used 'blob' it wouldn't have worked in Phonegap, I don't knnow why. There is no way to make Phonegap to understand Blob type if it is not with the plugin "blob-util"
-    fimage.onreadystatechange = function () // once the request finished this function is executed
-    // more info at: http://www.w3schools.com/Ajax/ajax_xmlhttprequest_onreadystatechange.asp
-    {
-        if(fimage.readyState == 4) // aqui tendria que añadir: ""&& fimage.status == 200", pero en el browser del atom no funciona
+// This function recursively retrieves all floor images from the remote database starting from the floor given by the parameter.
+// It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
+function requestMapImages(floor, callback, new_version){
+    var mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"];
+        console.log("hello loop (k="+floor+")");
+        var fimage = new XMLHttpRequest();
+        fimage.open("GET", 'http://'+_domain+':'+_server_port+'/maps/'+mapNames[floor], true); // 'true' means asynchronous
+        // fimage.setRequestHeader("Content-Type","image/png"); // This is not necessary
+        fimage.responseType = "arraybuffer"; // If we had used 'blob' it wouldn't have worked in Phonegap, I don't knnow why. There is no way to make Phonegap to understand Blob type if it is not with the plugin "blob-util"
+        fimage.onreadystatechange = function () // once the request finished this function is executed
+        // more info at: http://www.w3schools.com/Ajax/ajax_xmlhttprequest_onreadystatechange.asp
         {
-            // var response = fimage.response; // This doesn't work on Phonegap, but it does in Desktop browsers.
-            // var response = new Blob([fimage.response], {type: "image/png"}); // This doesn't work on Phonegap, but it does in Desktop browsers.
-            console.log([fimage.response]);
-            var blob = blobUtil.createBlob([fimage.response], {type: 'text/plain'});
-            blobUtil.blobToBase64String(blob).then(function (base64String) {
-                // success
-                console.log(base64String);
-                saveAsAttachment(1, base64String);
-            }).catch(function (err) {
-                // error
-            });
-            console.log("blob created!");
+            if(fimage.readyState == 4) // aqui tendria que añadir: ""&& fimage.status == 200", pero en el browser del atom no funciona
+            {
+                // var response = fimage.response; // This doesn't work on Phonegap, but it does in Desktop browsers.
+                // var response = new Blob([fimage.response], {type: "image/png"}); // This doesn't work on Phonegap, but it does in Desktop browsers.
+                var blob = blobUtil.createBlob([fimage.response], {type: 'image/jpeg'}); // We convert the read image into blob
+                blobUtil.blobToBase64String(blob).then(function (base64String) { // We convert the blob into base64
+                    console.log(base64String);
+                    saveMapImage(floor, base64String, new_version); // Now we save the image in the local database as a base64 string
+                    if (floor < (mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again until we finish retrieving all floor maps from remote database.
+                }).catch(function (err) {
+                    console.log("error converting from blob to base64");
+                    console.log(err);
+                });
+                //More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:
+                //blob-util github page: https://github.com/nolanlawson/blob-util#blobToBinaryString
+                // http://bl.ocks.org/nolanlawson/edaf09b84185418a55d9 (storing and reading Blob type images)
+                // https://hacks.mozilla.org/2012/02/saving-images-and-files-in-localstorage/ (storing any kind of file)
+                // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest (XMLHttpRequest)
+                // https://msdn.microsoft.com/en-us/library/windows/apps/hh871381.aspx (requesting an image from a server using responseType)
+            }
+        }
+        fimage.send(null);
+}
+
+// This function saves the image as base64 string in the local database in the corresponding field as it appears in rooms.json file.
+// Each floor has a value called "map" in the database where the image is saved as a string.
+// The images are not saved as attachements!
+// It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
+function saveMapImage(floor, base64, new_version) {
+    _dbrooms.get(floor.toString()).then(function (doc) {
+        var ver;
+        if (new_version != null) {ver = new_version; } else {ver = doc.map.v;}
+        _dbrooms.put({
+            _id: doc._id,
+            _rev: doc._rev,
+            map: {
+                image: base64,
+                v: ver
+            }
+        }).then(function (response) {
+            console.log("Floor map image inserted SUCCESSFULLY! (floor"+floor+")");
+        }).catch(function (err) {
+            console.log(err);
+        });
+    }).catch(function (err) {
+        console.log("error getting floor");
+        console.log(err);
+    });
+}
+
+function getAttachment(floor){
+    console.log("HOLA??? (floor= "+floor+")");
+    _dbrooms.get(floor.toString()).then(function (doc) {
+        console.log(doc._id);
+        console.log(doc._rev);
+        console.log(doc.map.image);
+        blobUtil.base64StringToBlob(doc.map.image).then(function (blob) {
+            // successlog
             console.log(blob);
             var imagen = blobUtil.createObjectURL(blob);
             console.log(imagen);
             var mybody = document.getElementById("imgprueba");
             mybody.src=imagen;
-            //More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:
-            //blob-util github page: https://github.com/nolanlawson/blob-util#blobToBinaryString
-            // http://bl.ocks.org/nolanlawson/edaf09b84185418a55d9 (storing and reading Blob type images)
-            // https://hacks.mozilla.org/2012/02/saving-images-and-files-in-localstorage/ (storing any kind of file)
-            // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest (XMLHttpRequest)
-            // https://msdn.microsoft.com/en-us/library/windows/apps/hh871381.aspx (requesting an image from a server using responseType)
-        }
-    }
-    fimage.send(null);
-}
-
-// ????????????????
-function saveAsAttachment(floor, blob) {
-    _dbrooms.get(floor.toString()).then(function (doc) {
-            _dbrooms.putAttachment(floor.toString(), 'map', doc._rev, blob, "text/plain").then(function (result) {
-                // handle result
-                console.log("stored successfully, o eso parece! :)");
-            }).catch(function (err) {
-                console.log("error put attachment");
-                console.log(err);
-            });
         }).catch(function (err) {
-            console.log("error getting floor");
-            console.log(err);
+            // error
         });
-}
-
-function getAttachment(floor){
-    console.log("HOLA??? (floor= "+floor+")");
-    // _dbrooms.get(floor.toString(), {attachments: true}).then(function (doc) {
-    //     console.log(doc._id);
-    //     console.log(doc._attachments.map.content_type);
-    // });
-
-    _dbrooms.getAttachment(floor.toString(), 'map').then(function (blobOrBuffer) {
-        // handle result
-        console.log("map=");
-        console.log(blobOrBuffer);
-        // esto es para text
-        // blobUtil.blobToBase64String(blobOrBuffer).then(function (base64String) {
-        //     // success
-        //     console.log(atob(base64String));
-        // }).catch(function (err) {
-        //     // error
-        // });
-        // var imagen = blobUtil.createObjectURL(blob);
-        // console.log(imagen);
-        // var mybody = document.getElementById("imgprueba");
-        // mybody.src=imagen;
-    }).catch(function (err) {
-        console.log(err);
     });
 }
 
