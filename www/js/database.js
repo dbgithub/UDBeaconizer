@@ -35,6 +35,18 @@ function createDB(whichDB) {
     }
 }
 
+// Deletes the database given as an argument
+function deleteDB(dbname) {
+    dbase = new PouchDB(dbname);
+    dbase.destroy().then(function (response) {
+        // success
+        console.log("Database deleted/removed successfully");
+    }).catch(function (err) {
+        console.log("error deleting the database:");
+        console.log(err);
+    });
+}
+
 // Shows database info
 function DBinfo(db) {
     db.info().then(function (result) {

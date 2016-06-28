@@ -39,7 +39,7 @@ function startScan()
 		for (var key in beacons)
 		{
 			// We check that the beacon we insert in the array is one of our beacons and not other company's one:
-			if (uint8ArrayToString(beacons[key].nid) == "A7 AE 2E B7 A7 49 BA C1 CA 64".toLowerCase()) {
+			if (uint8ArrayToString(beacons[key].nid) == "A7AE2EB7A749BAC1CA64".toLowerCase()) {
 				beaconList.push(beacons[key]);
 			}
 		}
@@ -64,7 +64,7 @@ function startScan()
 		{
 			// Only show beacons updated during the last 60 seconds.
 			var beacon = beacons[key];
-			if (beacon.timeStamp + 60000 < timeNow)
+			if (beacon.timeStamp + 30000 < timeNow)
 			{
 				delete beacons[key];
 			}
@@ -148,23 +148,37 @@ function startScan()
 
 	function htmlBeaconDistance(beacon)
 	{
-		if (beacon.rssi == 0) {return -1;}
-		if (beacon.rssi === undefined) {
+		// Firstly, we check whether the beacons are reachable or not. If we are not receiving signals from the beacons we will
+		// let the user know.
+		if (beacon === undefined && undefinedCounter != -1) {
 			undefinedCounter++;
-			undefinedCounter > 8 ? showToolTip('You might be experimenting some interferences! Beacons might not be reachable! :(') : null;
-			undefinedCounter > 30 ? null : null;
+			undefinedCounter == 8 ? showToolTip('You might be experimenting some interferences! Beacons might not be reachable! :(') : null; // If 8 consecutive frames are not received, we warn the user.
+			if (undefinedCounter == 15) {_allowYOUlabel = false; showYOUlabel();} // If 15 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
+			if (undefinedCounter == 30) { // If 30 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
+				undefinedCounter = -1;
+				navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
+				"are received, make sure you have the Bluetooth feature enabled in your device " +
+				" and ensure you are inside the building! :)", null, "Serious interferences :(", "Oki Doki!");
+			}
 		}
+
+		if (beacon.rssi == 0) {return -1;}
+
 		// The following 'if' conditional is a temporary patch/fix. The ratio should be divided by the correct RSSI value.
 		// Since we are using different types of beacons, some of them have the value of "-69", and some others "-59"
 		// The original formula for calculating distance without taking into account the 'if' should be:
 		// var ratio = (beacon.rssi*1.0)/-69; // InsteaD of -69 it should be txPower (that is, the rssi value measured at distance 1m)
 		var instancenum = uint8ArrayToString(beacon.bid);
-		if (instancenum == "00 00 04 00 00 03" || instancenum == "00 00 04 00 00 04" || instancenum == "00 00 04 00 00 05") {
+		if (instancenum == "000004000003" || instancenum == "000004000004" || instancenum == "000004000005") {
 			var ratio = (beacon.rssi*1.0)/-59; // InsteaD of -59 it should be txPower (that is, the rssi value measured at distance 1m)
 		} else {
 			var ratio = (beacon.rssi*1.0)/-69; // InsteaD of -69 it should be txPower (that is, the rssi value measured at distance 1m)
 		}
+		undefinedCounter = 0; // The counter is reset in case the contact with the beacons is again lost.
+		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position)
+		// We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
+		// The distance estimate is calculated as follow:
 		if (ratio < 1.0) {
 			return Math.pow(ratio, 10).toFixed(2);
 
@@ -184,7 +198,8 @@ function startScan()
 		}
 	}
 
-	// This function returns a string representing the HEX number grouped by Bytes. e.g "A7 43 65"
+	// This function returns a string representing the HEX number. Each Hexadecimal character represents 4bits. That's why sometimes the characters are
+	// grouped by two characters, hence, 8bits = 1B.
 	function uint8ArrayToString(uint8Array)
 	{
 		function format(x)
@@ -196,9 +211,9 @@ function startScan()
 		var result = '';
 		for (var i = 0; i < uint8Array.length; ++i)
 		{
-			result += format(uint8Array[i]) + ' '; // Apparently this is represented with white spaces to wrap it as Bytes, becasue each Hexadecimal value represents 4bits.
+			result += format(uint8Array[i]); // Comparing to the original implementation, I have remove the whitespace and the "trim" function from the returning statement.
 		}
-		return result.trim(); // Trim removes the last white space of the string
+		return result;
 	}
 
 	// Calculate an average of measured distances of beacons.
@@ -220,10 +235,9 @@ function startScan()
 		return (average/n).toFixed(2);
 	}
 
-	// It returns the floor the beacon is at physically speaking.
+	// It returns the floor the beacon is at, physically speaking.
 	function getFloor(instance) {
-		// We remove all white spaces (thanks to a regular expression) introduced by the 'uint8ArrayToString' function and then we obtain the floor number
-		return parseInt(instance.replace(/\s/g, "").substring(0, 6));
+		return parseInt(instance.substring(0, 6));
 	}
 
 	function showMessage(text)
@@ -271,12 +285,18 @@ function startScan()
 		// to see the room's location as well as user's location. Thus, you will be informed on how to get to your room.
 		// We check also the '_stopLoop' variable to prevent unnecesary processing time (e.g.loading the map each 500ms)
 		setTimeout(function() {
-			if (_floor != _currentfloor && !_stopLoop) { // This will occur if the user and the room are in different floors
+			if (_floor != _currentfloor && !_stopLoop && !isNaN(_currentfloor)) { // This will occur if the user and the room are in different floors. "!isNan(_currentfloor)" checks if there are beacons readings.
 				$("footer > img:first-child").fadeToggle(2500);
 				duplicateMaps(_currentfloor);
+				_sameFloor = false; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
+		                            // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
+				showYOUlabel();
 			} else if (_floor == _currentfloor && _stopLoop) { // This will occur when the user and the room are eventually in the same floor.
 				_stopLoop = false;
 				removeDuplicatedMaps();
+				_sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
+									// This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
+				showYOUlabel();
 			}
 		},1000) // If I take all this out of the setTimeout function, it doesn't work. I don't know why!
 
@@ -323,14 +343,20 @@ function startScan()
 		// If the values computed are not good enough values or strange values, we hide the spot from the map:
 		if (real_X === Infinity || real_X === -Infinity || isNaN(real_X) || real_X === undefined ||
 			real_Y === Infinity || real_Y === -Infinity || isNaN(real_Y) || real_Y === undefined) {
-				svg_circle_source.setAttribute("cx", -100); // This hides the point out of user's sight
-				svg_circle_source.setAttribute("cy", -100); // This hides the point out of user's sight
+				svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
+				svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
+				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 		} else {
+			svg_circle_source.style.visibility = "visible";
+			svg_circle_source.style.visibility = "visible";
+			label_you.style.visibility = "visible";
+			label_you.style.visibility = "visible";
 			svg_circle_source.setAttribute("cx", parseInt(real_X));
 			svg_circle_source.setAttribute("cy", parseInt(real_Y));
+			label_you.style.left=real_X + 25 +"px";
+			label_you.style.top=real_Y + 25 +"px";
 		}
-		label_you.style.left=real_X + 25 +"px";
-		label_you.style.top=real_Y + 25 +"px";
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
 		console.log("(realX = "+real_X+",realY = "+real_Y+")");

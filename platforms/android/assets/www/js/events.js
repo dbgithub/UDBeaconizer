@@ -167,6 +167,8 @@ function loadMap() {
         retrieveMap(room[1], false); // Here we are retrieving the map corresponding to the floor given by the room[] array.
                                     // 'false' means that we want to show the map as a unique floor, not as a second floor as it may happen if the user and the room are in different floors.
                                     // If I take this call out of setTimeout function, JavaScripts yields errors.
+        _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
+                            // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
     },0)
     _floor = room[1]; // we assign the floor number to this global variable in order to decide what map to show later on.
     locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
@@ -236,29 +238,17 @@ function loadMap() {
 
 }
 
-// Shows/depicts/loads the image within the DOM element.
+// Shows/loads the image within the DOM element.
 // 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
 function showMap(showAsSecondFloor) {
-    var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
-    var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
-
     if (!showAsSecondFloor) {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
         map.src = _reva;
-        // We show the corresponding label and the svg point:
-        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
-        // Note that when two maps are loaded and shown, the label and SVG point is handled in "evothings.eddystone.js" script.
-        svg_circle_source.style.visibility="visible";
-        label_you.style.visibility="visible";
     } else {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
         var map_sourcePoint = document.getElementById("map_sourcePoint");
         map_sourcePoint.src = _reva;
-        // We hide the label and the SVG point because in this scenario, the user and the floor he/she is searching are not the same:
-        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function
-        svg_circle_source.style.visibility="hidden";
-        label_you.style.visibility="hidden";
     }
 }
 
@@ -289,8 +279,27 @@ function switchMaps() {
     }
 }
 
+// This functions checks two booleans. Both booleans are set during application runtime.
+// All depends on whether there exists a communication with the beacons and if the user is at the same floor as the one he/she is searching for.
+function showYOUlabel() {
+    var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
+    var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
+
+    if (_sameFloor == true && _allowYOUlabel == true) {
+        // We show the corresponding label and the svg point:
+        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
+        // Note that when two maps are loaded and shown, the label and SVG point is handled in "evothings.eddystone.js" script.
+        svg_circle_source.style.visibility="visible";
+        label_you.style.visibility="visible";
+    } else {
+        // We hide the label and the SVG point because in this scenario, the user and the floor he/she is searching are not the same:
+        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function
+        svg_circle_source.style.visibility="hidden";
+        label_you.style.visibility="hidden";
+    }
+}
 // This functions removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
-// SO, now, we go back to the normal scenario.
+// So, now, we go back to the normal scenario.
 function removeDuplicatedMaps() {
     var map1 = document.getElementById("map");
     var map2 = document.getElementById("map_sourcePoint");
