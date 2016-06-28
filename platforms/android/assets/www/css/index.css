@@ -161,13 +161,13 @@ footer > img { /* la flechita significa todas las 'img' con parent 'footer' */
 /* Landscape layout: media rules (@media) are used to change some CSS properties only if a certain condition is true.*/
 /* The CSS classes you might want to modify must be above the @media rules */
 @media screen and (orientation: landscape) {
-    body {
+    /*body {
       background-color:#000;
     }
     .button {
       background-color: #000;
       font-size: 50px;
-    }
+    }*/
 }
 
 /* Possible useful CSS rules and classes towards the future: */

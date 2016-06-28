@@ -1,6 +1,6 @@
 var searchtimer; // GLOBAL VARIABLE. A timer that executes a certain function when the user stops writing something in the search bar.
-var inputValue; // Value/text introduced by the user
-var tooltipTimer; // Timer for the tooltip functionality. It is used when the user maintains pressure over an object triggering a tooltip explaining the use of that button, action or whatever.
+var inputValue; // GLOBAL VARIABLE. Value/text introduced by the user
+var tooltipTimer; // GLOBAL VARIABLE. Timer for the tooltip functionality. It is used when the user maintains pressure over an object triggering a tooltip explaining the use of that button, action or whatever.
 
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
@@ -32,7 +32,7 @@ function livesearch(text) {
         } // END inside if
     } else {
         // More info about Toast plugin at: https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin
-        window.plugins.toast.show('Please, type anything in the search bar :)', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
+        showToolTip('Please, type anything in the search bar :)');
         clearTimeout(searchtimer);
         hideLiveSearchResults();
     }// END outside if
@@ -51,6 +51,7 @@ function searchPeople() {
     retrievePerson(inputValue);
     retrieveRoom(inputValue, false); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
 }
+
 // Searches for the room in the database
 function searchRoom() {
     retrieveRoom(inputValue, true); // true means that it DOES show its results because the search item contains a number
@@ -73,7 +74,7 @@ function showRoomsList() {
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
-            window.plugins.toast.show('Not found! Please, try again :)', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
+            showToolTip('Not found! Please, try again :)');
             console.log("WARNING: no results found in the database");
             hideLiveSearchResults();
         }
@@ -106,7 +107,7 @@ function showBothStaffNRooms() {
             div.innerHTML = "<ul>" + list + "</ul>";
             div.style.visibility = "visible";
         } else {
-            window.plugins.toast.show('Not found! Please, try again :)', 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
+            showToolTip('Not found! Please, try again :)');
             console.log("WARNING: no results found in the database");
             hideLiveSearchResults();
         }
@@ -163,14 +164,16 @@ function loadMap() {
     localStorage.removeItem('_room');
     console.log("YOU ARE LOOKING FOR -"+ room[0].label + "- ROOM"); // eliminar esta traza
     setTimeout(function() {
-        retrieveMap(room[1], false); // Here we are retrieving the map corresponding to the floor given by he room[] array.
+        retrieveMap(room[1], false); // Here we are retrieving the map corresponding to the floor given by the room[] array.
                                     // 'false' means that we want to show the map as a unique floor, not as a second floor as it may happen if the user and the room are in different floors.
                                     // If I take this call out of setTimeout function, JavaScripts yields errors.
+        _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
+                            // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
     },0)
-    _floor = room[1]; // we assign the floor number to this global variable, later on, in order to decide what map to show.
-    locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing poins etc.)
+    _floor = room[1]; // we assign the floor number to this global variable in order to decide what map to show later on.
+    locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
-    // We draw the red destination point on the map + we draw the label corresponding too
+    // We draw the orange SVG point on the map and the corresponding label too:
     var svg_circle = document.getElementById("svg_circle_destinationpoint");
     var label_dest = document.getElementById("p_dest_label");
     svg_circle.style.visibility="visible";
@@ -180,12 +183,8 @@ function loadMap() {
     label_dest.style.top= parseInt(room[0].y) + 25 +"px";
     label_dest.innerHTML=room[0].label;
     label_dest.style.visibility="visible";
-    _destX = room[0].x;
-    _destY = room[0].y;
-
-    // map.addEventListener("load", function() {
-    //     // nothing to declare here for the moment
-    // }, false);
+    _destX = room[0].x; // Coordinate X of destination office/room
+    _destY = room[0].y; // Coordinate Y of destination office/room
 
     /* IScroll 5 */
     document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
@@ -208,12 +207,12 @@ function loadMap() {
         wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
     });
 
+    // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
-    map.onload= function () {
+    map.onload = function () {
         myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
         myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
-
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
@@ -239,26 +238,17 @@ function loadMap() {
 
 }
 
-// Shows/depicts/loads the image within the DOM element.
+// Shows/loads the image within the DOM element.
 // 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
 function showMap(showAsSecondFloor) {
-    var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
-    var label_you = document.getElementById("p_you");
-
     if (!showAsSecondFloor) {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
         map.src = _reva;
-        // We show the corresponding label and the svg:
-        svg_circle_source.style.visibility="visible";
-        label_you.style.visibility="visible";
     } else {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
         var map_sourcePoint = document.getElementById("map_sourcePoint");
         map_sourcePoint.src = _reva;
-        // We hide the label and the svg which is not needed for the moment:
-        svg_circle_source.style.visibility="hidden";
-        label_you.style.visibility="hidden";
     }
 }
 
@@ -289,8 +279,27 @@ function switchMaps() {
     }
 }
 
+// This functions checks two booleans. Both booleans are set during application runtime.
+// All depends on whether there exists a communication with the beacons and if the user is at the same floor as the one he/she is searching for.
+function showYOUlabel() {
+    var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
+    var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
+
+    if (_sameFloor == true && _allowYOUlabel == true) {
+        // We show the corresponding label and the svg point:
+        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
+        // Note that when two maps are loaded and shown, the label and SVG point is handled in "evothings.eddystone.js" script.
+        svg_circle_source.style.visibility="visible";
+        label_you.style.visibility="visible";
+    } else {
+        // We hide the label and the SVG point because in this scenario, the user and the floor he/she is searching are not the same:
+        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function
+        svg_circle_source.style.visibility="hidden";
+        label_you.style.visibility="hidden";
+    }
+}
 // This functions removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
-// SO, now, we go back to the normal scenario.
+// So, now, we go back to the normal scenario.
 function removeDuplicatedMaps() {
     var map1 = document.getElementById("map");
     var map2 = document.getElementById("map_sourcePoint");
@@ -306,34 +315,22 @@ function removeDuplicatedMaps() {
     source_point.style.visibility = "visible";
     dest_point.style.visibility = "visible";
 }
-// This function is called when the user presses a certain object on the screen which triggers an action.
-// When the user maintains the pressure over that object a tooltip will appear explaining the meaning of that button, object or whatever.
-function showTooltip(string){
+
+// This function shows a tooltip with the message given in the parameter when the user presses and maitains the finger over the object.
+// When the user maintains the pressure over that object this tooltip will appear explaining the meaning of that button, object or whatever.
+function showOnPressedToolTip(string){
     tooltipTimer = setTimeout(function () {
         window.plugins.toast.show(string, 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
     }, 800);
 }
+
+// This function shows a tooltip with the message given in the parameter.
+// For the moment, the duration and position of the Toast message is not editable.
+function showToolTip(string) {
+    window.plugins.toast.show(string, 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
+}
+
 // Aborts the timer, and therefore, the toast message in this case
 function abortTimer(){
     clearTimeout(tooltipTimer);
 }
-// // NOT USED ANYMORE, BUT WHO KNOWS....
-// // Shows the list of people (staff) found in the database according to the input text
-// function showStaffList() {
-//     setTimeout(function() {
-//         if (_searched_people.length != 0) {
-//             var list = "";
-//             for (j = 0; j < _searched_people.length; j++) {
-//                 list += "<li onclick='goContact("+j+")' ontouchstart='highlight(this)' ontouchend='highlightdefault(this)'>" + _searched_people[j].name + "</li>"
-//             }
-//             var div = document.getElementById("div_liveSearchResults");
-//             div.innerHTML = "<ul>" + list + "</ul>";
-//             div.style.visibility = "visible";
-//         } else {
-//             console.log("Per que coño pasa?!");
-//             var div = document.getElementById("div_liveSearchResults");
-//             div.innerHTML = " ";
-//             div.style.visibility = "hidden";
-//         }
-//     }, 100);
-// }

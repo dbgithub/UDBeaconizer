@@ -9,11 +9,11 @@
                 "parents": {
                     "/*": [
                         {
-                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
+                            "xml": "<feature name=\"BLE\"><param name=\"android-package\" value=\"com.evothings.BLE\" /></feature>",
                             "count": 1
                         },
                         {
-                            "xml": "<feature name=\"BLE\"><param name=\"android-package\" value=\"com.evothings.BLE\" /></feature>",
+                            "xml": "<feature name=\"Whitelist\"><param name=\"android-package\" value=\"org.apache.cordova.whitelist.WhitelistPlugin\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
                         },
                         {
@@ -40,13 +40,13 @@
         }
     },
     "installed_plugins": {
-        "cordova-plugin-whitelist": {
-            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
-        },
         "cordova-plugin-ble": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
         "cordova-plugin-eddystone": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
         "cordova-plugin-x-toast": {
@@ -55,11 +55,6 @@
     },
     "dependent_plugins": {},
     "modules": [
-        {
-            "file": "plugins/cordova-plugin-whitelist/whitelist.js",
-            "id": "cordova-plugin-whitelist.whitelist",
-            "runs": true
-        },
         {
             "file": "plugins/cordova-plugin-ble/ble.js",
             "id": "cordova-plugin-ble.BLE",
@@ -75,6 +70,11 @@
             ]
         },
         {
+            "file": "plugins/cordova-plugin-whitelist/whitelist.js",
+            "id": "cordova-plugin-whitelist.whitelist",
+            "runs": true
+        },
+        {
             "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
             "id": "cordova-plugin-x-toast.Toast",
             "clobbers": [
@@ -85,5 +85,11 @@
             "file": "plugins/cordova-plugin-x-toast/test/tests.js",
             "id": "cordova-plugin-x-toast.tests"
         }
-    ]
+    ],
+    "plugin_metadata": {
+        "cordova-plugin-ble": "1.0.1",
+        "cordova-plugin-eddystone": "1.2.0",
+        "cordova-plugin-whitelist": "1.2.1",
+        "cordova-plugin-x-toast": "2.5.1"
+    }
 }

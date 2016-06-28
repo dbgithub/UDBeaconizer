@@ -1,15 +1,3 @@
-// Deletes the database given as an argument
-function deleteDB(dbname) {
-    dbase = new PouchDB(dbname);
-    dbase.destroy().then(function (response) {
-        // success
-        console.log("Database deleted/removed successfully");
-    }).catch(function (err) {
-        console.log("error deleting the database:");
-        console.log(err);
-    });
-}
-
 // This function creates/fetches databases.
 // It syncs the local database with the remote database in case is needed.
 // The local database checks for changes in the remote database looking for updates.
@@ -45,6 +33,24 @@ function createDB(whichDB) {
             console.log(err);
         });
     }
+}
+
+// Shows database info
+function DBinfo(db) {
+    db.info().then(function (result) {
+        var str =
+        "DB name: " + result.db_name + "\n" +
+        "doc count: "+ result.doc_count + "\n" +
+        "update seq:" + result.update_seq + "\n" +
+        "attachment format: " + result.idb_attachment_format + "\n" +
+        "adapter: " + result.adapter + "\n" +
+        "sqlite plugin: " + result.sqlite_plugin + "\n" +
+        "websql encoding: " + result.websql_encoding;
+        console.log(str)
+    }).catch(function (err) {
+        console.log("error showing info of the database");
+        console.log(err);
+    });
 }
 
 // This function syncs the local database with the remote database.
@@ -183,6 +189,7 @@ function requestMapImages(floor, callback, new_version){
             }
         }
         fimage.send(null);
+        // More info about XMLhttprequest at: http://www.w3schools.com/ajax/ajax_xmlhttprequest_send.asp
 }
 
 // This function saves the image as base64 string in the local database in the corresponding field as it appears in rooms.json file.
@@ -207,132 +214,6 @@ function saveMapImage(floor, base64, new_version) {
         console.log("error getting floor");
         console.log(err);
     });
-}
-
-function getAttachment(floor){
-    console.log("HOLA??? (floor= "+floor+")");
-    _dbrooms.get("map"+floor.toString()).then(function (doc) {
-        console.log(doc._id);
-        console.log(doc._rev);
-        console.log(doc.image);
-        blobUtil.base64StringToBlob(doc.image).then(function (blob) {
-            // successlog
-            console.log(blob);
-            var imagen = blobUtil.createObjectURL(blob);
-            console.log(imagen);
-            var mybody = document.getElementById("imgprueba");
-            mybody.src=imagen;
-        }).catch(function (err) {
-            // error
-        });
-    });
-}
-
-
-// // TO DELETE?????? NOT USEFULL ANYMORE??????
-// This function creates a '.local' document in the database in order to control whether the DBs changes or not.
-// Afterwards, depending on the database given as the argument, we load the corresponding data in each database.
-function createChangesLoadData(db) {
-    setTimeout(function() {
-        if (_reva === -404) {
-            db.put({
-                _id: '_local/changes',
-                hasChanged: true
-            }).then(function (response) {
-                console.log("'_local/changes' corrently inserted. hasChanged=" + true);
-            }).catch(function (err) {
-                console.log("error in createChangesLoadData:");
-                console.log(err);
-            });
-            if (db === _db) { // This is the staff database
-                readTxtFile("stafflist.txt", loadStaffList); // We are passing 'loadStaffList' as a callback function to ensure synchronous operations.
-                hasChanged(false, _db);
-            } else if (db === _dbrooms) { // This is the rooms database
-                readJsonFile("rooms.json", loadRooms); // We are passing 'loadRooms' as a callback function to ensure synchronous operations.
-                // The maps/images are not saved in the database for the moment. They are retrieved with an AJAX call.
-                hasChanged(false, _dbrooms);
-            } else if (db === _dbbeacons) {
-                readJsonFile("beacons.json", loadBeacons); // We are passing 'loadBeacons' as a callback function to ensure synchronous operations.
-                hasChanged(false, _dbbeacons);
-            }
-        }
-    }, 2000); // This amount of time avoid JavaScript to behave badly. If I don't set it like that, it starts skipping functions and not working well. The amoung might vary.
-}
-
-// Shows databse info
-function DBinfo(db) {
-    db.info().then(function (result) {
-        var str =
-        "DB name: " + result.db_name + "\n" +
-        "doc count: "+ result.doc_count + "\n" +
-        "update seq:" + result.update_seq + "\n" +
-        "attachment format: " + result.idb_attachment_format + "\n" +
-        "adapter: " + result.adapter + "\n" +
-        "sqlite plugin: " + result.sqlite_plugin + "\n" +
-        "websql encoding: " + result.websql_encoding;
-        console.log(str)
-    }).catch(function (err) {
-        console.log("error showing info of the database");
-        console.log(err);
-    });
-}
-
-// // TO DELETE?????? NOT USEFULL ANYMORE??????
-// This function checks whether there has been any change in the DB or not.
-// This function changes the value of the state of the changes variable. The desired value is passed as an argument.
-function hasChanged(change, db) {
-    db.get('_local/changes').then(function (result) {
-        if (change !== null) {
-            db.put({
-                _id: '_local/changes',
-                _rev: result._rev,
-                hasChanged: change
-            }).then(function (response) {
-                console.log("'_local/changes' corrently updated. hasChanged=" + change);
-            });
-        }
-        _reva = result.hasChanged;
-    }).catch(function (err) {
-        console.log("WARNING: .local 'changes' document doesn't exist:");
-        console.log(err);
-        if (err.status === 404) {
-            // not found
-            _reva = -404; // returned variable
-        }
-    });
-}
-
-// TO DELETE?????? NOT USEFULL ANYMORE??????
-// This function saves the staff data in the browser's database as JSON documents
-function loadStaffList() {
-    var temp;
-    for (i = 0; i < _tuples.length; i++) {
-        temp = _tuples[i].split("|");
-        _db.put({
-            _id: temp[0].toLowerCase(),
-            name: temp[0],
-            position: temp[1],
-            faculty: temp[2],
-            email: temp[3],
-            extension: temp[4],
-            phone: temp[5],
-            fax: temp[6],
-            office: temp[7],
-            officehours: [
-                {"start": "10:00", "end":"12:00"}, // This is an example, it should be removed and let teachers add it by themselves
-                {"start": "16:00", "end":"18:00"} // This is an example, it should be removed and let teachers add it by themselves
-            ],
-            website: "www.example.deusto.es", // This is an example, it should be removed and let teachers add it by themselves
-            linkedin: "www.linkedin.deusto.com", // This is an example, it should be removed and let teachers add it by themselves
-            notes: "notes...", // This is an example, it should be removed and let teachers add it by themselves
-            dtech: temp[8] // This is an example, it should be removed and let teachers add it by themselves
-        }).then(function (response) {
-            // console.log("Correctly added STAFF document: " + response.id);
-        }).catch(function (err) {
-            console.log("error loading staff list:");
-            console.log(err);
-        });
-    }
 }
 
 // This function retrieves a person or several persons based on the given name from the database
@@ -407,60 +288,30 @@ function retrieveRoom(room, bool) {
     });
 }
 
-// TO DELETE?????? NOT USEFULL ANYMORE??????
-// This functions loads/saves the rooms document read from a file into the database
-function loadRooms() {
-    for (eachIndex in _jsondata) {
-        _dbrooms.put(_jsondata[eachIndex]).then(function (response) {
-            console.log("Correctly added JSON document:" + response.id);
-        }).catch(function (err) {
-            console.log("error adding json data:");
-            console.log(err);
-        });
-    }
-}
-
 // This function is part of an AJAX call that retrieves an image/map
 // 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
 function retrieveMap(floor, showAsSecondFloor) {
-    switch (floor) {
-        case "0":
-        readImageFile(["img/0_planta_cero.jpg"], showMap, showAsSecondFloor);
-        break;
-        case "1":
-        readImageFile(["img/1_planta_uno.jpg"], showMap, showAsSecondFloor);
-        break;
-        case "2":
-        readImageFile(["img/2_planta_dos.jpg"], showMap, showAsSecondFloor);
-        break;
-        case "3":
-        readImageFile(["img/3_planta_tres.jpg"], showMap, showAsSecondFloor);
-        break;
-        case "4":
-        readImageFile(["img/4_planta_cuatro.jpg"], showMap, showAsSecondFloor);
-        break;
-        case "5":
-        readImageFile(["img/5_planta_cinco.jpg"], showMap, showAsSecondFloor);
-        break;
-        default:
-        break;
-    }
-}
-
-// TO DELETE?????? NOT USEFULL ANYMORE??????
-// This function loads/saves the beacons document read from a file into the database
-function loadBeacons() {
-    for (eachIndex in _jsondata) {
-        _dbbeacons.put(_jsondata[eachIndex]).then(function (response) {
-            console.log("Correctly added JSON document:" + response.id);
+    _dbrooms.get("map"+floor).then(function (doc) {
+        blobUtil.base64StringToBlob(doc.image).then(function (blob) {
+            // success
+            // console.log(blob);
+            _reva = blobUtil.createObjectURL(blob);
+            showMap(showAsSecondFloor);
         }).catch(function (err) {
-            console.log("error adding json data:");
-            console.log(err);
+            // error
+            console.log("error converting from base64 to blob");
         });
-    }
+    });
+    // More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:
+    // blob-util github page: https://github.com/nolanlawson/blob-util#blobToBinaryString
+    // http://bl.ocks.org/nolanlawson/edaf09b84185418a55d9 (storing and reading Blob type images)
+    // https://hacks.mozilla.org/2012/02/saving-images-and-files-in-localstorage/ (storing any kind of file)
+    // https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest (XMLHttpRequest)
+    // https://msdn.microsoft.com/en-us/library/windows/apps/hh871381.aspx (requesting an image from a server using responseType)
+    // More info about XMLhttprequest at: http://www.w3schools.com/ajax/ajax_xmlhttprequest_send.asp
 }
 
-// This function retrieves a specific beacon from the database and assigns its coordinates to the corresponding global variables.
+// This function retrieves thte information attached to a specific beacon from the database and assigns its coordinates to the corresponding global variables.
 // Those global variables are used for trilateration.
 function retrieveBeacon(instance, j) {
     _dbbeacons.get(instance).then(function(doc) {
@@ -484,146 +335,22 @@ function retrieveBeacon(instance, j) {
         });
 }
 
-
-// CRUD operations with PouchDB. Testing purposes (to delete in the near future).
-// function addTodo(text) {
-//     var todo = {
-//         _id: "doc",
-//         title: text,
-//         completed: false
-//     };
-//     _db.put(todo, function callback(err, result) {
-//         if (!err) {
-//             console.log('Successfully posted a todo!');
-//             // hyper.log("TEXT:" + text);
-//             console.log("TEXT:" + text);
-//         } else
-//         {
-//             console.log("ERROR" + err);
-//         }
-//     });
-// }
-//
-// function getTodo() {
-//     _db.get("_design/view_splitID").then(function (doc) {
-//         // handle doc
-//         // hyper.log(doc.title);
-//         console.log(doc);
-//     }).catch(function (err) {
-//         console.log(err);
-//     });
-// }
-//
-// function updateTodo() {
-//     // Remember that whenever you want to update any field, you are basically putin another document
-//     // into the database. The "update" occurs because you specify the revision number of the document
-//     // you want to update. Therefore, in case you want to add/remove fields to the documents, you just
-//     // add/remove them within the .put function and that's gonna be what it remains in the DB.
-//     _db.get("doc").then(function(doc) {
-//         return _db.put({
-//             _id: "doc",
-//             _rev: doc._rev,
-//             title: "Let's Dance3",
-//             completed: false,
-//             format: "PDF",
-//             time: "10:00"
-//         });
-//     }).then(function(response) {
-//         // handle response
-//         console.log("update successful");
-//         console.log(doc.title + doc.completed + doc._id);
-//     }).catch(function (err) {
-//         console.log(err);
-//     });
-// }
-//
-// function deleteTodo() {
-//     _db.get('doc').then(function(doc) {
-//         return _db.remove(doc._id, doc._rev);
-//     }).then(function (result) {
-//         // handle result
-//         console.log("Doc deleted!");
-//     }).catch(function (err) {
-//         console.log(err);
-//     });
-// }
-// END - CRUD operations with PouchDB. Testing purposes.
-
-
-
-// // This function saves the read images into dbrooms database as attachments
-// function loadMaps() {
-//     // Con este snippet de codigo funciona en Desktop a las mil maravillas, en Phonegap se atasca, se satura sobremanera.
-//     // for (i in _maps) {
-//     //     _dbrooms.putAttachment('floor'+i, 'attachment'+i, _maps[i], 'image/jpg').then(function (result) {
-//     //         // handle result
-//     //         console.log("Correctly added FLOOR:" + result.id);
-//     //     }).catch(function (err) {
-//     //         console.log("error loading floor in the database:");
-//     //         console.log(err);
-//     //     });
-//     // }
-//     // Con este snippet de codigo nos aseguramos de que los attachments se añadan syncronamente sin saturar la maquina y por tanto Phonegap no se atasca y funciona bien.
-//     // Pero el tiempo de ejecucion y de recuperacion de imagees es excesivo dejando esta implementacion casi inutil. Mejor hacer AJAX (al servidor o local) cada vez que se solcite una imagen.
-//     _dbrooms.putAttachment('floor'+0, 'attachment'+0, _maps[0], 'image/jpg').then(function (result) {
-//             // handle result
-//             console.log("Correctly added FLOOR:" + result.id);
-//             _dbrooms.putAttachment('floor'+1, 'attachment'+1, _maps[1], 'image/jpg').then(function (result) {
-//                     // handle result
-//                     console.log("Correctly added FLOOR:" + result.id);
-//                     _dbrooms.putAttachment('floor'+2, 'attachment'+2, _maps[2], 'image/jpg').then(function (result) {
-//                             // handle result
-//                             console.log("Correctly added FLOOR:" + result.id);
-//                         }).catch(function (err) {
-//                             console.log("error loading floor in the database:");
-//                             console.log(err);
-//                         });
-//                 }).catch(function (err) {
-//                     console.log("error loading floor in the database:");
-//                     console.log(err);
-//                 });
-//         }).catch(function (err) {
-//             console.log("error loading floor in the database:");
-//             console.log(err);
-//         });
-// }
-
-// // This functions retrieves a map/image according to the floor number given as an argument. The DOM element 'map' is also passed as an argument to shyncronously change the src attribute so that the image can be loaded.
-// function retrieveMap(floor, DOMmap) {
-//     _dbrooms.getAttachment('floor'+floor, 'attachment'+floor).then(function (blob) {
-//         // It returns the data URL for the retrieved image:
-//         DOMmap.src = blobUtil.createObjectURL(blob);
-//         console.log("DOMmap src = "+ DOMmap.src);
-//     }).catch(function (err) {
-//         hyper.log("error retrieving specific floor from database:");
-//         hyper.log(err);
-//     });
-// }
-
-// This function creates design documents which are used for second indexers for queries against the database
-// Once you have specified the design documents you can query based on them and retrieve the documents you want.
-// More info at: https://pouchdb.com/2014/05/01/secondary-indexes-have-landed-in-pouchdb.html
-// https://pouchdb.com/api.html#query_database
-// https://pouchdb.com/guides/queries.html
-// function createDesignDocuments() {
-//     var ddoc = {
-//         _id: '_design/view_splitID', // It must have the "_design" prefix to be recognizable
-//         views: {
-//             by_name: { // This is how the "view" is called. You will use this name to query afterwards.
-//                 map: function (doc) {
-//                     if (doc._id.indexOf(_filter) > -1) {
-//                         emit(doc._id); // outputs the value with which the documents are going to be filtered
-//                     }
-//                     }.toString() // It's necessary to preparate the object for becoming valid JSON.
-//                 }
-//             }
-//         };
-//     // Now, we have to save the design documents:
-//     _db.put(ddoc).then(function () {
-//         // success!
-//         console.log("success");
-//     }).catch(function (err) {
-//         console.log("Error saving design documents: " + err);
-//         // error 409 = already exists
-//     });
-// }
+// TO DELETE: it's just for testing purposes
+function getAttachment(floor){
+    console.log("HOLA??? (floor= "+floor+")");
+    _dbrooms.get("map"+floor.toString()).then(function (doc) {
+        console.log(doc._id);
+        console.log(doc._rev);
+        console.log(doc.image);
+        blobUtil.base64StringToBlob(doc.image).then(function (blob) {
+            // successlog
+            console.log(blob);
+            var imagen = blobUtil.createObjectURL(blob);
+            console.log(imagen);
+            var mybody = document.getElementById("imgprueba");
+            mybody.src=imagen;
+        }).catch(function (err) {
+            // error
+        });
+    });
+}
