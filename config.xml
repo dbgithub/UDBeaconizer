@@ -112,7 +112,7 @@
     -->
     <access origin="*" />
 
-    <plugin name="cordova-plugin-whitelist" version="1.2.1" />
+    <plugin name="cordova-plugin-whitelist" version="1" />
     <allow-navigation href="http://*/*" />
     <allow-navigation href="https://*/*" />
     <allow-intent href="http://*/*" />
