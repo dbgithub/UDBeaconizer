@@ -64,7 +64,7 @@
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
 
-        <gap:plugin name="cordova-plugin-ble" version="https://github.com/evothings/cordova-ble"/>
+        <gap:plugin name="cordova-plugin-ble-central" version="https://github.com/don/cordova-plugin-ble-central"/>
         <gap:plugin name="cordova-plugin-eddystone" version="https://github.com/evothings/cordova-eddystone"/>
         <gap:plugin name="cordova-plugin-x-toast" version="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin"/>
 
