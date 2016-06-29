@@ -18,6 +18,9 @@
         },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },
     "dependent_plugins": {}

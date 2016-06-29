@@ -13,7 +13,7 @@
 </head>
 <body onload="loadContactDetails()">
     <header>
-        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showTooltip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
         <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
         <div id="div_liveSearchResults"></div>
     </header>
@@ -36,9 +36,9 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="js/blob-util.min.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
-    <script src="js/readFiles.js"></script>
     <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();

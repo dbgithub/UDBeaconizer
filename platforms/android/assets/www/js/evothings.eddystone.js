@@ -11,7 +11,7 @@ var undefinedCounter = 0; // This counter works as an estimate to determine whet
 function startScan()
 {
 	showMessage('Scan in progress.');
-	_beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
+	// _beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
 	evothings.eddystone.startScan(
 		function(beacon)
 		{
@@ -160,6 +160,7 @@ function startScan()
 				"are received, make sure you have the Bluetooth feature enabled in your device " +
 				" and ensure you are inside the building! :)", null, "Serious interferences :(", "Oki Doki!");
 			}
+			return null;
 		}
 
 		if (beacon.rssi == 0) {return -1;}
@@ -185,16 +186,17 @@ function startScan()
 		} else {
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
-			if (_beaconsDistance[beacon.address] === undefined) {_beaconsDistance[beacon.address] = []}
-			// console.log("_beaconsDistance["+instancenum+"]= " +_beaconsDistance[beacon.address].length);
-			if (_beaconsDistance[beacon.address].length < 7) {
-				// console.log("_beaconsDistance["+instancenum+"].push(...) =" + accuracy);
-				_beaconsDistance[beacon.address].push(accuracy);
-			} else {
-				_beaconsDistance[beacon.address].shift();
-				_beaconsDistance[beacon.address].push(accuracy);
-				return calculateAverageDistance(beacon.address);
-			}
+			return accuracy;
+			// if (_beaconsDistance[beacon.address] === undefined) {_beaconsDistance[beacon.address] = []}
+			// // console.log("_beaconsDistance["+instancenum+"]= " +_beaconsDistance[beacon.address].length);
+			// if (_beaconsDistance[beacon.address].length < 7) {
+			// 	// console.log("_beaconsDistance["+instancenum+"].push(...) =" + accuracy);
+			// 	_beaconsDistance[beacon.address].push(accuracy);
+			// } else {
+			// 	_beaconsDistance[beacon.address].shift();
+			// 	_beaconsDistance[beacon.address].push(accuracy);
+			// 	return calculateAverageDistance(beacon.address);
+			// }
 		}
 	}
 
@@ -375,9 +377,10 @@ function startScan()
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
 			_stopLoop = true;
+			_sameFloor = false;
 			// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
 			// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
 			// if (_currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
-			retrieveMap(_currentfloor.toString(), true); // If I take this call out of setTimeout function, JavaScripts yields errors.
+			retrieveMap(_currentfloor.toString()); // If I take this call out of setTimeout function, JavaScripts yields errors.
 		},0)
 	}

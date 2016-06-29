@@ -13,7 +13,7 @@
 </head>
 <body onload="loadMap()">
     <header>
-        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showTooltip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
+        <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
         <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
         <div id="div_liveSearchResults"></div>
     </header>
@@ -35,7 +35,7 @@
     </section>
     <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
     <footer>
-        <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showTooltip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
+        <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showOnPressedToolTip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
         <div id="div_distanceTillDestination">
             <img src="./img/destination_ico.png" alt="distace to target" />
             <p id="p_distanceTillDest"></p>
@@ -51,7 +51,6 @@
     <script type="text/javascript" src="js/blob-util.min.js"></script>
     <script type="text/javascript" src="js/iscroll-zoom.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
-    <script src="js/readFiles.js"></script>
     <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();

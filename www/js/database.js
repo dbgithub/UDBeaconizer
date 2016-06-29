@@ -107,7 +107,7 @@ function checkChanges(db, dbalias, dbname) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
             console.log(err);
         });
-    }, error: function(xhr,status,error) {console.log(error +":"+status);}});
+    }, error: function(xhr,status,error) {console.log("error in 'checkChanges', AJAX call");console.log(error +":"+status);}});
 }
 
 // This function checks for changes in the local database corresponding to maps' images.
@@ -128,7 +128,7 @@ function checkMapChanges(floor, dbalias, callback) {
                 console.log(err);
             });
         },0);
-    }, error: function(xhr,status,error) {console.log(error +":"+status);}});
+    }, error: function(xhr,status,error) {console.log("error in 'checkMapChanges', AJAX call");console.log(error +":"+status);}});
 }
 
 // This function creates a local document which is a metadata document.
@@ -151,20 +151,44 @@ function createLocalDocument(db) {
 }
 
 // This function updates the local sequence number of the local database.
+// This function is called from two parts of the code: "syncDB" and "saveMapImage". In the former scenario, there is no need to look
+// at the new sequence number. However, in the latter case, there is no way of knowing the new sequence number rather than checking it
+// in the local database and add 1 to that number.
 function updateLocalDocument(db, new_seq) {
-    db.get('_local/sequence_number_version').then(function (result) {
-        db.put({
-            _id: '_local/sequence_number_version',
-            _rev: result._rev,
-            seq_version: new_seq
-        }).then(function (response) {
-            console.log(response.seq_version);
-            console.log("'_local/sequence_number_version' corrently updated.");
+    // if (new_seq != null) { // Este codigo comentado y el de la parte de abajo es para evitar que rooms.js se actualice solo cuando hay que actualizar un mapa. No esta acabado del todo. Falta evitar que se ejecute cuando la app se inicia por primera vez.
+        db.get('_local/sequence_number_version').then(function (result) {
+            db.put({
+                _id: '_local/sequence_number_version',
+                _rev: result._rev,
+                seq_version: new_seq
+            }).then(function (response) {
+                console.log("'_local/sequence_number_version' corrently updated.");
+            });
+        }).catch(function (err) {
+            console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
+            console.log(err);
         });
-    }).catch(function (err) {
-        console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
-        console.log(err);
-    });
+    // } else {
+    //     // This 'else' corresponds to the call from 'saveMapImage' function where we don't know the new sequence number.
+    //     // The only thing we know is that it has increased in one unit.
+    //     db.info().then(function (result) {
+    //         db.get('_local/sequence_number_version').then(function (result2) {
+    //             db.put({
+    //                 _id: '_local/sequence_number_version',
+    //                 _rev: result2._rev,
+    //                 seq_version: result.update_seq
+    //             }).then(function (response) {
+    //                 console.log("'_local/sequence_number_version' corrently updated for floor maps.");
+    //             });
+    //         }).catch(function (err) {
+    //             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
+    //             console.log(err);
+    //         });
+    //     }).catch(function (err) {
+    //         console.log("error showing info of the database");
+    //         console.log(err);
+    //     });
+    // }
 }
 
 // This function recursively retrieves all floor images from the remote database starting from the floor given by the parameter.
@@ -186,7 +210,7 @@ function requestMapImages(floor, callback, new_version){
                 var blob = blobUtil.createBlob([fimage.response], {type: 'image/jpeg'}); // We convert the read image into blob
                 blobUtil.blobToBase64String(blob).then(function (base64String) { // We convert the blob into base64
                     console.log(base64String);
-                    saveMapImage(floor, base64String, new_version); // Now we save the image in the local database as a base64 string
+                    saveMapImage(floor.toString(), base64String, new_version); // Now we save the image in the local database as a base64 string
                     if (floor < (mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again until we finish retrieving all floor maps from remote database.
                 }).catch(function (err) {
                     console.log("error converting from blob to base64");
@@ -209,7 +233,7 @@ function requestMapImages(floor, callback, new_version){
 // The images are not saved as attachements!
 // It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
 function saveMapImage(floor, base64, new_version) {
-    _dbrooms.get("map"+floor.toString()).then(function (doc) {
+    _dbrooms.get("map"+floor).then(function (doc) {
         var ver;
         if (new_version != null) {ver = new_version; } else {ver = doc.v;}
         _dbrooms.put({
@@ -219,7 +243,9 @@ function saveMapImage(floor, base64, new_version) {
             v: ver
         }).then(function (response) {
             console.log("Floor map image inserted SUCCESSFULLY! (floor"+floor+")");
+            // updateLocalDocument(_dbrooms, null); // We must update the local document to prevent unnecesary updates and syncs from remote DB. // Este codigo comentado es para evitar que rooms.js se actualice solo cuando hay que actualizar un mapa. No esta acabado del todo. Falta evitar que se ejecute cuando la app se inicia por primera vez.
         }).catch(function (err) {
+            console.log("error saving the image in the local database");
             console.log(err);
         });
     }).catch(function (err) {
@@ -301,14 +327,13 @@ function retrieveRoom(room, bool) {
 }
 
 // This function is part of an AJAX call that retrieves an image/map
-// 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
-function retrieveMap(floor, showAsSecondFloor) {
+function retrieveMap(floor) {
     _dbrooms.get("map"+floor).then(function (doc) {
         blobUtil.base64StringToBlob(doc.image).then(function (blob) {
             // success
             // console.log(blob);
             _reva = blobUtil.createObjectURL(blob);
-            showMap(showAsSecondFloor);
+            showMap();
         }).catch(function (err) {
             // error
             console.log("error converting from base64 to blob");

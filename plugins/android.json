@@ -10,6 +10,9 @@
         "cordova-plugin-ble": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
+        "cordova-plugin-dialogs": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
         "cordova-plugin-eddystone": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },

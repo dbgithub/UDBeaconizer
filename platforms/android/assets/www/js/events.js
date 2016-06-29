@@ -129,7 +129,7 @@ function loadContactDetails() {
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != " ") {
         office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
-        console.log(office);
+        // console.log(office);
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
         office = "-";
@@ -164,11 +164,10 @@ function loadMap() {
     localStorage.removeItem('_room');
     console.log("YOU ARE LOOKING FOR -"+ room[0].label + "- ROOM"); // eliminar esta traza
     setTimeout(function() {
-        retrieveMap(room[1], false); // Here we are retrieving the map corresponding to the floor given by the room[] array.
-                                    // 'false' means that we want to show the map as a unique floor, not as a second floor as it may happen if the user and the room are in different floors.
-                                    // If I take this call out of setTimeout function, JavaScripts yields errors.
+        retrieveMap(room[1]); // Here we are retrieving the map corresponding to the floor given by the room[] array.
+                             // If I take this call out of setTimeout function, JavaScripts yields errors.
         _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
-                            // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
+                            // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
     },0)
     _floor = room[1]; // we assign the floor number to this global variable in order to decide what map to show later on.
     locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
@@ -239,9 +238,9 @@ function loadMap() {
 }
 
 // Shows/loads the image within the DOM element.
-// 'showAsSecondFloor' is a boolean indicating whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
-function showMap(showAsSecondFloor) {
-    if (!showAsSecondFloor) {
+// "_sameFloor" boolean indicates whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
+function showMap() {
+    if (_sameFloor) {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
         map.src = _reva;
