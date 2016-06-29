@@ -263,10 +263,10 @@ function switchMaps() {
     if (map2.style.display != "inline") {
         map1.style.display = "none";
         map2.style.display = "inline";
-        you.style.visibility = "visible";
+        _allowYOUlabel ? you.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
         dest_label.style.visibility = "hidden";
         // upstairs_downstairs.style.visibility = "visible";
-        source_point.style.visibility = "visible";
+        _allowYOUlabel ? source_point.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
         dest_point.style.visibility = "hidden";
     } else {
         map2.style.display = "none";
@@ -283,7 +283,7 @@ function switchMaps() {
 function showYOUlabel() {
     var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
     var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
-
+    console.log("sameFLorr = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
     if (_sameFloor == true && _allowYOUlabel == true) {
         // We show the corresponding label and the svg point:
         // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.

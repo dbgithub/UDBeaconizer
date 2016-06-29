@@ -16,6 +16,8 @@ function startScan()
 		function(beacon)
 		{
 			// Update beacon data.
+			console.log("HOLA AITOR!, pero que pasa? que esta pasando? :(");
+			console.log("HOLA AITOR2!, pero que pasa? que esta pasando? :(");
 			beacon.timeStamp = Date.now();
 			beacons[beacon.address] = beacon;
 		},
@@ -53,8 +55,8 @@ function startScan()
 	function updateBeaconList()
 	{
 		removeOldBeacons();
-		applyTrilateration();
-		// displayBeacons();
+		// applyTrilateration();
+		displayBeacons();
 	}
 
 	function removeOldBeacons()
@@ -156,12 +158,12 @@ function startScan()
 			if (undefinedCounter == 15) {_allowYOUlabel = false; showYOUlabel();} // If 15 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
 			if (undefinedCounter == 30) { // If 30 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
 				undefinedCounter = -1;
-				_allowYOUlabel = false; 
+				_allowYOUlabel = false;
 				navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
 				"are received, make sure you have the Bluetooth feature enabled in your device " +
 				" and ensure you are inside the building! :)", null, "Serious interferences :(", "Oki Doki!");
 			}
-			return null;
+			// return null;
 		}
 
 		if (beacon.rssi == 0) {return -1;}

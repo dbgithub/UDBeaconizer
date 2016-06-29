@@ -16,6 +16,8 @@ function startScan()
 		function(beacon)
 		{
 			// Update beacon data.
+			console.log("HOLA AITOR!, pero que pasa? que esta pasando? :(");
+			console.log("HOLA AITOR2!, pero que pasa? que esta pasando? :(");
 			beacon.timeStamp = Date.now();
 			beacons[beacon.address] = beacon;
 		},
@@ -53,8 +55,8 @@ function startScan()
 	function updateBeaconList()
 	{
 		removeOldBeacons();
-		applyTrilateration();
-		// displayBeacons();
+		// applyTrilateration();
+		displayBeacons();
 	}
 
 	function removeOldBeacons()
@@ -156,11 +158,12 @@ function startScan()
 			if (undefinedCounter == 15) {_allowYOUlabel = false; showYOUlabel();} // If 15 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
 			if (undefinedCounter == 30) { // If 30 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
 				undefinedCounter = -1;
+				_allowYOUlabel = false;
 				navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
 				"are received, make sure you have the Bluetooth feature enabled in your device " +
 				" and ensure you are inside the building! :)", null, "Serious interferences :(", "Oki Doki!");
 			}
-			return null;
+			// return null;
 		}
 
 		if (beacon.rssi == 0) {return -1;}
@@ -350,10 +353,10 @@ function startScan()
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 		} else {
-			svg_circle_source.style.visibility = "visible";
-			svg_circle_source.style.visibility = "visible";
-			label_you.style.visibility = "visible";
-			label_you.style.visibility = "visible";
+			// svg_circle_source.style.visibility = "visible";
+			// svg_circle_source.style.visibility = "visible";
+			// label_you.style.visibility = "visible";
+			// label_you.style.visibility = "visible";
 			svg_circle_source.setAttribute("cx", parseInt(real_X));
 			svg_circle_source.setAttribute("cy", parseInt(real_Y));
 			label_you.style.left=real_X + 25 +"px";
@@ -377,7 +380,6 @@ function startScan()
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
 			_stopLoop = true;
-			_sameFloor = false;
 			// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
 			// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
 			// if (_currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
