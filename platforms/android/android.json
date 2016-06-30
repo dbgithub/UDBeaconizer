@@ -24,8 +24,7 @@
                             "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
                             "count": 1
                         }
-                    ],
-                    "/widget": []
+                    ]
                 }
             },
             "AndroidManifest.xml": {

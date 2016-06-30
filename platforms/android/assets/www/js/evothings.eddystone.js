@@ -12,7 +12,7 @@ function startScan()
 {
 	showMessage('Scan in progress.');
 	// _beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
-	ble.startScan([],
+	evothings.eddystone.startScan(
 		function(beacon)
 		{
 			// Update beacon data.
