@@ -1,5 +1,4 @@
-cordova.define("cordova-plugin-ble.BLE", function(require, exports, module) {
-// API definition for EvoThings BLE plugin.
+cordova.define("cordova-plugin-ble.BLE", function(require, exports, module) { // API definition for EvoThings BLE plugin.
 //
 // Use jsdoc to generate documentation.
 
