@@ -29,12 +29,10 @@
     <preference name="android-minSdkVersion" value="14" />
     <preference name="android-installLocation" value="auto" />
     <preference name="android-build-tool" value="gradle" />
-    <preference name="phonegap-version" value="cli-6.1.0" />
+    <preference name="phonegap-version" value="cli-5.2.0" />
     <gap:plugin name="org.apache.cordova.dialogs" />
     <gap:plugin name="org.apache.cordova.inappbrowser" />
     <gap:plugin name="org.apache.cordova.network-information" />
-    <gap:plugin name="cordova-plugin-ble-central" source="npm" />
-    <gap:plugin name="cordova-plugin-bluetoothle" source="npm" />
     <gap:plugin name="cordova-plugin-ble" source="npm" />
     <gap:plugin name="cordova-plugin-eddystone" source="npm" />
     <gap:plugin name="cordova-plugin-x-toast" version="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin" />
@@ -74,9 +72,6 @@
     <allow-intent href="geo:*" />
     <feature name="BLE">
         <param name="android-package" value="com.evothings.BLE" />
-    </feature>
-    <feature name="BluetoothLePlugin">
-        <param name="android-package" value="com.randdusing.bluetoothle.BluetoothLePlugin" />
     </feature>
     <feature name="Notification">
         <param name="android-package" value="org.apache.cordova.dialogs.Notification" />

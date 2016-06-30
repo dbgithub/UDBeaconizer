@@ -8,13 +8,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-bluetoothle/www/bluetoothle.js",
-        "id": "cordova-plugin-bluetoothle.BluetoothLe",
-        "clobbers": [
-            "window.bluetoothle"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-dialogs/www/notification.js",
         "id": "cordova-plugin-dialogs.notification",
         "merges": [
@@ -56,7 +49,6 @@ module.exports.metadata =
 // TOP OF METADATA
 {
     "cordova-plugin-ble": "1.0.1",
-    "cordova-plugin-bluetoothle": "4.0.0",
     "cordova-plugin-dialogs": "1.2.1",
     "cordova-plugin-eddystone": "1.2.0",
     "cordova-plugin-whitelist": "1.2.1",
