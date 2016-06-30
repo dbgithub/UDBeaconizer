@@ -12,12 +12,11 @@ function startScan()
 {
 	showMessage('Scan in progress.');
 	// _beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
-	evothings.eddystone.startScan(
+	ble.startScan([],
 		function(beacon)
 		{
 			// Update beacon data.
-			console.log("HOLA AITOR!, pero que pasa? que esta pasando? :(");
-			console.log("HOLA AITOR2!, pero que pasa? que esta pasando? :(");
+			console.log("HOLA? Se ejecuta esta funcion?");
 			beacon.timeStamp = Date.now();
 			beacons[beacon.address] = beacon;
 		},
@@ -163,7 +162,7 @@ function startScan()
 				"are received, make sure you have the Bluetooth feature enabled in your device " +
 				" and ensure you are inside the building! :)", null, "Serious interferences :(", "Oki Doki!");
 			}
-			// return null;
+			return null;
 		}
 
 		if (beacon.rssi == 0) {return -1;}
