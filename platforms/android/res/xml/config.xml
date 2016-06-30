@@ -1,10 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="es.deusto.UDbeaconizer" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
-    <preference name="AndroidLaunchMode" value="singleTop" />
-    <feature name="App">
-        <param name="android-package" value="org.apache.cordova.App" />
-    </feature>
     <allow-intent href="market:*" />
     <name>UD Beaconizer</name>
     <description>
@@ -34,11 +30,11 @@
     <preference name="android-targetSdkVersion" value="18" />
     <preference name="android-installLocation" value="auto" />
     <preference name="android-build-tool" value="gradle" />
-    <preference name="phonegap-version" value="cli-5.2.0" />
+    <preference name="phonegap-version" value="cli-6.1.0" />
     <gap:plugin name="org.apache.cordova.dialogs" />
     <gap:plugin name="org.apache.cordova.inappbrowser" />
     <gap:plugin name="org.apache.cordova.network-information" />
-    <gap:plugin name="cordova-plugin-ble" source="npm" spec="1.0.1" />
+    <gap:plugin name="cordova-plugin-ble" source="npm" />
     <gap:plugin name="cordova-plugin-eddystone" source="npm" />
     <gap:plugin name="cordova-plugin-x-toast" version="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin" />
     <icon src="icon.png" />
@@ -80,6 +76,10 @@
     </feature>
     <feature name="Notification">
         <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
+    </feature>
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
     </feature>
     <feature name="Toast">
         <param name="android-package" value="nl.xservices.plugins.Toast" />
