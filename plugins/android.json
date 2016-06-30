@@ -10,6 +10,9 @@
         "cordova-plugin-ble": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
+        "cordova-plugin-bluetoothle": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
@@ -20,9 +23,6 @@
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
         "cordova-plugin-x-toast": {
-            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
-        },
-        "cordova-plugin-bluetoothle": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },

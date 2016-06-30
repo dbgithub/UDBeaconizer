@@ -67,8 +67,6 @@
     <!-- Third party plugins -->
     <!-- A list of available plugins are available at https://build.phonegap.com/plugins -->
 
-        <gap:plugin name="cordova-plugin-ble-central" source="npm"/>
-        <gap:plugin name="cordova-plugin-bluetoothle" source="npm" />
         <gap:plugin name="cordova-plugin-ble" source="npm"/>
         <gap:plugin name="cordova-plugin-eddystone" source="npm"/>
         <!-- <gap:plugin name="cordova-plugin-eddystone" version="https://github.com/evothings/cordova-eddystone"/> -->

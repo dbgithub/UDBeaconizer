@@ -13,6 +13,10 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"BluetoothLePlugin\"><param name=\"android-package\" value=\"com.randdusing.bluetoothle.BluetoothLePlugin\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"Notification\"><param name=\"android-package\" value=\"org.apache.cordova.dialogs.Notification\" /></feature>",
                             "count": 1
                         },
@@ -22,10 +26,6 @@
                         },
                         {
                             "xml": "<feature name=\"Toast\"><param name=\"android-package\" value=\"nl.xservices.plugins.Toast\" /></feature>",
-                            "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"BluetoothLePlugin\"><param name=\"android-package\" value=\"com.randdusing.bluetoothle.BluetoothLePlugin\" /></feature>",
                             "count": 1
                         }
                     ]
@@ -55,6 +55,9 @@
         "cordova-plugin-ble": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
+        "cordova-plugin-bluetoothle": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
@@ -66,9 +69,6 @@
         },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
-        },
-        "cordova-plugin-bluetoothle": {
-            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },
     "dependent_plugins": {},
@@ -78,6 +78,13 @@
             "id": "cordova-plugin-ble.BLE",
             "clobbers": [
                 "evothings.ble"
+            ]
+        },
+        {
+            "file": "plugins/cordova-plugin-bluetoothle/www/bluetoothle.js",
+            "id": "cordova-plugin-bluetoothle.BluetoothLe",
+            "clobbers": [
+                "window.bluetoothle"
             ]
         },
         {
@@ -116,21 +123,14 @@
         {
             "file": "plugins/cordova-plugin-x-toast/test/tests.js",
             "id": "cordova-plugin-x-toast.tests"
-        },
-        {
-            "file": "plugins/cordova-plugin-bluetoothle/www/bluetoothle.js",
-            "id": "cordova-plugin-bluetoothle.BluetoothLe",
-            "clobbers": [
-                "window.bluetoothle"
-            ]
         }
     ],
     "plugin_metadata": {
         "cordova-plugin-ble": "1.0.1",
+        "cordova-plugin-bluetoothle": "4.0.0",
         "cordova-plugin-dialogs": "1.2.1",
         "cordova-plugin-eddystone": "1.2.0",
         "cordova-plugin-whitelist": "1.2.1",
-        "cordova-plugin-x-toast": "2.5.1",
-        "cordova-plugin-bluetoothle": "4.0.0"
+        "cordova-plugin-x-toast": "2.5.1"
     }
 }
