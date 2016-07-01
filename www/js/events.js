@@ -5,7 +5,6 @@ var tooltipTimer; // GLOBAL VARIABLE. Timer for the tooltip functionality. It is
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
 function livesearch(text) {
-    fetchDB();
     // var re = /\s/g; // this is a regular expression checking for one or more space characters in the whole string, "g" means global.
     // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
     // hence the search would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
@@ -49,12 +48,14 @@ function hideLiveSearchResults() {
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
 function searchPeople() {
+    fetchDB();
     retrievePerson(inputValue);
     retrieveRoom(inputValue, false); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
 }
 
 // Searches for the room in the database
 function searchRoom() {
+    fetchDB();
     retrieveRoom(inputValue, true); // true means that it DOES show its results because the search item contains a number
 }
 

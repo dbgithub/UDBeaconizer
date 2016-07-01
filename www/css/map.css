@@ -1,5 +1,6 @@
 body {
     background-image: none;
+    padding-top: 250px;
 }
 section {
     background-color: red;  /* The color is for debuggin purposes */
@@ -9,9 +10,9 @@ section {
     overflow: visible;
     width: 100%;
     position: relative; /* This CSS property is used to center the wrapper for the map */
-    top: 90%; /* This CSS property is used to center the wrapper for the map */
+    top: 50%; /* This CSS property is used to center the wrapper for the map */
     /*margin-top: -175px; *//* The value has to be half of the height of the Wrapper. This CSS property is used to center the wrapper for the map */
-    /*margin-top: -10%;*/
+    margin-top: -10%;
     z-index: -2;
 }
 
