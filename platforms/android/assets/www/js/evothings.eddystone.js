@@ -351,12 +351,10 @@ function startScan()
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 		} else {
-			// svg_circle_source.style.visibility = "visible";
-			// svg_circle_source.style.visibility = "visible";
-			// label_you.style.visibility = "visible";
-			// label_you.style.visibility = "visible";
-			svg_circle_source.setAttribute("cx", parseInt(real_X));
-			svg_circle_source.setAttribute("cy", parseInt(real_Y));
+			// svg_circle_source.setAttribute("cx", parseInt(real_X)); esto habia antes de quitar el SVG circle
+			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
+			svg_circle_source.style.left = parseInt(real_X).toString() +"px";
+			svg_circle_source.style.top = parseInt(real_Y).toString() +"px";
 			label_you.style.left=real_X + 25 +"px";
 			label_you.style.top=real_Y + 25 +"px";
 		}

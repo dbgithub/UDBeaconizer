@@ -159,6 +159,7 @@ function linkSearch(x) {
 
 // This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
+    fetchDB();
     var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     localStorage.removeItem('_room');
@@ -176,8 +177,10 @@ function loadMap() {
     var svg_circle = document.getElementById("svg_circle_destinationpoint");
     var label_dest = document.getElementById("p_dest_label");
     svg_circle.style.visibility="visible";
-    svg_circle.setAttribute("cx", room[0].x);
-    svg_circle.setAttribute("cy", room[0].y);
+    svg_circle.style.left = room[0].x.toString() + "px";
+    svg_circle.style.top = room[0].y.toString() + "px";
+    // svg_circle.setAttribute("cx", room[0].x); // esto habia antes de quitar el SVG circle
+    // svg_circle.setAttribute("cy", room[0].y); // esto habia antes de quitar el SVG circle
     label_dest.style.left= parseInt(room[0].x) + 25 +"px";
     label_dest.style.top= parseInt(room[0].y) + 25 +"px";
     label_dest.innerHTML=room[0].label;
