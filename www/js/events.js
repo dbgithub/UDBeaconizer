@@ -48,14 +48,12 @@ function hideLiveSearchResults() {
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
 function searchPeople() {
-    fetchDB();
     retrievePerson(inputValue);
     retrieveRoom(inputValue, false); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
 }
 
 // Searches for the room in the database
 function searchRoom() {
-    fetchDB();
     retrieveRoom(inputValue, true); // true means that it DOES show its results because the search item contains a number
 }
 
@@ -161,6 +159,7 @@ function linkSearch(x) {
 
 // This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
+    fetchDB();
     var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     localStorage.removeItem('_room');
