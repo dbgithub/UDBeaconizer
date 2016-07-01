@@ -36,6 +36,14 @@ module.exports = [
         "clobbers": [
             "evothings.ble"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-eddystone/js/eddystone-plugin.js",
+        "id": "cordova-plugin-eddystone.eddystoneplugin",
+        "pluginId": "cordova-plugin-eddystone",
+        "clobbers": [
+            "evothings.eddystone"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -44,7 +52,8 @@ module.exports.metadata =
     "cordova-plugin-whitelist": "1.2.1",
     "cordova-plugin-x-toast": "2.5.1",
     "cordova-plugin-dialogs": "1.2.1",
-    "cordova-plugin-ble": "1.0.1"
+    "cordova-plugin-ble": "1.3.1",
+    "cordova-plugin-eddystone": "1.2.0"
 }
 // BOTTOM OF METADATA
 });
