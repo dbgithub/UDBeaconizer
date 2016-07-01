@@ -159,7 +159,6 @@ function linkSearch(x) {
 
 // This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
-    fetchDB();
     var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     localStorage.removeItem('_room');
@@ -169,7 +168,7 @@ function loadMap() {
                              // If I take this call out of setTimeout function, JavaScripts yields errors.
         _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
                             // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
-    },0)
+    },1000)
     _floor = room[1]; // we assign the floor number to this global variable in order to decide what map to show later on.
     locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 

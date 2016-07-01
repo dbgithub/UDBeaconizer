@@ -335,7 +335,6 @@ function retrieveRoom(room, bool) {
 
 // This function is part of an AJAX call that retrieves an image/map
 function retrieveMap(floor) {
-    setTimeout(function() {
         _dbrooms.get("map"+floor).then(function (doc) {
             blobUtil.base64StringToBlob(doc.image).then(function (blob) {
                 // success
@@ -347,7 +346,6 @@ function retrieveMap(floor) {
                 console.log("error converting from base64 to blob");
             });
         });
-    }, 1000)
     // More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:
     // blob-util github page: https://github.com/nolanlawson/blob-util#blobToBinaryString
     // http://bl.ocks.org/nolanlawson/edaf09b84185418a55d9 (storing and reading Blob type images)
