@@ -177,8 +177,8 @@ function loadMap() {
     var svg_circle = document.getElementById("svg_circle_destinationpoint");
     var label_dest = document.getElementById("p_dest_label");
     svg_circle.style.visibility="visible";
-    svg_circle.style.left = parseInt(room[0].x) + "px";
-    svg_circle.style.top = parseInt(room[0].y) + "px";
+    svg_circle.style.left = parseInt(room[0].x) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+    svg_circle.style.top = parseInt(room[0].y) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
     // svg_circle.setAttribute("cx", room[0].x); // esto habia antes de quitar el SVG circle
     // svg_circle.setAttribute("cy", room[0].y); // esto habia antes de quitar el SVG circle
     label_dest.style.left= parseInt(room[0].x) + 75 +"px";
@@ -284,10 +284,11 @@ function switchMaps() {
 // This functions checks two booleans. Both booleans are set during application runtime.
 // All depends on whether there exists a communication with the beacons and if the user is at the same floor as the one he/she is searching for.
 function showYOUlabel() {
+    var map2 = document.getElementById("map_sourcePoint");
     var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
     var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
     console.log("sameFLorr = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
-    if (_sameFloor == true && _allowYOUlabel == true) {
+    if ((_sameFloor == true && _allowYOUlabel == true) || (map2.style.display == "inline" && _allowYOUlabel)) {
         // We show the corresponding label and the svg point:
         // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
         // Note that when two maps are loaded and shown, the label and SVG point is handled in "evothings.eddystone.js" script.

@@ -341,7 +341,6 @@ function startScan()
 		var real_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
 
 		// Now we draw the SVG point and the corresponding label too:
-		var map2 = document.getElementById("map_sourcePoint");
 		var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
 		var label_you = document.getElementById("p_you");
 		// If the values computed are not good enough values or strange values, we hide the spot from the map:
@@ -352,19 +351,11 @@ function startScan()
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 		} else {
-			// With the following 'if' statement we are triggering the visibility of the source point.
-			// Since we are receiving readings from the beacons, we want to show the source point as long as
-			// the user is visualizing the corresponding and correct map, otherwise, it has no sense.
-			if (map2.style.display == "inline") {
-				svg_circle_source.style.visibility = "visible";
-				svg_circle_source.style.visibility = "visible";
-				label_you.style.visibility = "visible";
-				label_you.style.visibility = "visible";
-			}
+			showYOUlabel();
 			// svg_circle_source.setAttribute("cx", parseInt(real_X)); esto habia antes de quitar el SVG circle
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
-			svg_circle_source.style.left = real_X +"px";
-			svg_circle_source.style.top = real_Y +"px";
+			svg_circle_source.style.left = real_X - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			svg_circle_source.style.top = real_Y - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			label_you.style.left=real_X + 75 +"px";
 			label_you.style.top=real_Y + 75 +"px";
 		}
