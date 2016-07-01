@@ -13,9 +13,6 @@
         "cordova-plugin-dialogs": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
-        "cordova-plugin-eddystone": {
-            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
-        },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },

@@ -80,7 +80,6 @@ typedef void (^EVOCommandBlock)(void);
 @property CBCentralManager* central;
 @property NSMutableDictionary* peripherals;
 @property BOOL scanIsWaiting;
-@property NSArray* scanIsWaitingServices;
 @property NSString* scanCallbackId;
 
 // Public Cordova API.

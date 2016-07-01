@@ -16,7 +16,6 @@ function startScan()
 		function(beacon)
 		{
 			// Update beacon data.
-			console.log("HOLA? Se ejecuta esta funcion?");
 			beacon.timeStamp = Date.now();
 			beacons[beacon.address] = beacon;
 		},
@@ -54,8 +53,8 @@ function startScan()
 	function updateBeaconList()
 	{
 		removeOldBeacons();
-		// applyTrilateration();
-		displayBeacons();
+		applyTrilateration();
+		// displayBeacons();
 	}
 
 	function removeOldBeacons()
