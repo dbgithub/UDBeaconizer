@@ -152,9 +152,9 @@ function startScan()
 		// let the user know.
 		if (beacon === undefined && undefinedCounter != -1) {
 			undefinedCounter++;
-			undefinedCounter == 8 ? showToolTip('You might be experimenting some interferences! Beacons might not be reachable! :(') : null; // If 8 consecutive frames are not received, we warn the user.
-			if (undefinedCounter == 15) {_allowYOUlabel = false; showYOUlabel();} // If 15 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
-			if (undefinedCounter == 30) { // If 30 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
+			undefinedCounter == 16 ? showToolTip('You might be experimenting some interferences! Beacons might not be reachable! :(') : null; // If 8 consecutive frames are not received, we warn the user.
+			if (undefinedCounter == 30) {_allowYOUlabel = false; showYOUlabel();} // If 15 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
+			if (undefinedCounter == 50) { // If 30 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
 				undefinedCounter = -1;
 				_allowYOUlabel = false;
 				navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
@@ -341,6 +341,7 @@ function startScan()
 		var real_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
 
 		// Now we draw the SVG point and the corresponding label too:
+		var map2 = document.getElementById("map_sourcePoint");
 		var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
 		var label_you = document.getElementById("p_you");
 		// If the values computed are not good enough values or strange values, we hide the spot from the map:
@@ -351,6 +352,15 @@ function startScan()
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
 		} else {
+			// With the following 'if' statement we are triggering the visibility of the source point.
+			// Since we are receiving readings from the beacons, we want to show the source point as long as
+			// the user is visualizing the corresponding and correct map, otherwise, it has no sense.
+			if (map2.style.display == "inline") {
+				svg_circle_source.style.visibility = "visible";
+				svg_circle_source.style.visibility = "visible";
+				label_you.style.visibility = "visible";
+				label_you.style.visibility = "visible";
+			}
 			// svg_circle_source.setAttribute("cx", parseInt(real_X)); esto habia antes de quitar el SVG circle
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
 			svg_circle_source.style.left = real_X +"px";

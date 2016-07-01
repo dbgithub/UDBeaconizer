@@ -1,5 +1,5 @@
 body {
-    background-color: purple;  /* The color is for debuggin purposes */
+    background-color: orange;  /* The color is for debuggin purposes */
     background-image: none;
 }
 section {
@@ -11,7 +11,6 @@ section {
     width: 100%;
     position: relative; /* This CSS property is used to center the wrapper for the map */
     top: 50%; /* This CSS property is used to center the wrapper for the map */
-    padding-top: 500px;
     /*margin-top: -175px; *//* The value has to be half of the height of the Wrapper. This CSS property is used to center the wrapper for the map */
     z-index: -2;
 }
