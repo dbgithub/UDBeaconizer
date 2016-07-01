@@ -353,10 +353,10 @@ function startScan()
 		} else {
 			// svg_circle_source.setAttribute("cx", parseInt(real_X)); esto habia antes de quitar el SVG circle
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
-			svg_circle_source.style.left = parseInt(real_X).toString() +"px";
-			svg_circle_source.style.top = parseInt(real_Y).toString() +"px";
-			label_you.style.left=real_X + 25 +"px";
-			label_you.style.top=real_Y + 25 +"px";
+			svg_circle_source.style.left = real_X +"px";
+			svg_circle_source.style.top = real_Y +"px";
+			label_you.style.left=real_X + 75 +"px";
+			label_you.style.top=real_Y + 75 +"px";
 		}
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");

@@ -170,6 +170,7 @@ function updateLocalDocument(db, new_seq) {
                 seq_version: new_seq
             }).then(function (response) {
                 console.log("'_local/sequence_number_version' corrently updated.");
+                showToolTip("ready");
             });
         }).catch(function (err) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
