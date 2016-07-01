@@ -90,12 +90,13 @@ footer > img:first-child:active { /* la flechita significa todas las 'img' con p
     overflow: visible;
     z-index: -2;
 }
-#map_wrapper svg {
+/*ESto ya no existe*/
+/*#map_wrapper svg {
     position: absolute;
-}
+}*/
 
 #svg_circle_destinationpoint, #svg_circle_sourcepoint {
-    position: relative;
+    position: absolute;
     visibility: hidden;
 }
 
