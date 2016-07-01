@@ -181,8 +181,8 @@ function loadMap() {
     svg_circle.style.top = parseInt(room[0].y) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
     // svg_circle.setAttribute("cx", room[0].x); // esto habia antes de quitar el SVG circle
     // svg_circle.setAttribute("cy", room[0].y); // esto habia antes de quitar el SVG circle
-    label_dest.style.left= parseInt(room[0].x) + 75 +"px";
-    label_dest.style.top= parseInt(room[0].y) + 75 +"px";
+    label_dest.style.left= parseInt(room[0].x) + 40 +"px";
+    label_dest.style.top= parseInt(room[0].y) + 40 +"px";
     label_dest.innerHTML=room[0].label;
     label_dest.style.visibility="visible";
     _destX = room[0].x; // Coordinate X of destination office/room
