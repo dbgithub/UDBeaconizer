@@ -39,6 +39,7 @@
         // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
         localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
                                                                                 // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+        fetchDB();
         window.location = "map.html";
     }
     function goContact(index) {
