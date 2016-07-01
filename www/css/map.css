@@ -95,6 +95,7 @@ footer > img:first-child:active { /* la flechita significa todas las 'img' con p
 }
 
 #svg_circle_destinationpoint, #svg_circle_sourcepoint {
+    position: relative;
     visibility: hidden;
 }
 
