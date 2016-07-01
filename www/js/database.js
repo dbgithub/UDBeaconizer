@@ -37,7 +37,9 @@ function createDB(whichDB) {
 
 // This temporary function is to fetch the rooms database and to avoid the unhundled situation that happened before.
 function fetchDB() {
+    _db = new PouchDB(_staffdb_name); // Fetching the database for rooms.
     _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
+    _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for rooms.
 }
 
 // Deletes the database given as an argument

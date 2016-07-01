@@ -209,8 +209,8 @@ function loadMap() {
     // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
     map.onload = function () {
-        myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
-        myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
+        // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
