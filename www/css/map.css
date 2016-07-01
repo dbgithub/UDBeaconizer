@@ -98,7 +98,7 @@ footer > img:first-child:active { /* la flechita significa todas las 'img' con p
 
 #scrollable_content {
     z-index: -1;
-    /*background-color: blue; *//* The color is for debuggin purposes */
+    background-color: blue; /* The color is for debuggin purposes */
     position: absolute;
     width: auto;
     height: auto;

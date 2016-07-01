@@ -168,7 +168,7 @@ function loadMap() {
                              // If I take this call out of setTimeout function, JavaScripts yields errors.
         _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
                             // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
-    },1000)
+    },0)
     _floor = room[1]; // we assign the floor number to this global variable in order to decide what map to show later on.
     locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
@@ -209,8 +209,8 @@ function loadMap() {
     // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
     map.onload = function () {
-        myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
-        myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
+        // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
