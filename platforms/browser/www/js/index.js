@@ -75,7 +75,7 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        if (window.hyper && window.hyper.log) { console.log = hyper.log }
+        // if (window.hyper && window.hyper.log) { console.log = hyper.log }
         // navigator.notification.alert("HelloWorld!", null, "This is the tittle", "This is the button name");
         createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
@@ -86,9 +86,9 @@ var app = {
         // DBinfo(_db);
         // DBinfo(_dbrooms);
         // DBinfo(_dbbeacons);
-        // setTimeout(function() {
-        //     getAttachment(3);
-        // },5000)
+        setTimeout(function() {
+            getAttachment(3);
+        },7000)
         // deleteDB("staffdb");
         // deleteDB("roomsdb");
         // deleteDB("beaconsdb");

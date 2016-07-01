@@ -35,6 +35,13 @@ function createDB(whichDB) {
     }
 }
 
+// This temporary function is to fetch the rooms database and to avoid the unhundled situation that happened before.
+function fetchDB() {
+    _db = new PouchDB(_staffdb_name); // Fetching the database for rooms.
+    _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
+    _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for rooms.
+}
+
 // Deletes the database given as an argument
 function deleteDB(dbname) {
     dbase = new PouchDB(dbname);
@@ -328,17 +335,17 @@ function retrieveRoom(room, bool) {
 
 // This function is part of an AJAX call that retrieves an image/map
 function retrieveMap(floor) {
-    _dbrooms.get("map"+floor).then(function (doc) {
-        blobUtil.base64StringToBlob(doc.image).then(function (blob) {
-            // success
-            // console.log(blob);
-            _reva = blobUtil.createObjectURL(blob);
-            showMap();
-        }).catch(function (err) {
-            // error
-            console.log("error converting from base64 to blob");
+        _dbrooms.get("map"+floor).then(function (doc) {
+            blobUtil.base64StringToBlob(doc.image).then(function (blob) {
+                // success
+                // console.log(blob);
+                _reva = blobUtil.createObjectURL(blob);
+                showMap();
+            }).catch(function (err) {
+                // error
+                console.log("error converting from base64 to blob");
+            });
         });
-    });
     // More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:
     // blob-util github page: https://github.com/nolanlawson/blob-util#blobToBinaryString
     // http://bl.ocks.org/nolanlawson/edaf09b84185418a55d9 (storing and reading Blob type images)

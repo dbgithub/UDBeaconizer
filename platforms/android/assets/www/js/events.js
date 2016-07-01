@@ -216,24 +216,24 @@ function loadMap() {
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
     // and here too: http://api.jquery.com/animate/#animate-properties-options
-    function grow() {
-       $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
-        .animate(
-        {r: 35},
-        {duration:1000,step:function(now){
-          $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
-       }, complete:function(){shrink();}});
-   }
-
-   function shrink() {
-      $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
-      .animate(
-      {r: 18},
-      {duration:1000,step:function(now){
-        $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
-     }, complete:function(){grow();}});
-   }
-   grow();
+   //  function grow() {
+   //     $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+   //      .animate(
+   //      {r: 35},
+   //      {duration:1000,step:function(now){
+   //        $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+   //     }, complete:function(){shrink();}});
+   // }
+   //
+   // function shrink() {
+   //    $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+   //    .animate(
+   //    {r: 18},
+   //    {duration:1000,step:function(now){
+   //      $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+   //   }, complete:function(){grow();}});
+   // }
+   // grow();
 
 }
 
