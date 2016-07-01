@@ -5,6 +5,7 @@ var tooltipTimer; // GLOBAL VARIABLE. Timer for the tooltip functionality. It is
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
 function livesearch(text) {
+    fetchDB();
     // var re = /\s/g; // this is a regular expression checking for one or more space characters in the whole string, "g" means global.
     // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
     // hence the search would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
@@ -209,8 +210,8 @@ function loadMap() {
     // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
     map.onload = function () {
-        // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
-        // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
+        myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
