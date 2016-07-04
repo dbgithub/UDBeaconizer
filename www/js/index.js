@@ -86,9 +86,9 @@ var app = {
         // DBinfo(_db);
         // DBinfo(_dbrooms);
         // DBinfo(_dbbeacons);
-        setTimeout(function() {
-            getAttachment(3);
-        },7000)
+        // setTimeout(function() {
+        //     getAttachment(3);
+        // },7000)
         // deleteDB("staffdb");
         // deleteDB("roomsdb");
         // deleteDB("beaconsdb");

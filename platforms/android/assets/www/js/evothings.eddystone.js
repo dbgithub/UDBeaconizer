@@ -11,7 +11,7 @@ var undefinedCounter = 0; // This counter works as an estimate to determine whet
 function startScan()
 {
 	showMessage('Scan in progress.');
-	// _beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
+	_beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
 	evothings.eddystone.startScan(
 		function(beacon)
 		{
