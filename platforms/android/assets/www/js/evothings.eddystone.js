@@ -356,7 +356,7 @@ function startScan()
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
 			svg_circle_source.style.left = real_X - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			svg_circle_source.style.top = real_Y - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			label_you.style.left=real_X + 40 +"px";
+			label_you.style.left=real_X - 40 +"px";
 			label_you.style.top=real_Y + 40 +"px";
 		}
 		// console.log("(X = "+X+",Y = "+Y+")");
