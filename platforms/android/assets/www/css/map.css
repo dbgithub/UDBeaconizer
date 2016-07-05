@@ -1,0 +1,148 @@
+body {
+    /*background-color: yellow;  *//* The color is for debuggin purposes */
+    background-image: none;
+}
+section {
+    /*background-color: red;*/  /* The color is for debuggin purposes */
+    margin-left: 0px;
+    margin-right: 0px;
+    padding-bottom: 0px;
+    overflow: visible;
+    width: 100%;
+    position: relative; /* This CSS property is used to center the wrapper for the map */
+    /*top: 50%; *//* This CSS property is used to center the wrapper for the map */
+    top: 250px; /* This CSS property is used to center the wrapper for the map */
+    /*margin-top: -175px; *//* The value has to be half of the height of the Wrapper. This CSS property is used to center the wrapper for the map */
+    z-index: -2;
+}
+
+header {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    height: 110px; /*  valor que le he asignado yo */
+    margin: 0px;
+    padding: 5px;
+    background-image: url("../img/bg-noisy-grey.jpg");
+    border-bottom: 15px solid rgba(51,53,55,1);
+}
+
+footer {
+    height: 100px;
+    border-top: 8px solid rgba(51,53,55,1);
+}
+footer > img:last-child { /* la flechita significa todas las 'img' con parent 'footer' */
+    padding: 5px;
+    height: 100%;
+}
+
+footer > img:first-child { /* la flechita significa todas las 'img' con parent 'footer' */
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.56);
+    margin-left: 20px;
+    padding: 11px;
+    width: 100px;
+    height: auto;
+    bottom: 120px;
+    left: 0px;
+    display: none; /* we set display none because it will be shown just in necessary cases */
+}
+footer > img:first-child:active { /* la flechita significa todas las 'img' con parent 'footer' */
+    background-color: rgba(0, 0, 255, 0.9);
+}
+
+#div_liveSearchResults {
+    top: 110px;
+}
+
+#div_distanceTillDestination {
+    position: fixed;
+    margin-left: auto;
+    margin-right: 0px;
+    right: 0px;
+    bottom: 120px;
+    background-color: rgba(0, 0, 0, 0.56);
+    padding: 5px 12px 5px 5px;
+    width: 200px;
+    height: 70px;
+}
+
+#div_distanceTillDestination img {
+    height: 100%;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-right: 5px;
+    float: left;
+}
+#div_distanceTillDestination p {
+    display: inline-block;
+    font-size:40px;
+    color: rgb(255, 0, 0);
+    height: 100%;
+    text-align: center;
+}
+#map_wrapper {
+    /*background-color: #ccc; */ /* The color is for debuggin purposes */
+    height: 350px;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: visible;
+    z-index: -2;
+}
+/*ESto ya no existe*/
+/*#map_wrapper svg {
+    position: absolute;
+}*/
+
+#svg_circle_destinationpoint, #svg_circle_sourcepoint {
+    position: absolute;
+    visibility: hidden;
+}
+
+#scrollable_content {
+    z-index: -1;
+    /*background-color: blue; *//* The color is for debuggin purposes */
+    position: absolute;
+    width: auto;
+    height: auto;
+}
+
+#map {
+    /*-moz-transform: scale(0.6,0.6);
+    -webkit-transform: scale(0.6,0.6);
+    transform: scale(0.6,0.6);*/
+}
+#map_sourcePoint {
+    display: none;
+}
+
+#p_you, #p_upstairs_downstairs {
+    background-color: red;
+    padding: 9px 12px 9px 12px;
+    border-radius: 7px;
+    color: white;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.9);
+    display: inline;
+    font-size:45px;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+#p_dest_label {
+    background-color: darkorange;
+    padding: 9px 12px 9px 12px;
+    border-radius: 7px;
+    color: white;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.9);
+    display: inline;
+    font-size:45px;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+/* To delete: */
+#test_beacons p {
+    font-size: 19px;
+}
