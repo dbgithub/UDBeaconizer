@@ -39,7 +39,7 @@ var _destX, _destY; // X and Y coordinates of the destination point over the map
 var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
 var _currentfloor; // This int indicates the floor where the user is at.
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
-var _beaconsDistance = {};
+var _beaconsDistances = {};
 var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
 var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because is the initial one.
 var app = {
@@ -75,7 +75,7 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        // if (window.hyper && window.hyper.log) { console.log = hyper.log }
+        if (window.hyper && window.hyper.log) { console.log = hyper.log }
         // navigator.notification.alert("HelloWorld!", null, "This is the tittle", "This is the button name");
         createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched

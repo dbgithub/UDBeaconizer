@@ -11,7 +11,7 @@ var undefinedCounter = 0; // This counter works as an estimate to determine whet
 function startScan()
 {
 	showMessage('Scan in progress.');
-	// _beaconsDistance = {}; // The object containing a set of 5 measured distances of every beacon is reset.
+	_beaconsDistances = {}; // The object containing a set of 5 measured distances of every beacon is reset.
 	evothings.eddystone.startScan(
 		function(beacon)
 		{
@@ -188,16 +188,16 @@ function startScan()
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
 			return accuracy;
-			// if (_beaconsDistance[beacon.address] === undefined) {_beaconsDistance[beacon.address] = []}
-			// // console.log("_beaconsDistance["+instancenum+"]= " +_beaconsDistance[beacon.address].length);
-			// if (_beaconsDistance[beacon.address].length < 7) {
-			// 	// console.log("_beaconsDistance["+instancenum+"].push(...) =" + accuracy);
-			// 	_beaconsDistance[beacon.address].push(accuracy);
-			// } else {
-			// 	_beaconsDistance[beacon.address].shift();
-			// 	_beaconsDistance[beacon.address].push(accuracy);
-			// 	return calculateAverageDistance(beacon.address);
-			// }
+			if (_beaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []}
+			// console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
+			if (_beaconsDistances[beacon.address].length < 7) {
+				// console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
+				_beaconsDistances[beacon.address].push(accuracy);
+			} else {
+				_beaconsDistances[beacon.address].shift();
+				_beaconsDistances[beacon.address].push(accuracy);
+				return calculateAverageDistance(beacon.address);
+			}
 		}
 	}
 
@@ -223,16 +223,16 @@ function startScan()
 	// It discards outliers (values too high or too low)
 	function calculateAverageDistance(mac) {
 		// Firstly, we remove the outliers (or the values that are the biggest/smallest ones even if they are slightly bigger/smaller):
-		//  _beaconsDistance[mac].sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
-		 console.log(_beaconsDistance[mac][0] + " | " + _beaconsDistance[mac][1] + " | " + _beaconsDistance[mac][2] + " | " + _beaconsDistance[mac][3] + " | " + _beaconsDistance[mac][4] + " | " + _beaconsDistance[mac][5] + " | " + _beaconsDistance[mac][6] );
-		 _beaconsDistance[mac].shift(); // The first (smallest) value is removed from the array
-		 _beaconsDistance[mac].pop(); // The last (biggest) value is removed from the array
-		 console.log(_beaconsDistance[mac][0] + " | " + _beaconsDistance[mac][1] + " | " + _beaconsDistance[mac][2] + " | " + _beaconsDistance[mac][3] + " | " + _beaconsDistance[mac][4]);
+		 _beaconsDistances[mac].sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
+		 console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4] + " | " + _beaconsDistances[mac][5] + " | " + _beaconsDistances[mac][6] );
+		 _beaconsDistances[mac].shift(); // The first (smallest) value is removed from the array
+		 _beaconsDistances[mac].pop(); // The last (biggest) value is removed from the array
+		 console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4]);
 		// Now we compute an average among the values that remain in the array:
 		var average = 0;
-		var n = _beaconsDistance[mac].length;
+		var n = _beaconsDistances[mac].length;
 		for (k = 0; k < n; k++) {
-			average += _beaconsDistance[mac][k];
+			average += _beaconsDistances[mac][k];
 		} // END for
 		console.log("Average:" + (average/n).toFixed(2));
 		return (average/n).toFixed(2);
