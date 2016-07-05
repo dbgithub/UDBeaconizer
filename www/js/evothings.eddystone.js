@@ -191,17 +191,13 @@ function startScan()
 			// return accuracy;
 			if (_beaconsDistances[beacon.address] === undefined || _lastKnownBeaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []; _lastKnownBeaconsDistances[beacon.address] = 0;}
 			console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
-			console.log("_lastKnownBeaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address]);
+			console.log("_lastKnownBeaconsDistances["+instancenum+"]= " +_lastKnownBeaconsDistances[beacon.address]);
 			if (_beaconsDistances[beacon.address].length < 7) {
-				console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
 				_beaconsDistances[beacon.address].push(accuracy);
 				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
-				// _beaconsDistances[beacon.address].shift();
-				// _beaconsDistances[beacon.address].push(accuracy);
 				var val = calculateAverageDistance(beacon.address);
 				_lastKnownBeaconsDistances[beacon.address] = val;
-				console.log("VAL = " + val);
 				return val;
 			}
 		}
@@ -233,7 +229,6 @@ function startScan()
 		//  console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4] + " | " + _beaconsDistances[mac][5] + " | " + _beaconsDistances[mac][6] );
 		 _beaconsDistances[mac].shift(); // The first (smallest) value is removed from the array
 		 _beaconsDistances[mac].pop(); // The last (biggest) value is removed from the array
-		//  console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4]);
 		// Now we compute an average among the values that remain in the array:
 		var average = 0;
 		var n = _beaconsDistances[mac].length;
@@ -349,21 +344,32 @@ function startScan()
 		// Now we draw the SVG point and the corresponding label too:
 		var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
 		var label_you = document.getElementById("p_you");
-		// If the values computed are not good enough values or strange values, we hide the spot from the map:
+		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
+		// we will make it grayscale to make the user realize that is an old reading:
 		if (real_X === Infinity || real_X === -Infinity || isNaN(real_X) || real_X === undefined ||
 			real_Y === Infinity || real_Y === -Infinity || isNaN(real_Y) || real_Y === undefined) {
-				svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
-				svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
-				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
-				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				// svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
+				// svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
+				// label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				// label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				svg_circle_source.style.WebkitFilter="grayscale(100%)";
+				label_you.style.backgroundColor = "gray";
+				svg_circle_source.style.left = _lastKnownXcoordinate - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+				svg_circle_source.style.top = _lastKnownYcoordinate - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+				label_you.style.left=_lastKnownXcoordinate - 80 +"px";
+				label_you.style.top=_lastKnownYcoordinate + 40 +"px";
 		} else {
 			showYOUlabel();
 			// svg_circle_source.setAttribute("cx", parseInt(real_X)); esto habia antes de quitar el SVG circle
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
+			svg_circle_source.style.WebkitFilter="none";
+			label_you.style.backgroundColor = "red";
 			svg_circle_source.style.left = real_X - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			svg_circle_source.style.top = real_Y - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			label_you.style.left=real_X - 80 +"px";
 			label_you.style.top=real_Y + 40 +"px";
+			_lastKnownXcoordinate = real_X;
+			_lastKnownYcoordinate = real_Y;
 		}
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
