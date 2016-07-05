@@ -194,10 +194,10 @@ function startScan()
 				console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
 				_beaconsDistances[beacon.address].push(accuracy);
 			} else {
-				_beaconsDistances[beacon.address].shift();
-				_beaconsDistances[beacon.address].push(accuracy);
+				// _beaconsDistances[beacon.address].shift();
+				// _beaconsDistances[beacon.address].push(accuracy);
 				var val = calculateAverageDistance(beacon.address);
-				return parseInt(val);
+				return val;
 			}
 		}
 	}
@@ -236,7 +236,7 @@ function startScan()
 			average += _beaconsDistances[mac][k];
 		} // END for
 		console.log("Average:" + (average/n).toFixed(2));
-		return (average/n).toFixed(2);
+		return parseFloat((average/n).toFixed(2));
 	}
 
 	// It returns the floor the beacon is at, physically speaking.
