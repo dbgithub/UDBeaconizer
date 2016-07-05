@@ -171,7 +171,7 @@ function startScan()
 		// The original formula for calculating distance without taking into account the 'if' should be:
 		// var ratio = (beacon.rssi*1.0)/-69; // InsteaD of -69 it should be txPower (that is, the rssi value measured at distance 1m)
 		var instancenum = uint8ArrayToString(beacon.bid);
-		if (instancenum == "000004000003" || instancenum == "000004000004" || instancenum == "000004000005") {
+		if (instancenum == "000002000003" || instancenum == "000002000004" || instancenum == "000002000005") {
 			var ratio = (beacon.rssi*1.0)/-59; // InsteaD of -59 it should be txPower (that is, the rssi value measured at distance 1m)
 		} else {
 			var ratio = (beacon.rssi*1.0)/-69; // InsteaD of -69 it should be txPower (that is, the rssi value measured at distance 1m)
@@ -196,8 +196,10 @@ function startScan()
 			} else {
 				// _beaconsDistances[beacon.address].shift();
 				// _beaconsDistances[beacon.address].push(accuracy);
-				var val = calculateAverageDistance(beacon.address);
-				return val;
+				setTimeout(function() {
+					var val = calculateAverageDistance(beacon.address);
+					return val;
+				}, 0)
 			}
 		}
 	}
