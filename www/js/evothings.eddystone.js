@@ -12,6 +12,7 @@ function startScan()
 {
 	showMessage('Scan in progress.');
 	_beaconsDistances = {}; // The object containing a set of 5 measured distances of every beacon is reset.
+	_lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
 	evothings.eddystone.startScan(
 		function(beacon)
 		{
@@ -188,15 +189,18 @@ function startScan()
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
 			// return accuracy;
-			if (_beaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []}
+			if (_beaconsDistances[beacon.address] === undefined || _lastKnownBeaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []; _lastKnownBeaconsDistances[beacon.address] = 0;}
 			console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
+			console.log("_lastKnownBeaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address]);
 			if (_beaconsDistances[beacon.address].length < 7) {
 				console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
 				_beaconsDistances[beacon.address].push(accuracy);
+				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
 				// _beaconsDistances[beacon.address].shift();
 				// _beaconsDistances[beacon.address].push(accuracy);
 				var val = calculateAverageDistance(beacon.address);
+				_lastKnownBeaconsDistances[beacon.address] = val;
 				console.log("VAL = " + val);
 				return val;
 			}
