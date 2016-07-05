@@ -187,7 +187,7 @@ function startScan()
 		} else {
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
-			return accuracy;
+			// return accuracy;
 			if (_beaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []}
 			console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
 			if (_beaconsDistances[beacon.address].length < 7) {
