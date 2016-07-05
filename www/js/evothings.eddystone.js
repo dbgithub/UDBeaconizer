@@ -196,10 +196,9 @@ function startScan()
 			} else {
 				// _beaconsDistances[beacon.address].shift();
 				// _beaconsDistances[beacon.address].push(accuracy);
-				setTimeout(function() {
-					var val = calculateAverageDistance(beacon.address);
-					return val;
-				}, 0)
+				var val = calculateAverageDistance(beacon.address);
+				console.log("VAL = " + val);
+				return val;
 			}
 		}
 	}
@@ -237,7 +236,7 @@ function startScan()
 		for (k = 0; k < n; k++) {
 			average += _beaconsDistances[mac][k];
 		} // END for
-		console.log("Average:" + (average/n).toFixed(2));
+		// console.log("Average:" + (average/n).toFixed(2));
 		return parseFloat((average/n).toFixed(2));
 	}
 
