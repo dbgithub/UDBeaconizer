@@ -189,14 +189,15 @@ function startScan()
 			accuracy = parseFloat(accuracy.toFixed(2));
 			return accuracy;
 			if (_beaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []}
-			// console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
+			console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
 			if (_beaconsDistances[beacon.address].length < 7) {
-				// console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
+				console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
 				_beaconsDistances[beacon.address].push(accuracy);
 			} else {
 				_beaconsDistances[beacon.address].shift();
 				_beaconsDistances[beacon.address].push(accuracy);
-				return calculateAverageDistance(beacon.address);
+				var val = calculateAverageDistance(beacon.address);
+				return parseInt(val);
 			}
 		}
 	}
@@ -356,7 +357,7 @@ function startScan()
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
 			svg_circle_source.style.left = real_X - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			svg_circle_source.style.top = real_Y - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			label_you.style.left=real_X - 40 +"px";
+			label_you.style.left=real_X - 80 +"px";
 			label_you.style.top=real_Y + 40 +"px";
 		}
 		// console.log("(X = "+X+",Y = "+Y+")");
