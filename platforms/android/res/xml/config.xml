@@ -1,13 +1,26 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="es.deusto.UDbeaconizer" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
     <preference name="loglevel" value="DEBUG" />
+    <feature name="BLE">
+        <param name="android-package" value="com.evothings.BLE" />
+    </feature>
+    <feature name="Notification">
+        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
+    </feature>
+    <feature name="Whitelist">
+        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="Toast">
+        <param name="android-package" value="nl.xservices.plugins.Toast" />
+    </feature>
     <allow-intent href="market:*" />
-    <name>UD Beaconizer</name>
+    <name>UD Finder</name>
     <description>
-        First preliminary app for the implementation of "beaming the world" idea at Deusto. It provides an indoors-geolocalization feature using beacons.
+        App for indoors geolocalization system to search professors, lecturers, rooms, offices and laboratories using beacons.
     </description>
-    <author email="aitor.db@opendeusto.es" href="http://www.deusto.es">
-        DeustoTech Internet department
+    <author email="aitor.db@opendeusto.es" href="http://morelab.deusto.es/">
+        DeustoTech-Internet department
     </author>
     <content src="index.html" />
     <gap:platform name="ios" />
@@ -32,7 +45,6 @@
     <preference name="android-build-tool" value="gradle" />
     <preference name="phonegap-version" value="cli-6.1.0" />
     <gap:plugin name="org.apache.cordova.dialogs" />
-    <gap:plugin name="org.apache.cordova.network-information" />
     <gap:plugin name="cordova-plugin-ble" source="npm" />
     <gap:plugin name="cordova-plugin-eddystone" source="npm" />
     <gap:plugin name="cordova-plugin-x-toast" version="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin" />
@@ -64,25 +76,10 @@
     <access origin="*" />
     <allow-navigation href="http://*" />
     <allow-navigation href="https://*" />
-    <allow-navigation href="http://*/*" />
-    <allow-navigation href="https://*/*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
-    <feature name="BLE">
-        <param name="android-package" value="com.evothings.BLE" />
-    </feature>
-    <feature name="Notification">
-        <param name="android-package" value="org.apache.cordova.dialogs.Notification" />
-    </feature>
-    <feature name="Whitelist">
-        <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin" />
-        <param name="onload" value="true" />
-    </feature>
-    <feature name="Toast">
-        <param name="android-package" value="nl.xservices.plugins.Toast" />
-    </feature>
 </widget>

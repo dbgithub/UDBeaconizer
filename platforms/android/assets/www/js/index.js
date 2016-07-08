@@ -17,8 +17,8 @@
  * under the License.
  */
 // GLOBAL VARIABLES for all javascript files:
-var _server_domain = "http://dev.morelab.deusto.es/beaconizer";
-var _database_domain = "http://dev.morelab.deusto.es/pouchdb-beaconizer";
+var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
+var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
 // var _server_domain = "http://192.168.1.51:8888";
 // var _database_domain = "http://192.168.1.51:5984";
 var _staffdb_name='staffdb'; // Real database name in server-side.
@@ -78,7 +78,7 @@ var app = {
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        // if (window.hyper && window.hyper.log) { console.log = hyper.log }
+        if (window.hyper && window.hyper.log) { console.log = hyper.log }
         // navigator.notification.alert("HelloWorld!", null, "This is the tittle", "This is the button name");
         createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
