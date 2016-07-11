@@ -60,18 +60,18 @@
     </script>
 
     <script type="text/javascript">
-    function goContact(index) {
-        evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
-        localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-        window.location = "contact.html";
-    }
-    function goMap(index) {
-        localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-        loadMap();
-        hideLiveSearchResults();
-    }
+    // function goContact(index) {
+    //     evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+    //     localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    //                                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    //     window.location = "contact.html";
+    // }
+    // function goMap(index) {
+    //     localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    //                                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    //     loadMap();
+    //     hideLiveSearchResults();
+    // }
     </script>
 </body>
 </html>

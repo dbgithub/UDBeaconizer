@@ -17,8 +17,8 @@
  * under the License.
  */
 // GLOBAL VARIABLES for all javascript files:
-var _server_domain = "http://dev.morelab.deusto.es/beaconizer";
-var _database_domain = "http://dev.morelab.deusto.es/pouchdb-beaconizer";
+var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
+var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
 // var _server_domain = "http://192.168.1.51:8888";
 // var _database_domain = "http://192.168.1.51:5984";
 var _staffdb_name='staffdb'; // Real database name in server-side.
@@ -28,6 +28,8 @@ var _db; // database for staff
 var _dbrooms; // database for rooms
 var _dbbeacons; // database for beacons
 var _reva; // returned value for any function
+var _index; // the index value for "searched rooms" and "searched people"
+var _trilaterationTimer; // This is the timer triggered by setInterval in the trilateration function
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
 var _sortedList; // a list of beacons sorted by signal strength
@@ -39,7 +41,10 @@ var _destX, _destY; // X and Y coordinates of the destination point over the map
 var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
 var _currentfloor; // This int indicates the floor where the user is at.
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
-var _beaconsDistances = {};
+var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon is so as to calculate an average of the values.
+var _lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+var _lastKnownXcoordinate; // This value saves the last available, correct, accurate and known X coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
+var _lastKnownYcoordinate; // This value saves the last available, correct, accurate and known Y coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
 var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
 var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because is the initial one.
 var app = {
@@ -71,12 +76,13 @@ var app = {
         // navigator.app.exitApp();  // To Exit Application
         // navigator.app.backHistory(); // To go back
         evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
-        window.location = "index.html";
+        cleanGUI();
+        clearInterval(_trilaterationTimer); // In case we go back from Map page, this is to avoid applying trilateration for ever.
+        window.location = "#spa_index";
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
-        // if (window.hyper && window.hyper.log) { console.log = hyper.log }
-        // navigator.notification.alert("HelloWorld!", null, "This is the tittle", "This is the button name");
+        if (window.hyper && window.hyper.log) { console.log = hyper.log }
         createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
         createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database

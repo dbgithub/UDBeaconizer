@@ -256,11 +256,11 @@ function startScan()
 	// This function triggers all the business logic related to locating the user in a given floor.
 	function locateUser() {
 		// Evothings.eddystone.js: 'timer' is the ID that identifies the timer created by "setInterval".
-		var timer = null;
+		_trilaterationTimer = null;
 		// Evothings.eddystone.js: Start tracking beacons!
 		setTimeout(startScan, 500);
 		// Evothings.eddystone.js: Timer that refreshes the display.
-		timer = setInterval(updateBeaconList, 500);
+		_trilaterationTimer = setInterval(updateBeaconList, 500);
 	}
 
 	// It estimates and returns the floor number the user is at based on an average upon the information provided by all the beacons.

@@ -45,6 +45,12 @@ function hideLiveSearchResults() {
     div.style.visibility = "hidden";
 }
 
+// This function cleans the GUI of the index page.
+function cleanGUI() {
+    var div = document.getElementById("searchbar");
+    div.value = "";
+    hideLiveSearchResults();
+}
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
 function searchPeople() {
@@ -63,7 +69,7 @@ function showRoomsList() {
         if (_searched_rooms.length != 0) {
             var list = "";
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li onclick='goMap("+j+")' ontouchstart='return true;'>" + (_searched_rooms[j])[0].label + "</li>"
+                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'>" + (_searched_rooms[j])[0].label + "</a></li>"
             }
             var div = document.getElementById("div_liveSearchResults");
             if (_searched_rooms.length > 6) {
@@ -89,12 +95,14 @@ function showBothStaffNRooms() {
         var list = "";
         if (_searched_people.length != 0) {
             for (j = 0; j < _searched_people.length; j++) {
-                list += "<li onclick='goContact("+j+")' ontouchstart='return true;'>" + _searched_people[j].name + "</li>"
+                list += "<li><a onclick='goContact("+j+")' data-transition='slide' href='#spa_contact'>" + _searched_people[j].name + "</a></li>"
+                // ontouchstart='return true; attribute needed??'
             }
         }
         if (_searched_rooms.length != 0) {
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li onclick='goMap("+j+")' ontouchstart='return true;'>" + (_searched_rooms[j])[0].label + "</li>"
+                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                // ontouchstart='return true; attribute needed??'
             }
         }
         if (list != "") {
@@ -116,9 +124,10 @@ function showBothStaffNRooms() {
 
 // This methods is called in the 'onLoad' event handler of the contact.html page
 function loadContactDetails() {
-    var person = JSON.parse(localStorage.getItem('_person')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    localStorage.removeItem('_person');
+    // var person = JSON.parse(localStorage.getItem('_person')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    // localStorage.removeItem('_person');
+    var person = _searched_people[_index];
     var rows = " ";
     var officehours = " - ";
     var office = "";
@@ -159,37 +168,37 @@ function linkSearch(x) {
 
 // This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
-    fetchDB();
-    var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    localStorage.removeItem('_room');
-    console.log("YOU ARE LOOKING FOR -"+ room[0].label + "- ROOM"); // eliminar esta traza
+    fetchDB(); // ESTA LLAMDA HABRIA QUE QUITARLA LO MAS SEGURO
+    // var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    // localStorage.removeItem('_room');
+    console.log("YOU ARE LOOKING FOR -"+ _searched_rooms[_index][0].label + "- ROOM"); // eliminar esta traza
     setTimeout(function() {
-        retrieveMap(room[1]); // Here we are retrieving the map corresponding to the floor given by the room[] array.
+        retrieveMap(_searched_rooms[_index][1]); // Here we are retrieving the map corresponding to the floor given by the room[] array.
                              // If I take this call out of setTimeout function, JavaScripts yields errors.
         _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
                             // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
     },0)
-    _floor = room[1]; // we assign the floor number to this global variable in order to decide what map to show later on.
+    _floor = _searched_rooms[_index][1]; // we assign the floor number to this global variable in order to decide what map to show later on.
     locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
     // We draw the orange SVG point on the map and the corresponding label too:
     var svg_circle = document.getElementById("svg_circle_destinationpoint");
     var label_dest = document.getElementById("p_dest_label");
     svg_circle.style.visibility="visible";
-    svg_circle.style.left = parseInt(room[0].x) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-    svg_circle.style.top = parseInt(room[0].y) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-    // svg_circle.setAttribute("cx", room[0].x); // esto habia antes de quitar el SVG circle
-    // svg_circle.setAttribute("cy", room[0].y); // esto habia antes de quitar el SVG circle
-    label_dest.style.left= parseInt(room[0].x) + 40 +"px";
-    label_dest.style.top= parseInt(room[0].y) + 40 +"px";
-    label_dest.innerHTML=room[0].label;
+    svg_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+    svg_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+    // svg_circle.setAttribute("cx", _searched_rooms[_index][0].x); // esto habia antes de quitar el SVG circle
+    // svg_circle.setAttribute("cy", _searched_rooms[_index][0].y); // esto habia antes de quitar el SVG circle
+    label_dest.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +"px";
+    label_dest.style.top= parseInt(_searched_rooms[_index][0].y) + 40 +"px";
+    label_dest.innerHTML=_searched_rooms[_index][0].label;
     label_dest.style.visibility="visible";
-    _destX = room[0].x; // Coordinate X of destination office/room
-    _destY = room[0].y; // Coordinate Y of destination office/room
+    _destX = _searched_rooms[_index][0].x; // Coordinate X of destination office/room
+    _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
     /* IScroll 5 */
-    document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
+    // document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
     // If you change the elements or the structure of your DOM you should call the refresh method: myScroll.refresh();
     // There are multiple events you can handle:
     // zoomEnd
@@ -336,4 +345,24 @@ function showToolTip(string) {
 // Aborts the timer, and therefore, the toast message in this case
 function abortTimer(){
     clearTimeout(tooltipTimer);
+}
+
+// This function loads the map html page within the SPA (Single Page Application) context.
+function goMap(index) {
+    // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
+    hideLiveSearchResults();
+    loadMap();
+}
+
+// This function loads the contact html page within the SPA (Single Page Application) context.
+function goContact(index) {
+    // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
+    hideLiveSearchResults();
+    clearInterval(_trilaterationTimer);
+    loadContactDetails();
+    evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
 }

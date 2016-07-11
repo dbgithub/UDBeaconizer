@@ -28,6 +28,8 @@ var _db; // database for staff
 var _dbrooms; // database for rooms
 var _dbbeacons; // database for beacons
 var _reva; // returned value for any function
+var _index; // the index value for "searched rooms" and "searched people"
+var _trilaterationTimer; // This is the timer triggered by setInterval in the trilateration function
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
 var _sortedList; // a list of beacons sorted by signal strength
@@ -74,12 +76,13 @@ var app = {
         // navigator.app.exitApp();  // To Exit Application
         // navigator.app.backHistory(); // To go back
         evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
-        window.location = "index.html";
+        cleanGUI();
+        clearInterval(_trilaterationTimer); // In case we go back from Map page, this is to avoid applying trilateration for ever.
+        window.location = "#spa_index";
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
-        // navigator.notification.alert("HelloWorld!", null, "This is the tittle", "This is the button name");
         createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
         // If it is not the first time, the database is just fetched
         createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database

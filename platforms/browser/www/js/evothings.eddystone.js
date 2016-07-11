@@ -12,6 +12,7 @@ function startScan()
 {
 	showMessage('Scan in progress.');
 	_beaconsDistances = {}; // The object containing a set of 5 measured distances of every beacon is reset.
+	_lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
 	evothings.eddystone.startScan(
 		function(beacon)
 		{
@@ -171,7 +172,7 @@ function startScan()
 		// The original formula for calculating distance without taking into account the 'if' should be:
 		// var ratio = (beacon.rssi*1.0)/-69; // InsteaD of -69 it should be txPower (that is, the rssi value measured at distance 1m)
 		var instancenum = uint8ArrayToString(beacon.bid);
-		if (instancenum == "000004000003" || instancenum == "000004000004" || instancenum == "000004000005") {
+		if (instancenum == "000002000003" || instancenum == "000002000004" || instancenum == "000002000005") {
 			var ratio = (beacon.rssi*1.0)/-59; // InsteaD of -59 it should be txPower (that is, the rssi value measured at distance 1m)
 		} else {
 			var ratio = (beacon.rssi*1.0)/-69; // InsteaD of -69 it should be txPower (that is, the rssi value measured at distance 1m)
@@ -187,17 +188,17 @@ function startScan()
 		} else {
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
-			return accuracy;
-			if (_beaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []}
+			// return accuracy;
+			if (_beaconsDistances[beacon.address] === undefined || _lastKnownBeaconsDistances[beacon.address] === undefined) {_beaconsDistances[beacon.address] = []; _lastKnownBeaconsDistances[beacon.address] = 0;}
 			console.log("_beaconsDistances["+instancenum+"]= " +_beaconsDistances[beacon.address].length);
+			console.log("_lastKnownBeaconsDistances["+instancenum+"]= " +_lastKnownBeaconsDistances[beacon.address]);
 			if (_beaconsDistances[beacon.address].length < 7) {
-				console.log("_beaconsDistances["+instancenum+"].push(...) =" + accuracy);
 				_beaconsDistances[beacon.address].push(accuracy);
+				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
-				_beaconsDistances[beacon.address].shift();
-				_beaconsDistances[beacon.address].push(accuracy);
 				var val = calculateAverageDistance(beacon.address);
-				return parseInt(val);
+				_lastKnownBeaconsDistances[beacon.address] = val;
+				return val;
 			}
 		}
 	}
@@ -225,18 +226,17 @@ function startScan()
 	function calculateAverageDistance(mac) {
 		// Firstly, we remove the outliers (or the values that are the biggest/smallest ones even if they are slightly bigger/smaller):
 		 _beaconsDistances[mac].sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
-		 console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4] + " | " + _beaconsDistances[mac][5] + " | " + _beaconsDistances[mac][6] );
+		//  console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4] + " | " + _beaconsDistances[mac][5] + " | " + _beaconsDistances[mac][6] );
 		 _beaconsDistances[mac].shift(); // The first (smallest) value is removed from the array
 		 _beaconsDistances[mac].pop(); // The last (biggest) value is removed from the array
-		 console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4]);
 		// Now we compute an average among the values that remain in the array:
 		var average = 0;
 		var n = _beaconsDistances[mac].length;
 		for (k = 0; k < n; k++) {
 			average += _beaconsDistances[mac][k];
 		} // END for
-		console.log("Average:" + (average/n).toFixed(2));
-		return (average/n).toFixed(2);
+		// console.log("Average:" + (average/n).toFixed(2));
+		return parseFloat((average/n).toFixed(2));
 	}
 
 	// It returns the floor the beacon is at, physically speaking.
@@ -256,11 +256,11 @@ function startScan()
 	// This function triggers all the business logic related to locating the user in a given floor.
 	function locateUser() {
 		// Evothings.eddystone.js: 'timer' is the ID that identifies the timer created by "setInterval".
-		var timer = null;
+		_trilaterationTimer = null;
 		// Evothings.eddystone.js: Start tracking beacons!
 		setTimeout(startScan, 500);
 		// Evothings.eddystone.js: Timer that refreshes the display.
-		timer = setInterval(updateBeaconList, 500);
+		_trilaterationTimer = setInterval(updateBeaconList, 500);
 	}
 
 	// It estimates and returns the floor number the user is at based on an average upon the information provided by all the beacons.
@@ -344,21 +344,32 @@ function startScan()
 		// Now we draw the SVG point and the corresponding label too:
 		var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
 		var label_you = document.getElementById("p_you");
-		// If the values computed are not good enough values or strange values, we hide the spot from the map:
+		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
+		// we will make it grayscale to make the user realize that is an old reading:
 		if (real_X === Infinity || real_X === -Infinity || isNaN(real_X) || real_X === undefined ||
 			real_Y === Infinity || real_Y === -Infinity || isNaN(real_Y) || real_Y === undefined) {
-				svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
-				svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
-				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
-				label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				// svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
+				// svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
+				// label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				// label_you.style.visibility = "hidden"; // This hides the point out from user's sight
+				svg_circle_source.style.WebkitFilter="grayscale(100%)";
+				label_you.style.backgroundColor = "gray";
+				svg_circle_source.style.left = _lastKnownXcoordinate - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+				svg_circle_source.style.top = _lastKnownYcoordinate - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+				label_you.style.left=_lastKnownXcoordinate - 80 +"px";
+				label_you.style.top=_lastKnownYcoordinate + 40 +"px";
 		} else {
 			showYOUlabel();
 			// svg_circle_source.setAttribute("cx", parseInt(real_X)); esto habia antes de quitar el SVG circle
 			// svg_circle_source.setAttribute("cy", parseInt(real_Y)); esto habia antes de quitar el SVG circle
+			svg_circle_source.style.WebkitFilter="none";
+			label_you.style.backgroundColor = "red";
 			svg_circle_source.style.left = real_X - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			svg_circle_source.style.top = real_Y - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			label_you.style.left=real_X - 80 +"px";
 			label_you.style.top=real_Y + 40 +"px";
+			_lastKnownXcoordinate = real_X;
+			_lastKnownYcoordinate = real_Y;
 		}
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");

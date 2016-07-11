@@ -5,29 +5,105 @@
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, target-densitydpi=device-dpi" />
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
     <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="css/UDFinder.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile.icons.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/jquery.mobile.structure-1.4.5.min.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <!-- <link rel="stylesheet" type="text/css" href="css/map.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="css/contact.css" /> -->
+    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
     <title>UD Beaconizer</title>
 </head>
 <body>
-    <header><h1>What are you looking for?</h1></header>
-    <section>
+
+    <!-- INDEX page -->
+    <div id="spa_index" data-role="page">
+        <header><h1>What are you looking for?</h1></header>
+        <section>
             <input id="searchbar" class="input_search_bar" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
             <div id="div_liveSearchResults"></div>
-        <button class="button" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
-    </section>
+            <button class="button" data-corners="false" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
+        </section>
 
-    <footer>
-        <img id="imgprueba" src="./img/logo_UD-standard.svg" alt="logo">
-    </footer>
+        <footer>
+            <img id="imgprueba" src="./img/logo_UD-standard.svg" alt="logo">
+        </footer>
+    </div>
+    <!-- /INDEX page -->
+
+
+    <!-- MAP page -->
+    <div id="spa_map" data-role="page">
+        <header>
+            <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
+            <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
+            <div id="div_liveSearchResults"></div>
+        </header>
+
+        <section>
+            <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
+                <div id="scrollable_content"> <!-- This div ('scrollable_content') is necessary becasue IScroll focuses in the first child of the element you indicate in the initialization -->
+                    <!-- <svg>
+                        <circle id="svg_circle_sourcepoint" cx="0" cy="0" r="18" fill="red" />
+                        <circle id="svg_circle_destinationpoint" cx="0" cy="0" r="18" fill="orange" />
+                    </svg> -->
+                    <img id="svg_circle_sourcepoint" src="./img/red_circle.png" width="70" height="70" alt="youicon">
+                    <img id="svg_circle_destinationpoint" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
+
+                    <p id="p_you">YOU</p>
+                    <p id="p_dest_label">destination</p>
+                    <!-- <p id="p_upstairs_downstairs"></p> -->
+                    <img id="map" src="" alt="map">
+                    <img id="map_sourcePoint" src="" alt="map">
+                </div>
+            </div>
+        </section>
+        <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
+        <footer>
+            <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showOnPressedToolTip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
+            <div id="div_distanceTillDestination">
+                <img src="./img/destination_ico.png" alt="distace to target" />
+                <p id="p_distanceTillDest"></p>
+            </div>
+            <img src="./img/logo_UD-badge.png" alt="UD badge">
+        </footer>
+    </div>
+    <!-- /MAP page -->
+
+
+    <!-- CONTACT page -->
+    <div id="spa_contact" data-role="page">
+            <header>
+                <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
+                <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
+                <div id="div_liveSearchResults"></div>
+            </header>
+
+            <section>
+                <div id="div_header">
+                    <img src="img/profilepic.png" alt="profile pic" />
+                    <p id="p_header"></p>
+                </div>
+                <hr>
+                <div id="div_body">
+                </div>
+            </section>
+
+            <footer>
+                <img src="./img/logo_UD-badge.png" alt="UD badge">
+            </footer>
+    </div>
+    <!-- /CONTACT page -->
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
-    <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="js/blob-util.min.js"></script>
+    <script type="text/javascript" src="js/iscroll-zoom.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
     <script src="js/database.js"></script>
     <script type="text/javascript">
@@ -35,18 +111,19 @@
     </script>
 
     <script type="text/javascript">
-    function goMap(index) {
-        // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
-        localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-        window.location = "map.html";
-    }
-    function goContact(index) {
-        // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
-        localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-                                                                                // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-        window.location = "contact.html";
-    }
+    // function goMap(index) {
+    //     // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
+    //     localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    //                                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    //     window.location = "#spa_map";
+    // }
+    // function goContact(index) {
+    //     // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
+    //     localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    //                                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
+    //     window.location = "#spa_contact";
+    //     alert(window.location.pathname);
+    // }
     </script>
 </body>
 </html>
