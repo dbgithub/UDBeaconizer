@@ -39,10 +39,14 @@ function livesearch(text) {
 }
 
 // It hides the live-search-result DOM element and its content
+// We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
 function hideLiveSearchResults() {
-    var div = document.getElementById("div_liveSearchResults");
-    div.innerHTML = " ";
-    div.style.visibility = "hidden";
+    // var div = document.getElementById("div_liveSearchResults");
+    // div.innerHTML = "";
+    // div.style.visibility = "hidden";
+    var div = $("[data-id='liveSearchResults']");
+    div.html("");
+    div.css("visibility", "hidden");
 }
 
 // This function cleans the GUI of the index page.
@@ -65,20 +69,26 @@ function searchRoom() {
 
 // Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showRoomsList() {
+    if (document.getElementById("searchbar").value == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     setTimeout(function() {
         if (_searched_rooms.length != 0) {
             var list = "";
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
             }
-            var div = document.getElementById("div_liveSearchResults");
+            // var div = document.getElementById("div_liveSearchResults");
+            var div = $("[data-id='liveSearchResults']");
             if (_searched_rooms.length > 6) {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
             } else {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
             }
-            div.innerHTML = "<ul>" + list + "</ul>";
-            div.style.visibility = "visible";
+            // div.innerHTML = "<ul data-role='listview'>" + list + "</ul>";
+            // div.style.visibility = "visible";
+            div.html("<ul data-role='listview'>" + list + "</ul>")
+            div.css("visibility", "visible");
         } else {
             showToolTip('Not found! Please, try again :)');
             console.log("WARNING: no results found in the database");
@@ -89,31 +99,37 @@ function showRoomsList() {
 
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showBothStaffNRooms() {
+    if (document.getElementById("searchbar").value == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     setTimeout(function() {
         console.log("length PEOPLE: " +_searched_people.length); // eliminar esta traza
         console.log("length ROOMS: " +_searched_rooms.length); // eliminar esta traza
         var list = "";
         if (_searched_people.length != 0) {
             for (j = 0; j < _searched_people.length; j++) {
-                list += "<li><a onclick='goContact("+j+")' data-transition='slide' href='#spa_contact'>" + _searched_people[j].name + "</a></li>"
+                list += "<li><a onclick='goContact("+j+")' data-transition='slide' href='#spa_contact'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
                 // ontouchstart='return true; attribute needed??'
             }
         }
         if (_searched_rooms.length != 0) {
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
                 // ontouchstart='return true; attribute needed??'
             }
         }
         if (list != "") {
-            var div = document.getElementById("div_liveSearchResults");
+            // var div = document.getElementById("div_liveSearchResults");
+            var div = $("[data-id='liveSearchResults']");
             if (_searched_people.length + _searched_rooms.length > 6) {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
             } else {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
             }
-            div.innerHTML = "<ul>" + list + "</ul>";
-            div.style.visibility = "visible";
+            // div.innerHTML = "<ul data-role='listview'>" + list + "</ul>";
+            // div.style.visibility = "visible";
+            div.html("<ul data-role='listview'>" + list + "</ul>")
+            div.css("visibility", "visible");
         } else {
             showToolTip('Not found! Please, try again :)');
             console.log("WARNING: no results found in the database");
@@ -198,7 +214,7 @@ function loadMap() {
     _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
     /* IScroll 5 */
-    // document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
+    // document.getElementById("spa_map").addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
     // If you change the elements or the structure of your DOM you should call the refresh method: myScroll.refresh();
     // There are multiple events you can handle:
     // zoomEnd
@@ -206,23 +222,100 @@ function loadMap() {
     // scrollStart ...
     // like this: myScroll.on('scrollEnd', doSomething);
     // more info at: https://github.com/cubiq/iscroll
-    var myScroll = new IScroll('#map_wrapper', {
-        zoom: true, // It allows zooming
-        scrollX: true, // It allows to scroll in the X axis
-        scrollY: true, // It allows to scroll in the Y axis
-        mouseWheel: true, // It listens to mouse wheel event
-        zoomMin:0.5, // Default: 1
-        zoomMax:1.2,
-        freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
-        deceleration: 0.0001,
-        wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
+    // var myScroll = new IScroll('#map_wrapper', {
+    //     zoom: true, // It allows zooming
+    //     scrollX: true, // It allows to scroll in the X axis
+    //     scrollY: true, // It allows to scroll in the Y axis
+    //     mouseWheel: true, // It listens to mouse wheel event
+    //     zoomMin:0.5, // Default: 1
+    //     zoomMax:1.2,
+    //     freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
+    //     deceleration: 0.0001,
+    //     wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
+    // });
+    /* jQuery panzoom by timmywil */
+    $("#map_wrapper").panzoom({
+        // Should always be non-empty
+        // Used to bind jQuery events without collisions
+        // A guid is not added here as different instantiations/versions of Panzoom
+        // on the same element is not supported.
+        eventNamespace: ".panzoom",
+        // Whether or not to transition the scale
+        transition: true,
+        // Default cursor style for the element
+        cursor: "move",
+        // There may be some use cases for zooming without panning or vice versa
+        // NOTE: disablePan also disables focal point zooming
+        disablePan: false,
+        disableZoom: false,
+        // Pan only on the X or Y axes
+        disableXAxis: false,
+        disableYAxis: false,
+        // Set whether you'd like to pan on left (1), middle (2), or right click (3)
+        which: 1,
+        // The increment at which to zoom
+        // adds/subtracts to the scale each time zoomIn/Out is called
+        increment: 0.3,
+        // Turns on exponential zooming
+        // If false, zooming will be incremented linearly
+        exponential: true,
+        // Pan only when the scale is greater than minScale
+        panOnlyWhenZoomed: false,
+        // min and max zoom scales
+        minScale: 0.4,
+        maxScale: 1.2,
+        // The default step for the range input
+        // Precendence: default < HTML attribute < option setting
+        rangeStep: 0.05,
+        // Animation duration (ms)
+        duration: 400,
+        // CSS easing used for scale transition
+        easing: "ease-in-out",
+        // Indicate that the element should be contained within its parent when panning
+        // Note: this does not affect zooming outside of the parent
+        // Set this value to 'invert' to only allow panning outside of the parent element (the opposite of the normal use of contain)
+        // 'invert' is useful for a large Panzoom element where you don't want to show anything behind it
+        contain: true
+        // Transform value to which to always reset (string)
+        // Defaults to the original transform on the element when Panzoom is initialized
+        // startTransform: undefined,
+        // This optional jQuery collection can be set to specify all of the elements
+        // on which the transform should always be set.
+        // It should have at least one element.
+        // This is mainly used for delegating the pan and zoom transform settings
+        // to another element or multiple elements.
+        // The default is the Panzoom element wrapped in jQuery
+        // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
+        // Note: only one Panzoom element will still handle events for a Panzoom instance.
+        // Use multiple Panzoom instances for that use case.
+        // $set: $elem,
+        // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
+        // $zoomIn: $(),
+        // $zoomOut: $(),
+        // Range input on which to bind zooming functionality
+        // $zoomRange: $(),
+        // Reset buttons/links collection on which to bind the reset method
+        // $reset: $(),
+        // For convenience, these options will be bound to Panzoom events
+        // These can all be bound normally on the Panzoom element
+        // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
+        // onStart: undefined,
+        // onChange: undefined,
+        // onZoom: undefined,
+        // onPan: undefined,
+        // onEnd: undefined,
+        // onReset: undefined
     });
 
     // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
     map.onload = function () {
-        myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
-        myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        $("#map_wrapper").panzoom("resetPan", false);
+        $("#map_wrapper").panzoom("resetZoom", false);
+        $("#map_wrapper").panzoom("pan", -_destX, -_destY);
+        $("#map_wrapper").panzoom("zoom", 0.7, { animate: true });
+        // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
+        // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
@@ -365,4 +458,14 @@ function goContact(index) {
     clearInterval(_trilaterationTimer);
     loadContactDetails();
     evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+}
+
+// This function tries to hide the footer when the soft keyboard is shown in the screen and tries to display it when the soft keyboard disappears. Currently it does not work very well.
+// _input is a boolean representing whether an text input has gained focus or not.
+// _viewportHeight is the Height of the Viewport of the application at some point in time.
+// _softKeyboard is a boolean representing whether the soft keyboard is shown or not.
+function softKeyboard(height) {
+    var piezazo = document.getElementById("footer"); // 'piezazo' is the footer
+    if (!_input || (_input && height > _viewportHeight && _softKeyboard)) {piezazo.style.display = "initial"; _softKeyboard = false} else if (_input && !_softKeyboard ) {piezazo.style.display = "none"; _softKeyboard = true;}
+    _viewportHeight = height;
 }

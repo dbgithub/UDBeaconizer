@@ -6,53 +6,52 @@
     <meta name="msapplication-tap-highlight" content="no" />
     <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
-    <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="css/UDFinder.min.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.mobile.icons.min.css" />
     <link rel="stylesheet" type="text/css" href="css/jquery.mobile.structure-1.4.5.min.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
     <!-- <link rel="stylesheet" type="text/css" href="css/map.css" /> -->
     <!-- <link rel="stylesheet" type="text/css" href="css/contact.css" /> -->
     <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
     <title>UD Beaconizer</title>
 </head>
-<body>
+<body onresize="softKeyboard(window.innerHeight);">
 
     <!-- INDEX page -->
     <div id="spa_index" data-role="page">
         <header><h1>What are you looking for?</h1></header>
-        <section>
-            <input id="searchbar" class="input_search_bar" data-clear-btn="true" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
-            <div id="div_liveSearchResults"></div>
-            <button class="button" data-corners="false" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
-        </section>
-
-        <footer>
+        <div data-role="main" class="ui-content">
+            <div class="div_searchbarStyle">  <!-- This div is just merely for styling purposes -->
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+            </div>
+            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+            <button class="button ui-btn" data-corners="false" type="button" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
+        </div>
+        <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
             <img id="imgprueba" src="./img/logo_UD-standard.svg" alt="logo">
-        </footer>
+        </div>
     </div>
     <!-- /INDEX page -->
 
 
     <!-- MAP page -->
     <div id="spa_map" data-role="page">
-        <header>
-            <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
-            <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
-            <div id="div_liveSearchResults"></div>
-        </header>
+        <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
+            <a id="backarrow" href="#spa_index" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
+            <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+            </div>
+            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+            <span class="ui-title"></span> <!-- This is used supposidly to make the height of the header look good. -->
+        </div>
 
-        <section>
-            <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
-                <div id="scrollable_content"> <!-- This div ('scrollable_content') is necessary becasue IScroll focuses in the first child of the element you indicate in the initialization -->
-                    <!-- <svg>
-                        <circle id="svg_circle_sourcepoint" cx="0" cy="0" r="18" fill="red" />
-                        <circle id="svg_circle_destinationpoint" cx="0" cy="0" r="18" fill="orange" />
-                    </svg> -->
+        <div data-role="main" class="ui-content">
+            <div id="div_maplimits">
+                <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
                     <img id="svg_circle_sourcepoint" src="./img/red_circle.png" width="70" height="70" alt="youicon">
                     <img id="svg_circle_destinationpoint" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
-
                     <p id="p_you">YOU</p>
                     <p id="p_dest_label">destination</p>
                     <!-- <p id="p_upstairs_downstairs"></p> -->
@@ -60,26 +59,27 @@
                     <img id="map_sourcePoint" src="" alt="map">
                 </div>
             </div>
-        </section>
+        </div>
         <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
-        <footer>
+        <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
             <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showOnPressedToolTip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
             <div id="div_distanceTillDestination">
                 <img src="./img/destination_ico.png" alt="distace to target" />
                 <p id="p_distanceTillDest"></p>
             </div>
             <img src="./img/logo_UD-badge.png" alt="UD badge">
-        </footer>
+        </div>
     </div>
     <!-- /MAP page -->
 
 
     <!-- CONTACT page -->
     <div id="spa_contact" data-role="page">
+
             <header>
                 <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
                 <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
-                <div id="div_liveSearchResults"></div>
+                <div id="div_liveSearchResults" data-id="liveSearchResults"></div>
             </header>
 
             <section>
@@ -102,8 +102,10 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
     <script type="text/javascript" src="js/evothings.eddystone.js"></script>
+    <script type="text/javascript" src="js/jquery.flip.min.js"></script>
     <script type="text/javascript" src="js/blob-util.min.js"></script>
-    <script type="text/javascript" src="js/iscroll-zoom.js"></script>
+    <!-- <script type="text/javascript" src="js/iscroll-zoom.js"></script> -->
+    <script type="text/javascript" src="js/jquery.panzoom.min.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script>
     <script src="js/database.js"></script>
     <script type="text/javascript">

@@ -47,6 +47,9 @@ var _lastKnownXcoordinate; // This value saves the last available, correct, accu
 var _lastKnownYcoordinate; // This value saves the last available, correct, accurate and known Y coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
 var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
 var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because is the initial one.
+var _input; // A boolean representing whether an text input has gained focus or not.
+var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
+var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
 var app = {
     // Application Constructor
     initialize: function() {
@@ -92,13 +95,15 @@ var app = {
         // DBinfo(_db);
         // DBinfo(_dbrooms);
         // DBinfo(_dbbeacons);
-        // setTimeout(function() {
-        //     getAttachment(3);
-        // },7000)
         // deleteDB("staffdb");
         // deleteDB("roomsdb");
         // deleteDB("beaconsdb");
-
+        _viewportHeight = window.innerHeight; // Here we set the Height of the Viewport to the corresponding variable.
+        // The following event is fired/triggered when the "clear" icon in the main seearch bar text input is pressed.
+        // This might have to be changed in the future because no all inputs have to have this behaviour. Selectors are crazy, I cannot select what I want.
+        $(".ui-input-clear").on("click", function() {
+            hideLiveSearchResults();
+        });
         // 3 seconds after the app is run, it forces to enable Bluetooth before any real scan is made.
         // NO ESTOY SEGURO DE MANTENER ESTE CODIGO? ES USEFUL? SI BUSCAN UNA ROOM RAPIDO PASAS A MAP.HTML Y A LOS 3 SEGUNDOS SE TE PARA A BUSQUEDA
         // setTimeout(function() {

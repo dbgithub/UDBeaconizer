@@ -39,10 +39,14 @@ function livesearch(text) {
 }
 
 // It hides the live-search-result DOM element and its content
+// We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
 function hideLiveSearchResults() {
-    var div = document.getElementById("div_liveSearchResults");
-    div.innerHTML = " ";
-    div.style.visibility = "hidden";
+    // var div = document.getElementById("div_liveSearchResults");
+    // div.innerHTML = "";
+    // div.style.visibility = "hidden";
+    var div = $("[data-id='liveSearchResults']");
+    div.html("");
+    div.css("visibility", "hidden");
 }
 
 // This function cleans the GUI of the index page.
@@ -65,20 +69,26 @@ function searchRoom() {
 
 // Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showRoomsList() {
+    if (document.getElementById("searchbar").value == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     setTimeout(function() {
         if (_searched_rooms.length != 0) {
             var list = "";
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
             }
-            var div = document.getElementById("div_liveSearchResults");
+            // var div = document.getElementById("div_liveSearchResults");
+            var div = $("[data-id='liveSearchResults']");
             if (_searched_rooms.length > 6) {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
             } else {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
             }
-            div.innerHTML = "<ul>" + list + "</ul>";
-            div.style.visibility = "visible";
+            // div.innerHTML = "<ul data-role='listview'>" + list + "</ul>";
+            // div.style.visibility = "visible";
+            div.html("<ul data-role='listview'>" + list + "</ul>")
+            div.css("visibility", "visible");
         } else {
             showToolTip('Not found! Please, try again :)');
             console.log("WARNING: no results found in the database");
@@ -89,31 +99,37 @@ function showRoomsList() {
 
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showBothStaffNRooms() {
+    if (document.getElementById("searchbar").value == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     setTimeout(function() {
         console.log("length PEOPLE: " +_searched_people.length); // eliminar esta traza
         console.log("length ROOMS: " +_searched_rooms.length); // eliminar esta traza
         var list = "";
         if (_searched_people.length != 0) {
             for (j = 0; j < _searched_people.length; j++) {
-                list += "<li><a onclick='goContact("+j+")' data-transition='slide' href='#spa_contact'>" + _searched_people[j].name + "</a></li>"
+                list += "<li><a onclick='goContact("+j+")' data-transition='slide' href='#spa_contact'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
                 // ontouchstart='return true; attribute needed??'
             }
         }
         if (_searched_rooms.length != 0) {
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
                 // ontouchstart='return true; attribute needed??'
             }
         }
         if (list != "") {
-            var div = document.getElementById("div_liveSearchResults");
+            // var div = document.getElementById("div_liveSearchResults");
+            var div = $("[data-id='liveSearchResults']");
             if (_searched_people.length + _searched_rooms.length > 6) {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
             } else {
-                div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
+                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
             }
-            div.innerHTML = "<ul>" + list + "</ul>";
-            div.style.visibility = "visible";
+            // div.innerHTML = "<ul data-role='listview'>" + list + "</ul>";
+            // div.style.visibility = "visible";
+            div.html("<ul data-role='listview'>" + list + "</ul>")
+            div.css("visibility", "visible");
         } else {
             showToolTip('Not found! Please, try again :)');
             console.log("WARNING: no results found in the database");
@@ -365,4 +381,14 @@ function goContact(index) {
     clearInterval(_trilaterationTimer);
     loadContactDetails();
     evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+}
+
+// This function tries to hide the footer when the soft keyboard is shown in the screen and tries to display it when the soft keyboard disappears. Currently it does not work very well.
+// _input is a boolean representing whether an text input has gained focus or not.
+// _viewportHeight is the Height of the Viewport of the application at some point in time.
+// _softKeyboard is a boolean representing whether the soft keyboard is shown or not.
+function softKeyboard(height) {
+    var piezazo = document.getElementById("footer"); // 'piezazo' is the footer
+    if (!_input || (_input && height > _viewportHeight && _softKeyboard)) {piezazo.style.display = "initial"; _softKeyboard = false} else if (_input && !_softKeyboard ) {piezazo.style.display = "none"; _softKeyboard = true;}
+    _viewportHeight = height;
 }

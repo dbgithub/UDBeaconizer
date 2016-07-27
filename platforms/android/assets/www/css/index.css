@@ -10,19 +10,21 @@
     box-sizing: border-box; /* It changes how the Width and Height of the elements are calculated */
 }
 
-body {
+.ui-page {
+    background: transparent; /* Without this my own background would not appear */
+}
+
+#spa_index {
     background-image: url("../img/bg-gray-bars.jpg");
-    font-family:'PT Sans', sans-serif !important;
-    height: 100%;
+    font-family:'PT Sans', sans-serif;
 }
 
 header {
     margin: 0 5% 0 5%;
 }
 
-section {
-    margin: 0 5% 0 5%;
-    padding-bottom: 190px;  /* This value is calculated as: footer's height + some free space so that it looks nice (e.g 40px) */
+#spa_index .ui-content {
+    padding-top: 60px;
 }
 
 h1 {
@@ -33,126 +35,48 @@ h1 {
     margin-top: 35px;
 }
 
-footer {
-    background-image: url("../img/bg-gray-triangles.png");
-    background-repeat: repeat;
-    background-attachment:fixed;
-    border-top: 15px solid rgba(51,53,55,1);
+.footer {
+    background-image: url("../img/bg-gray-triangles.png") !important;
+    background-repeat: repeat !important;
+    background-attachment:fixed !important;
+    border-top: 8px solid rgba(51,53,55,1) !important;
     text-align: center;
     vertical-align: middle;
-    position: fixed;
-    bottom: 0px;
+    height: 80px !important;  /* Change this value as you desire. */
+}
+
+.footer img {
+    padding: 5px;
+    height: 100% !important;
+}
+
+.div_searchbarStyle  {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.8);
+}
+.div_searchbarStyle2  {
+    margin-left: 40px;
+    margin-right: 3px;
+    margin-top: -7px;
+}
+#spa_index .input_search_bar  {
+    font-size: 30px;
     width: 100%;
-    height: 150px;  /* Change this value as you desire. Remember to take a look (change) section's padding bottom value: */
-}
-
-footer > img { /* la flechita significa todas las 'img' con parent 'footer' */
-    padding: 12px;
-    height: 100%;
-}
-
-#img_backarrow {
-    height: 100%;
-    padding: 5px 10px 5px 10px;
-    float: left;
-}
-#img_backarrow:active{
-    background-color: rgba(88, 87, 87, 1);
-}
-
-.input_search_bar {
-    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8) !important;
-    background-color: rgba(0, 0, 0, 0.8) !important;
-    /*border-radius: 10px;*/
-    border-style: solid !important;
-    border-color: rgb(41, 41, 41) !important;
-    color: white !important;
-    padding: 12px !important;
-    margin-top: 110px !important;
-    font-size: 30px !important;
-    vertical-align: middle !important;
-    display: block !important;
-    width: 100% !important;
-    height: 100px !important;
+    height: 50px;
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
     user-select: text; /* allows copy, paste and manipulating text within text field*/
-}
-.input_search_bar2 {
-    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
-    background: rgba(0, 0, 0, 0.8) url("../img/location_ico.png") 10px no-repeat;
-    background-size: auto 85%;
-    border-radius: 10px;
-    border-style: solid;
-    border-color: rgb(41, 41, 41);
-    color: white;
-    padding: 12px 12px 12px 80px;
-    margin-left: 5px;
-    margin-right: 5px;
-    font-size: 45px;
-    vertical-align: middle;
-    width: 85%;
-    /*float: left;*/ /* No tengo todas conmigo de que esto lo vaya a utilizar */
-    height: 100%; /* This should be equal to height of header - the height of the black divisor */
-    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
-    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
-    user-select: text; /* allows copy, paste and manipulating text within text field*/
-}
-
-#div_liveSearchResults {
-    background-image: url("../img/bg-noisy-grey.jpg");
-    opacity: 0.75;
-    filter: alpha(opacity=75); /* For IE8 and earlier */
-    /* The shadow is set in the corresponding Show functions in 'events.js'*/
-    border-style: solid;
-    border-color: black;
-    width: 90%;
-    left: 50%;
-    margin-left: -45%;
-    position: absolute; /* This should absolute, in order to make the impressions that float over the rest of the elements */
-    visibility: hidden;
-    margin-top: -6px;
-    max-height: 400px;
-    overflow: scroll;
-}
-#div_liveSearchResults ul {
-    list-style-type:none;
-}
-#div_liveSearchResults li {
-    font-size:25px;
-    font-weight:normal;
-    text-align:left;
-    /*padding: 6px;*/
-    border-bottom: 1px solid gray;
-    overflow: hidden;
-}
-#div_liveSearchResults li a {
-    text-decoration: none;
-    color: inherit;
-    font-size: inherit;
-    font-weight:inherit;
-}
-#div_liveSearchResults li:first-child {
-    border-top: 1px solid gray;
-}
-#div_liveSearchResults li:active {
-    background-color: #0053ce;
-    color: #FFF;
 }
 
 .button {
     box-shadow: 0px 1px 10px 3px rgba(0, 0, 0, 0.8);
-    background-color: #0053ce;
-    display: block;
     border: none;
-    font-size: 60px;
-    font-weight: normal !important;
-    color: #FFF;
-    padding: 50px;
-    width: 300px;
+    font-size: 30px;
+    font-weight: normal;
+    padding: 30px;
+    width: 170px !important;
     text-align: center;
     vertical-align: middle;
-    margin: 60px auto 0px auto;
+    margin: 40px auto 0px auto;
 }
 .button:active {
     background-color: #FFF !important;
@@ -167,6 +91,235 @@ footer > img { /* la flechita significa todas las 'img' con parent 'footer' */
  -webkit-box-shadow: 0px 1px 10px 3px rgba(0, 0, 0, 0.8) !important;
  box-shadow: 0px 1px 10px 3px rgba(0, 0, 0, 0.8) !important;
 }
+
+#div_liveSearchResults {
+    background-image: url("../img/bg-noisy-grey.jpg");
+    opacity: 0.75;
+    filter: alpha(opacity=75); /* For IE8 and earlier */
+    /* The shadow is set in the corresponding Show functions in 'events.js'*/
+    border-style: solid;
+    border-color: black;
+    width: 90%;
+    left: 50%;
+    margin-left: -45%;
+    position: absolute; /* This is absolute in order to make the impression that floats over the rest of the elements */
+    visibility: hidden;
+    margin-top: -6px;
+    max-height: 180px;
+    overflow: scroll;
+    z-index: 2;
+}
+#div_liveSearchResults ul {
+    list-style-type:none;
+}
+#div_liveSearchResults li {
+    font-size:25px;
+    font-weight:normal;
+    text-align:left;
+    border-bottom: 1px solid gray;
+    overflow: hidden;
+}
+#div_liveSearchResults li a {
+    text-decoration: none;
+    color: inherit;
+    font-size: inherit;
+    font-weight:inherit;
+}
+#div_liveSearchResults li a img {
+    width: 16px;
+    height: 16px;
+    margin: 0px 4px 0px 4px;
+}
+#div_liveSearchResults li:first-child {
+    border-top: 1px solid gray;
+}
+#div_liveSearchResults li:active {
+    background-color: #0053ce;
+    color: #FFF;
+}
+
+
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+/* %%%%%%%%%%%%%%%%%%%%%%%%%% MAP %%%%%%%%%%%%%%%%%%%%%%%%%%% */
+
+#spa_map {
+    /*background-color: yellow;  *//* The color is for debuggin purposes */
+    background-color: none;
+}
+
+#spa_map .ui-content {
+    background-color: red;  /* The color is for debuggin purposes */
+    margin-left: 0px;
+    margin-right: 0px;
+    overflow: visible;
+    width: 100%;
+    position: relative; /* This CSS property is used to center the wrapper for the map */
+    /*top: 50%; *//* This CSS property is used to center the wrapper for the map */
+    /*margin-top: -175px; *//* The value has to be half of the height of the Wrapper. This CSS property is used to center the wrapper for the map */
+    z-index: -2;
+}
+
+.header {
+    height: 60px !important; /*  valor que le he asignado yo */
+    background-image: url("../img/bg-noisy-grey.jpg") !important;
+    border-bottom: 8px solid rgba(51,53,55,1) !important;
+}
+
+#spa_map .input_search_bar {
+    font-size: 20px;
+    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    user-select: text; /* allows copy, paste and manipulating text within text field*/
+}
+
+#spa_map #backarrow.ui-btn {
+    background-color: transparent;
+    border-style: none;
+    margin-top: -5px;
+    margin-left: -5px;
+    height: 100%;
+    padding: 0px 20px 0px 20px;
+}
+#spa_map #backarrow.ui-btn:focus {
+ -moz-box-shadow: none !important;
+ -webkit-box-shadow: none !important;
+ box-shadow: none !important;
+}
+#spa_map #backarrow.ui-btn:active {
+    background-color: #0053ce;
+}
+#spa_map #backarrow.ui-btn::after {
+    background-size: 110%; /* This changes the size of the icon*/
+}
+
+#spa_map .footer {
+    border-top: 5px solid rgba(51,53,55,1) !important;
+    height: 50px !important;
+}
+#spa_map .footer > img:last-child { /* la flechita significa todas las 'img' con parent 'footer' */
+    padding: 1px;
+    height: 100%;
+}
+#spa_map .footer > img:first-child { /* la flechita significa todas las 'img' con parent 'footer' */
+    position: fixed;
+    background-color: rgba(0, 0, 0, 0.56);
+    margin-left: 10px;
+    padding: 6px;
+    width: 60px;
+    height: auto !important;
+    bottom: 70px;
+    left: 0px;
+    display: none; /* we set display none because it will be shown just in necessary cases */
+}
+#spa_map .footer > img:first-child:active { /* la flechita significa todas las 'img' con parent 'footer' */
+    background-color: rgba(0, 0, 255, 0.9);
+}
+
+#div_distanceTillDestination {
+    position: fixed;
+    margin-left: auto;
+    margin-right: 0px;
+    right: 0px;
+    bottom: 70px;
+    background-color: rgba(0, 0, 0, 0.56);
+    padding: 3px;
+    width: auto;
+    min-width: 110px;
+    height: 50px;
+}
+#div_distanceTillDestination img {
+    height: 90%;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    margin-left: -3px;
+    float: left;
+}
+#div_distanceTillDestination p {
+    display: inline-block;
+    font-size:25px;
+    color: rgb(255, 0, 0);
+    text-align: center;
+    vertical-align: middle;
+    text-shadow: none !important;
+    line-height: 45px; /* This is an approximate value to div's height so as to center the text vertically */
+}
+
+#spa_map #div_liveSearchResults {
+    /*top: 110px;*/
+}
+
+#map_wrapper {
+    /*background-color: #ccc; */ /* The color is for debuggin purposes */
+    height: 350px;
+    width: 350px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow: visible;
+    z-index: -2;
+}
+/*ESto ya no existe*/
+/*#map_wrapper svg {
+    position: absolute;
+}*/
+
+#svg_circle_destinationpoint, #svg_circle_sourcepoint {
+    position: absolute;
+    visibility: hidden;
+}
+
+#scrollable_content {
+    z-index: -1;
+    /*background-color: blue; *//* The color is for debuggin purposes */
+    position: absolute;
+    width: auto;
+    height: auto;
+}
+
+#map {
+    /*-moz-transform: scale(0.6,0.6);
+    -webkit-transform: scale(0.6,0.6);
+    transform: scale(0.6,0.6);*/
+}
+#map_sourcePoint {
+    display: none;
+}
+
+#p_you, #p_upstairs_downstairs {
+    background-color: red;
+    padding: 9px 12px 9px 12px;
+    border-radius: 7px;
+    color: white;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.9);
+    display: inline;
+    font-size:45px;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+#p_dest_label {
+    background-color: darkorange;
+    padding: 9px 12px 9px 12px;
+    border-radius: 7px;
+    color: white;
+    box-shadow: 0px 0px 15px 3px rgba(0, 0, 0, 0.9);
+    display: inline;
+    font-size:45px;
+    font-weight: bold;
+    position: absolute;
+    visibility: hidden;
+}
+
+/* To delete: */
+#test_beacons p {
+    font-size: 19px;
+}
+
+
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
+/* %%%%%%%%%%%%%%%%%%%%%%%%%% /MAP %%%%%%%%%%%%%%%%%%%%%%%%%%% */
+
+
+
 
 /* Portrait layout (default) */
 /* ... */
@@ -183,8 +336,8 @@ footer > img { /* la flechita significa todas las 'img' con parent 'footer' */
     }*/
 }
 
-/* Possible useful CSS rules and classes towards the future: */
 
+/* Possible useful CSS rules and classes towards the future: */
 @keyframes fade {
     from { opacity: 1.0; }
     50% { opacity: 0.4; }
