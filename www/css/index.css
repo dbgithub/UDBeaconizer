@@ -161,20 +161,20 @@ h1 {
     position: absolute;
 }
 
-.header {
+.header { /* ALSO USED IN 'CONTACT' PAGE */
     height: 60px !important; /*  valor que le he asignado yo */
     background-image: url("../img/bg-noisy-grey.jpg") !important;
     border-bottom: 8px solid rgba(51,53,55,1) !important;
 }
 
-#spa_map .input_search_bar {
+#spa_map .input_search_bar, #spa_contact .input_search_bar{ /* ALSO USED IN 'CONTACT' PAGE */
     font-size: 20px;
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
     user-select: text; /* allows copy, paste and manipulating text within text field*/
 }
 
-#spa_map #backarrow.ui-btn {
+#spa_map #backarrow.ui-btn, #spa_contact #backarrow.ui-btn { /* ALSO USED IN 'CONTACT' PAGE */
     background-color: transparent;
     border-style: none;
     margin-top: -5px;
@@ -182,23 +182,23 @@ h1 {
     height: 100%;
     padding: 0px 20px 0px 20px;
 }
-#spa_map #backarrow.ui-btn:focus {
+#spa_map #backarrow.ui-btn:focus, #spa_contact #backarrow.ui-btn:focus { /* ALSO USED IN 'CONTACT' PAGE */
  -moz-box-shadow: none !important;
  -webkit-box-shadow: none !important;
  box-shadow: none !important;
 }
-#spa_map #backarrow.ui-btn:active {
+#spa_map #backarrow.ui-btn:active, #spa_contact #backarrow.ui-btn:active { /* ALSO USED IN 'CONTACT' PAGE */
     background-color: #0053ce;
 }
-#spa_map #backarrow.ui-btn::after {
+#spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE */
     background-size: 110%; /* This changes the size of the icon*/
 }
 
-#spa_map .footer {
+#spa_map .footer, #spa_contact .footer{ /* ALSO USED IN 'CONTACT' PAGE */
     border-top: 5px solid rgba(51,53,55,1) !important;
     height: 50px !important;
 }
-#spa_map .footer > img:last-child { /* la flechita significa todas las 'img' con parent 'footer' */
+#spa_map .footer > img:last-child, #spa_contact .footer > img:last-child{ /* la flechita significa todas las 'img' con parent 'footer' */ /* ALSO USED IN 'CONTACT' PAGE */
     padding: 1px;
     height: 100%;
 }
@@ -246,8 +246,8 @@ h1 {
     line-height: 45px; /* This is an approximate value to div's height so as to center the text vertically */
 }
 
-#spa_map #div_liveSearchResults {
-    margin-left: -39%;
+#spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE */
+    margin-left: -45%;
 }
 
 #map_wrapper {
@@ -313,87 +313,66 @@ h1 {
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% CONTACT %%%%%%%%%%%%%%%%%%%%%%%%%%% */
 
-header {
-    position: fixed;
-    top: 0px;
-    width: 100%;
-    height: 110px; /*  valor que le he asignado yo */
-    margin: 0px;
-    padding: 5px;
-    background-image: url("../img/bg-noisy-grey.jpg");
-    border-bottom: 15px solid rgba(51,53,55,1);
-}
-
-footer {
-    height: 100px;
-    border-top: 8px solid rgba(51,53,55,1);
-}
-footer > img { /* la flechita significa todas las 'img' con parent 'footer' */
-    padding: 5px;
+#spa_contact {
+    background-image: url("../img/bg-gray-bars.jpg");
     height: 100%;
 }
-section {
-    margin: 130px 20px 130px 20px;
+
+#spa_contact .ui-content {
+    /*background-color: rgba(124, 124, 124,0.0);*/
+    margin: 8px 8px 8px 8px;
     padding-bottom: 0px;
-    background-color: rgba(124, 124, 124,0.0);
-
-    box-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    padding: 8px;
+}
+#spa_contact .ui-content hr {
+    display: block;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    clear: left;
 }
 
-section hr {
-    margin-left: 30px;
-    margin-right: 30px;
-}
-
-section img {
-    max-width: 100%;
-    max-height: 100%;
-    width: 250px;
-    float: left;
-    margin-right: 30px;
-}
-
-#div_header {
-    padding-bottom: 80px;
+#div_profile_header {
+    padding-bottom: 10px;
     height: auto;
 }
-
-#div_header p {
+#div_profile_header img {
+    width: 100px;
+    float: left;
+    margin-right: 20px;
+}
+#div_profile_header p {
     text-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
-    font-size:70px;
+    font-size:35px;
     font-weight:normal;
     text-align:left;
 }
 
-#div_body {
-    margin-top: 50px;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-
-#div_body p, #div_body table {
-    font-size:50px;
+#div_profile_body p, #div_profile_body table {
+    font-size:25px;
     font-weight:normal;
     text-align:left;
     clear: left;
 }
 
-#div_body p:nth-child(odd) {
-    font-size:30px;
+#div_profile_body p:nth-child(odd) {
+    font-size:18px;
 }
 
-#div_body table {
+#div_profile_body table {
     border-collapse: collapse;
 }
-#div_body tr:nth-child(odd) {
+#div_profile_body tr:nth-child(odd) {
     background-color: rgb(128, 128, 128);
     border-bottom: 1px solid black;
 }
-#div_body tr:nth-child(even) {
+#div_profile_body tr:nth-child(even) {
     background-color: rgb(80, 80, 80);
 }
-#div_body table td {
-    padding: 5px 10px 5px 10px;
+#div_profile_body table td {
+    padding: 3px 8px 3px 8px;
     color: white;
 }
 

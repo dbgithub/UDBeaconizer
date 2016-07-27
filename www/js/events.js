@@ -153,14 +153,14 @@ function loadContactDetails() {
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != " ") {
-        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
+        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#spa_contact' data-transition='slide' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
         // console.log(office);
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
         office = "-";
     }
-    document.getElementById("p_header").innerHTML = person.name;
-    document.getElementById("div_body").innerHTML =
+    document.getElementById("p_profile_header").innerHTML = person.name;
+    document.getElementById("div_profile_body").innerHTML =
     "<p>POSITION: </p><p>" + ((person.position != " ") ? person.position : "-") + "</p>" +
     "<p>FACULTY: </p><p>" + ((person.faculty != " ") ? person.faculty : "-") + "</p>"+
     "<p>OFFICE: </p><p>" + office + "</p>"+
@@ -173,6 +173,18 @@ function loadContactDetails() {
     "<p>LINKEDIN: </p><p>" + ((person.linkedin != " ") ? person.linkedin : "-") + "</p>"+
     "<p>WORKING AT DeustoTech?: </p><p>" + ((person.dtech) ? "Yes" : "No") + "</p>"+
     "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
+
+    $(document).on("swipeleft swiperight", "#spa_contact", function(e) {
+        console.log("holi, ha habido un swap!");
+        // We check if there is no open panel on the page because otherwise
+        // a swipe to close the left panel would also open the right panel (and v.v.).
+        // We do this by checking the data that the framework stores on the page element (panel: open).
+        if ($(".ui-page-active").jqmData("panel") !== "open") {
+            if (e.type === "swipeleft") {
+                $("#sidepanel").panel("open");
+            }
+        }
+    });
 }
 
 // This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar

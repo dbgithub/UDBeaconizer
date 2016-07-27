@@ -75,26 +75,31 @@
 
     <!-- CONTACT page -->
     <div id="spa_contact" data-role="page">
+        <div data-role="panel" data-position="right" data-display="overlay" id="sidepanel">
+            <p>
+                hello
+            </p>
+        </div>
+        <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
+            <a id="backarrow" href="#spa_index" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
+            <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+            </div>
+            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+            <span class="ui-title"></span> <!-- This is used supposidly to make the height of the header look good. -->
+        </div>
 
-            <header>
-                <img id="img_backarrow" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()" src="img/back-arrow.png" alt="back arrow" />
-                <input id="searchbar" class="input_search_bar2" type="search" name="search_bar" oninput="livesearch(this.value)" value="">
-                <div id="div_liveSearchResults" data-id="liveSearchResults"></div>
-            </header>
-
-            <section>
-                <div id="div_header">
+            <div data-role="main" class="ui-content ui-shadow">
+                <div id="div_profile_header">
                     <img src="img/profilepic.png" alt="profile pic" />
-                    <p id="p_header"></p>
-                </div>
-                <hr>
-                <div id="div_body">
-                </div>
-            </section>
+                    <p id="p_profile_header"></p>
+                </div><hr>
+                <div id="div_profile_body"></div>
+            </div>
 
-            <footer>
+            <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
                 <img src="./img/logo_UD-badge.png" alt="UD badge">
-            </footer>
+            </div>
     </div>
     <!-- /CONTACT page -->
 
