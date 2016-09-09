@@ -174,14 +174,14 @@ function loadContactDetails() {
     "<p>WORKING AT DeustoTech?: </p><p>" + ((person.dtech) ? "Yes" : "No") + "</p>"+
     "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
 
-    $(document).on("swipeleft swiperight", "#spa_contact", function(e) {
-        console.log("holi, ha habido un swap!");
+    // This code snippet initializes the swiping effect panel in the CONTACT page
+    $(document).on("swipeleft", "#spa_contact", function(e) {
         // We check if there is no open panel on the page because otherwise
         // a swipe to close the left panel would also open the right panel (and v.v.).
         // We do this by checking the data that the framework stores on the page element (panel: open).
         if ($(".ui-page-active").jqmData("panel") !== "open") {
             if (e.type === "swipeleft") {
-                $("#sidepanel").panel("open");
+                $("#sidepanel_contact").panel("open");
             }
         }
     });
@@ -329,6 +329,18 @@ function loadMap() {
         // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
         // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
+
+    // This code snippet initializes the swiping effect panel in the MAP page
+    $(document).on("swipeleft", "#spa_map", function(e) {
+        // We check if there is no open panel on the page because otherwise
+        // a swipe to close the left panel would also open the right panel (and v.v.).
+        // We do this by checking the data that the framework stores on the page element (panel: open).
+        if ($(".ui-page-active").jqmData("panel") !== "open") {
+            if (e.type === "swipeleft") {
+                $("#sidepanel_map").panel("open");
+            }
+        }
+    });
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
@@ -480,4 +492,98 @@ function softKeyboard(height) {
     var piezazo = document.getElementById("footer"); // 'piezazo' is the footer
     if (!_input || (_input && height > _viewportHeight && _softKeyboard)) {piezazo.style.display = "initial"; _softKeyboard = false} else if (_input && !_softKeyboard ) {piezazo.style.display = "none"; _softKeyboard = true;}
     _viewportHeight = height;
+}
+
+// PLUGIN CORDOVA-PLUGIN-GOOGLE+ (OAuth):
+// Ojo al dato, con este plugin lo que hace es autenticarte con alguna cuenta que tengas vinculada en el propio dispositivo
+// Es decir, no te deja introducir email y contraseña como lo harias mediante una pagina web. Has de acceder mediante una cuenta
+// vinculada/registrada en el dispositivo. Es un approach mas nativo que otras opciones.
+// Siguiendo los pasos al pie de la letra funciona correctamente todo. Cuidado en el campo "webClientId" de esta función dado que ha de ser el WEBclientID, no el del Android.
+// Puede que tengas que comentar el metatag de index.html de "google-signin-client_id".
+// OJO! OJo con el config.xml, has de poner el mismo id de la aplicacion en Google Developer Console.
+// Github page: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
+// Utilizando keytool: https://developers.google.com/drive/android/auth
+// Ubicacion de tu debug.keystore: https://developer.android.com/studio/publish/app-signing.html
+// Para mas informacion sobre todo: https://developers.google.com/identity/sign-in/web/sign-in
+// Google Developers products: https://developers.google.com/products/
+// Apps connected to your device/account: https://security.google.com/settings/security/permissions?pli=1
+function signInOAuth() {
+    if (!_signedIn) {
+        try {
+            window.plugins.googleplus.login(
+                {
+                    'webClientId': '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com' // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                },
+                function (obj) {
+                    // On success:
+                    console.log("Sign in successful!");
+                    console.log(JSON.stringify(obj));
+                    // SHOW SIGN OUT BUTTON
+                    // SET ANY VARIABLE BY MYSELF
+                    signInOperations();
+                },
+                function (msg) {
+                    // On error:
+                    console.log("WARNING! (signInOAuth). Probably the user has cancelled the operation: " + msg);
+                }
+            );
+        } catch (e) {
+            // On error:
+            console.log("ERROR! (signInOAuth): " + e);
+        }
+    } else {
+        // CAMBIAR DE PAGE E IR DIRECTOS A LA EDICION
+    }
+}
+
+function disconnectOAuth() {
+    try {
+        window.plugins.googleplus.disconnect(
+            function (msg) {
+                // On success:
+                console.log("Disconnection successful!");
+                console.log(msg);
+                showToolTip("Signing out was successful! Come back soon ;-)");
+                // REMOVE SING OUT BUTTON!
+                // CLEAR ANY VARIABLE SET BY MYSELF
+                _signedIn = false;
+                $(".btn_signout").fadeToggle("slow");
+                $("#p_oauth_email").fadeToggle("slow");
+            }
+        );
+    } catch (e) {
+        // On error:
+        console.log("ERROR! (disconnectOAuth): " + e);
+    }
+}
+
+function silentLoginOAuth() {
+    try {
+        window.plugins.googleplus.trySilentLogin(
+            {
+                'webClientId': '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com' // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+            },
+            function (obj) {
+                // On success:
+                console.log("Silent login successful!");
+                console.log(JSON.stringify(obj));
+                // SHOW SIGN OUT BUTTON
+                // SET ANY VARIABLE BY MYSELF
+                signInOperations();
+            },
+            function (msg) {
+                // On warning or error:
+                console.log("WARNING! (silentLoginOAuth). Probably the user was not logged in: " + msg);
+            }
+        );
+    } catch (e) {
+        // On error:
+        console.log("ERROR! (silentLoginOAuth)" + e);
+    }
+}
+
+function signInOperations() {
+    $(".btn_signout").fadeToggle("slow");
+    $("#p_oauth_email").fadeToggle("slow");
+    _signedIn = true;
 }
