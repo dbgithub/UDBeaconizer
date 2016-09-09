@@ -44,6 +44,14 @@ module.exports = [
         "clobbers": [
             "evothings.eddystone"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+        "id": "cordova-plugin-googleplus.GooglePlus",
+        "pluginId": "cordova-plugin-googleplus",
+        "clobbers": [
+            "window.plugins.googleplus"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -53,7 +61,8 @@ module.exports.metadata =
     "cordova-plugin-x-toast": "2.5.1",
     "cordova-plugin-dialogs": "1.2.1",
     "cordova-plugin-ble": "1.3.1",
-    "cordova-plugin-eddystone": "1.2.0"
+    "cordova-plugin-eddystone": "1.2.0",
+    "cordova-plugin-googleplus": "4.0.9"
 }
 // BOTTOM OF METADATA
 });

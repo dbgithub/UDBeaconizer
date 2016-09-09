@@ -29,6 +29,13 @@ module.exports = [
         ]
     },
     {
+        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+        "id": "cordova-plugin-googleplus.GooglePlus",
+        "clobbers": [
+            "window.plugins.googleplus"
+        ]
+    },
+    {
         "file": "plugins/cordova-plugin-whitelist/whitelist.js",
         "id": "cordova-plugin-whitelist.whitelist",
         "runs": true
@@ -51,6 +58,7 @@ module.exports.metadata =
     "cordova-plugin-ble": "1.3.1",
     "cordova-plugin-dialogs": "1.2.1",
     "cordova-plugin-eddystone": "1.2.0",
+    "cordova-plugin-googleplus": "4.0.9",
     "cordova-plugin-whitelist": "1.2.1",
     "cordova-plugin-x-toast": "2.5.1"
 };

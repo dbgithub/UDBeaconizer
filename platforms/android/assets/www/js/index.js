@@ -27,6 +27,9 @@ var _beacons_name='beaconsdb'; // Real database name in server-side.
 var _db; // database for staff
 var _dbrooms; // database for rooms
 var _dbbeacons; // database for beacons
+var _db_alias = "staff";
+var _dbrooms_alias = "rooms";
+var _dbbeacons_alias = "beacons";
 var _reva; // returned value for any function
 var _index; // the index value for "searched rooms" and "searched people"
 var _trilaterationTimer; // This is the timer triggered by setInterval in the trilateration function
@@ -41,6 +44,7 @@ var _destX, _destY; // X and Y coordinates of the destination point over the map
 var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
 var _currentfloor; // This int indicates the floor where the user is at.
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
+var _mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"]; // This array contains the names of the images representing the maps. Whenever we declare a new map or we change its name, we should ONLY do it here, not anywhere else in the code.
 var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon is so as to calculate an average of the values.
 var _lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
 var _lastKnownXcoordinate; // This value saves the last available, correct, accurate and known X coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
@@ -50,6 +54,7 @@ var _sameFloor = -1; // A boolean indicating whether the user is at the same flo
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
+var _signedIn = false; // A boolean representing whether the user is signed in through OAuth.
 var app = {
     // Application Constructor
     initialize: function() {
@@ -63,15 +68,13 @@ var app = {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.addEventListener("backbutton", this.onBackButton, false);
     },
-    // deviceready Event Handler
-    //
+    // 'deviceready' Event Handler
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
     },
-    // backkeydown Event Handler
-    //
+    // 'backkeydown' Event Handler
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onBackButton: function() {
@@ -86,30 +89,23 @@ var app = {
     // Update DOM on a Received Event
     receivedEvent: function(id) {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
-        createDB("staff"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-        // If it is not the first time, the database is just fetched
-        createDB("rooms"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-        // If it is not the first time, the database is just fetched
-        createDB("beacons"); // This call creates the database for the firt time, reads staff list and loads the data into the database
-        // If it is not the first time, the database is just fetched
+        // hola();
+        fetchDB(); // This makes sure the databases are fetched. It will create the local databases if it is needed, otherwise it will sync with remote database and update the data.
         // DBinfo(_db);
         // DBinfo(_dbrooms);
         // DBinfo(_dbbeacons);
-        // deleteDB("staffdb");
-        // deleteDB("roomsdb");
-        // deleteDB("beaconsdb");
+        deleteDB("staffdb");
+        deleteDB("roomsdb");
+        deleteDB("beaconsdb");
         _viewportHeight = window.innerHeight; // Here we set the Height of the Viewport to the corresponding variable.
         // The following event is fired/triggered when the "clear" icon in the main seearch bar text input is pressed.
         // This might have to be changed in the future because no all inputs have to have this behaviour. Selectors are crazy, I cannot select what I want.
         $(".ui-input-clear").on("click", function() {
             hideLiveSearchResults();
         });
-        // 3 seconds after the app is run, it forces to enable Bluetooth before any real scan is made.
-        // NO ESTOY SEGURO DE MANTENER ESTE CODIGO? ES USEFUL? SI BUSCAN UNA ROOM RAPIDO PASAS A MAP.HTML Y A LOS 3 SEGUNDOS SE TE PARA A BUSQUEDA
-        // setTimeout(function() {
-        //     evothings.ble.startScan(null,null); // more info about the API: https://evothings.com/doc/lib-doc/module-cordova-plugin-ble.html  and its github page: https://github.com/evothings/cordova-ble
-        //     evothings.ble.stopScan();
-        // }, 3000)
 
+        // createDB("staff"); // to DELETE in the near future
+        // createDB("rooms"); // to DELETE in the near future
+        // createDB("beacons"); // to DELETE in the near future
     }
 };

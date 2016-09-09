@@ -13,7 +13,7 @@
         If you only want to build for certain platforms you can specify these
         platforms with the gap:platform tag:
     -->
-    <gap:platform name="ios" />
+    <!-- <gap:platform name="ios" /> --> <!-- For the moment, let's not build for iOS. The aim is not focused on that platform yet -->
     <gap:platform name="android" />
     <!--
         If you do not want any permissions to be added to your app, add the
@@ -21,7 +21,6 @@
         permission on your app, which PhoneGap requires):
         <preference name="permissions" value="none"/>
     -->
-    <preference name="permissions" value="none" />
     <!-- Customize your app and platform with the 'preference' element: -->
     <preference name="orientation" value="default" /> <!-- all: default means both landscape and portrait are enabled -->
     <preference name="target-device" value="universal" /> <!-- all: possible values handset, tablet, or universal -->
@@ -71,7 +70,10 @@
         <gap:plugin name="cordova-plugin-ble" source="npm"/>
         <gap:plugin name="cordova-plugin-eddystone" source="npm"/>
         <gap:plugin name="cordova-plugin-x-toast" version="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin"/>
-
+        <gap:plugin spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" source="git">
+            <!-- <param name="REVERSED_CLIENT_ID" value="myreversedclientid" /> --> <!-- Not necessary because we are not compiling for iOS -->
+        </gap:plugin>
+        <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus" />
 
     <!-- Define app icon for each platform. -->
     <icon src="icon.png" />

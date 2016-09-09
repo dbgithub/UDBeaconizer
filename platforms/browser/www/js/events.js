@@ -153,14 +153,14 @@ function loadContactDetails() {
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != " ") {
-        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
+        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#spa_contact' data-transition='slide' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
         // console.log(office);
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
         office = "-";
     }
-    document.getElementById("p_header").innerHTML = person.name;
-    document.getElementById("div_body").innerHTML =
+    document.getElementById("p_profile_header").innerHTML = person.name;
+    document.getElementById("div_profile_body").innerHTML =
     "<p>POSITION: </p><p>" + ((person.position != " ") ? person.position : "-") + "</p>" +
     "<p>FACULTY: </p><p>" + ((person.faculty != " ") ? person.faculty : "-") + "</p>"+
     "<p>OFFICE: </p><p>" + office + "</p>"+
@@ -173,6 +173,18 @@ function loadContactDetails() {
     "<p>LINKEDIN: </p><p>" + ((person.linkedin != " ") ? person.linkedin : "-") + "</p>"+
     "<p>WORKING AT DeustoTech?: </p><p>" + ((person.dtech) ? "Yes" : "No") + "</p>"+
     "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
+
+    // This code snippet initializes the swiping effect panel in the CONTACT page
+    $(document).on("swipeleft", "#spa_contact", function(e) {
+        // We check if there is no open panel on the page because otherwise
+        // a swipe to close the left panel would also open the right panel (and v.v.).
+        // We do this by checking the data that the framework stores on the page element (panel: open).
+        if ($(".ui-page-active").jqmData("panel") !== "open") {
+            if (e.type === "swipeleft") {
+                $("#sidepanel_contact").panel("open");
+            }
+        }
+    });
 }
 
 // This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
@@ -214,7 +226,7 @@ function loadMap() {
     _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
     /* IScroll 5 */
-    // document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
+    // document.getElementById("spa_map").addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
     // If you change the elements or the structure of your DOM you should call the refresh method: myScroll.refresh();
     // There are multiple events you can handle:
     // zoomEnd
@@ -222,24 +234,113 @@ function loadMap() {
     // scrollStart ...
     // like this: myScroll.on('scrollEnd', doSomething);
     // more info at: https://github.com/cubiq/iscroll
-    var myScroll = new IScroll('#map_wrapper', {
-        zoom: true, // It allows zooming
-        scrollX: true, // It allows to scroll in the X axis
-        scrollY: true, // It allows to scroll in the Y axis
-        mouseWheel: true, // It listens to mouse wheel event
-        zoomMin:0.5, // Default: 1
-        zoomMax:1.2,
-        freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
-        deceleration: 0.0001,
-        wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
+    // var myScroll = new IScroll('#map_wrapper', {
+    //     zoom: true, // It allows zooming
+    //     scrollX: true, // It allows to scroll in the X axis
+    //     scrollY: true, // It allows to scroll in the Y axis
+    //     mouseWheel: true, // It listens to mouse wheel event
+    //     zoomMin:0.5, // Default: 1
+    //     zoomMax:1.2,
+    //     freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
+    //     deceleration: 0.0001,
+    //     wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
+    // });
+    /* jQuery panzoom by timmywil */
+    $("#map_wrapper").panzoom({
+        // Should always be non-empty
+        // Used to bind jQuery events without collisions
+        // A guid is not added here as different instantiations/versions of Panzoom
+        // on the same element is not supported.
+        eventNamespace: ".panzoom",
+        // Whether or not to transition the scale
+        transition: true,
+        // Default cursor style for the element
+        cursor: "move",
+        // There may be some use cases for zooming without panning or vice versa
+        // NOTE: disablePan also disables focal point zooming
+        disablePan: false,
+        disableZoom: false,
+        // Pan only on the X or Y axes
+        disableXAxis: false,
+        disableYAxis: false,
+        // Set whether you'd like to pan on left (1), middle (2), or right click (3)
+        which: 1,
+        // The increment at which to zoom
+        // adds/subtracts to the scale each time zoomIn/Out is called
+        increment: 0.3,
+        // Turns on exponential zooming
+        // If false, zooming will be incremented linearly
+        exponential: true,
+        // Pan only when the scale is greater than minScale
+        panOnlyWhenZoomed: false,
+        // min and max zoom scales
+        minScale: 0.4,
+        maxScale: 1.2,
+        // The default step for the range input
+        // Precendence: default < HTML attribute < option setting
+        rangeStep: 0.05,
+        // Animation duration (ms)
+        duration: 400,
+        // CSS easing used for scale transition
+        easing: "ease-in-out",
+        // Indicate that the element should be contained within its parent when panning
+        // Note: this does not affect zooming outside of the parent
+        // Set this value to 'invert' to only allow panning outside of the parent element (the opposite of the normal use of contain)
+        // 'invert' is useful for a large Panzoom element where you don't want to show anything behind it
+        contain: true
+        // Transform value to which to always reset (string)
+        // Defaults to the original transform on the element when Panzoom is initialized
+        // startTransform: undefined,
+        // This optional jQuery collection can be set to specify all of the elements
+        // on which the transform should always be set.
+        // It should have at least one element.
+        // This is mainly used for delegating the pan and zoom transform settings
+        // to another element or multiple elements.
+        // The default is the Panzoom element wrapped in jQuery
+        // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
+        // Note: only one Panzoom element will still handle events for a Panzoom instance.
+        // Use multiple Panzoom instances for that use case.
+        // $set: $elem,
+        // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
+        // $zoomIn: $(),
+        // $zoomOut: $(),
+        // Range input on which to bind zooming functionality
+        // $zoomRange: $(),
+        // Reset buttons/links collection on which to bind the reset method
+        // $reset: $(),
+        // For convenience, these options will be bound to Panzoom events
+        // These can all be bound normally on the Panzoom element
+        // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
+        // onStart: undefined,
+        // onChange: undefined,
+        // onZoom: undefined,
+        // onPan: undefined,
+        // onEnd: undefined,
+        // onReset: undefined
     });
 
     // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
     map.onload = function () {
-        myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
-        myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        $("#map_wrapper").panzoom("resetPan", false);
+        $("#map_wrapper").panzoom("resetZoom", false);
+        $("#map_wrapper").panzoom("pan", -_destX, -_destY);
+        $("#map_wrapper").panzoom("zoom", 0.7, { animate: true });
+        // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
+        // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
     }
+
+    // This code snippet initializes the swiping effect panel in the MAP page
+    $(document).on("swipeleft", "#spa_map", function(e) {
+        // We check if there is no open panel on the page because otherwise
+        // a swipe to close the left panel would also open the right panel (and v.v.).
+        // We do this by checking the data that the framework stores on the page element (panel: open).
+        if ($(".ui-page-active").jqmData("panel") !== "open") {
+            if (e.type === "swipeleft") {
+                $("#sidepanel_map").panel("open");
+            }
+        }
+    });
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
@@ -391,4 +492,98 @@ function softKeyboard(height) {
     var piezazo = document.getElementById("footer"); // 'piezazo' is the footer
     if (!_input || (_input && height > _viewportHeight && _softKeyboard)) {piezazo.style.display = "initial"; _softKeyboard = false} else if (_input && !_softKeyboard ) {piezazo.style.display = "none"; _softKeyboard = true;}
     _viewportHeight = height;
+}
+
+// PLUGIN CORDOVA-PLUGIN-GOOGLE+ (OAuth):
+// Ojo al dato, con este plugin lo que hace es autenticarte con alguna cuenta que tengas vinculada en el propio dispositivo
+// Es decir, no te deja introducir email y contraseña como lo harias mediante una pagina web. Has de acceder mediante una cuenta
+// vinculada/registrada en el dispositivo. Es un approach mas nativo que otras opciones.
+// Siguiendo los pasos al pie de la letra funciona correctamente todo. Cuidado en el campo "webClientId" de esta función dado que ha de ser el WEBclientID, no el del Android.
+// Puede que tengas que comentar el metatag de index.html de "google-signin-client_id".
+// OJO! OJo con el config.xml, has de poner el mismo id de la aplicacion en Google Developer Console.
+// Github page: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
+// Utilizando keytool: https://developers.google.com/drive/android/auth
+// Ubicacion de tu debug.keystore: https://developer.android.com/studio/publish/app-signing.html
+// Para mas informacion sobre todo: https://developers.google.com/identity/sign-in/web/sign-in
+// Google Developers products: https://developers.google.com/products/
+// Apps connected to your device/account: https://security.google.com/settings/security/permissions?pli=1
+function signInOAuth() {
+    if (!_signedIn) {
+        try {
+            window.plugins.googleplus.login(
+                {
+                    'webClientId': '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com' // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                },
+                function (obj) {
+                    // On success:
+                    console.log("Sign in successful!");
+                    console.log(JSON.stringify(obj));
+                    // SHOW SIGN OUT BUTTON
+                    // SET ANY VARIABLE BY MYSELF
+                    signInOperations();
+                },
+                function (msg) {
+                    // On error:
+                    console.log("WARNING! (signInOAuth). Probably the user has cancelled the operation: " + msg);
+                }
+            );
+        } catch (e) {
+            // On error:
+            console.log("ERROR! (signInOAuth): " + e);
+        }
+    } else {
+        // CAMBIAR DE PAGE E IR DIRECTOS A LA EDICION
+    }
+}
+
+function disconnectOAuth() {
+    try {
+        window.plugins.googleplus.disconnect(
+            function (msg) {
+                // On success:
+                console.log("Disconnection successful!");
+                console.log(msg);
+                showToolTip("Signing out was successful! Come back soon ;-)");
+                // REMOVE SING OUT BUTTON!
+                // CLEAR ANY VARIABLE SET BY MYSELF
+                _signedIn = false;
+                $(".btn_signout").fadeToggle("slow");
+                $("#p_oauth_email").fadeToggle("slow");
+            }
+        );
+    } catch (e) {
+        // On error:
+        console.log("ERROR! (disconnectOAuth): " + e);
+    }
+}
+
+function silentLoginOAuth() {
+    try {
+        window.plugins.googleplus.trySilentLogin(
+            {
+                'webClientId': '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com' // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+            },
+            function (obj) {
+                // On success:
+                console.log("Silent login successful!");
+                console.log(JSON.stringify(obj));
+                // SHOW SIGN OUT BUTTON
+                // SET ANY VARIABLE BY MYSELF
+                signInOperations();
+            },
+            function (msg) {
+                // On warning or error:
+                console.log("WARNING! (silentLoginOAuth). Probably the user was not logged in: " + msg);
+            }
+        );
+    } catch (e) {
+        // On error:
+        console.log("ERROR! (silentLoginOAuth)" + e);
+    }
+}
+
+function signInOperations() {
+    $(".btn_signout").fadeToggle("slow");
+    $("#p_oauth_email").fadeToggle("slow");
+    _signedIn = true;
 }

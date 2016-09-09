@@ -1,3 +1,76 @@
+// This function fetches the databases from local, if they don't exist, then it creates the databases for the first time.
+// After fetching the databases, it starts initializating the databases.
+// Javascript is a MESS!! Due to the fact is single-thread, it handles the calls to the functions very weirdly.
+// For this reason, sometimes you are not left with any other options than declaring callbacks (and using 'promises' whenever you can)
+// in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
+// The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
+// called within the functions to avoid problems with race conditions or similar issues.
+function fetchDB() {
+    _db = new PouchDB(_staffdb_name); // Fetching the database for staff.
+    _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
+    _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for beacons.
+    // initializeDB();
+}
+
+// This function initializes the 'staff' database. Depending whether is the first time or not, it will create for the first time the database or
+// sync the data from the remote database respetively (local database checks for updates in the remote database).
+// Javascript is a MESS!! Due to the fact is single-thread, it handles the calls to the functions very weirdly.
+// For this reason, sometimes you are not left with any other options than declaring callbacks (and using 'promises' whenever you can)
+// in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
+// The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
+// called within the functions to avoid problems with race conditions or similar issues.
+function initializeDB() {
+    // STAFF database:
+    _db.info().then(function (result) {
+        // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+        if (result.doc_count == 0) {createLocalDocument(_db); syncDB(_db, _staffdb_name);} else {checkChanges(_db, _db_alias, _staffdb_name);}
+    }).catch(function (err) {
+        console.log("error getting info about database:");
+        console.log(err);
+    });
+    iniRoomsDB();
+}
+
+// This function initializes the 'rooms' database. Depending whether is the first time or not, it will create for the first time the database or
+// sync the data from the remote database respetively (local database checks for updates in the remote database).
+// Javascript is a MESS!! Due to the fact is single-thread, it handles the calls to the functions very weirdly.
+// For this reason, sometimes you are not left with any other options than declaring callbacks (and using 'promises' whenever you can)
+// in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
+// The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
+// called within the functions to avoid problems with race conditions or similar issues.
+function iniRoomsDB() {
+    //ROOMS database:
+    _dbrooms.info().then(function (result) {
+        // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+        if (result.doc_count == 0) {_firstTime = true; createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkMapChanges(0, _dbrooms_alias, checkMapChanges);} // "CheckChanges" is callled within the "CheckMapchanges" function to
+                                                                                                                                                                            // avoid updating the rooms database before the map images were able to
+                                                                                                                                                                            // be updated.
+    }).catch(function (err) {
+        console.log("error getting info about database:");
+        console.log(err);
+    });
+    iniBeaconsDB();
+}
+
+// This function initializes the 'beacons' database. Depending whether is the first time or not, it will create for the first time the database or
+// sync the data from the remote database respetively (local database checks for updates in the remote database).
+// Javascript is a MESS!! Due to the fact is single-thread, it handles the calls to the functions very weirdly.
+// For this reason, sometimes you are not left with any other options than declaring callbacks (and using 'promises' whenever you can)
+// in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
+// The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
+// called within the functions to avoid problems with race conditions or similar issues.
+function iniBeaconsDB() {
+    // BEACONS database:
+    _dbbeacons.info().then(function (result) {
+        // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+        if (result.doc_count == 0) {createLocalDocument(_dbbeacons); syncDB(_dbbeacons, _beacons_name);} else {checkChanges(_dbbeacons, _dbbeacons_alias, _beacons_name);}
+    }).catch(function (err) {
+        console.log("error getting info about database:");
+        console.log(err);
+    });
+}
+
+// TO DELETE IN THE FUTURE! IT HAS BEEN IMPLEMENTED IN A DIFFERENT WAY TAKING INTO ACCOUNT CALLBACKS.
 // This function creates/fetches databases.
 // It syncs the local database with the remote database in case is needed.
 // The local database checks for changes in the remote database looking for updates.
@@ -33,13 +106,6 @@ function createDB(whichDB) {
             console.log(err);
         });
     }
-}
-
-// This temporary function is to fetch the rooms database and to avoid the unhundled situation that happened before.
-function fetchDB() {
-    _db = new PouchDB(_staffdb_name); // Fetching the database for rooms.
-    _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
-    _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for rooms.
 }
 
 // Deletes the database given as an argument
@@ -93,10 +159,10 @@ function syncDB(db, dbname) {
         console.log("(a document might have failed to replicate due to permissions)");
     }).on('complete', function (info) {
         console.log("Replication from remote database to local '"+dbname+"' database successfully DONE!");
-        updateLocalDocument(db, info.last_seq); // 'info.last_seq' corresponds to the 'update_seq' of the remote database
+        updateLocalDocument(db, info.last_seq); // 'info.last_seq' corresponds to the 'update_seq' of the remote database, this way we can track the changes done in the local database.
         if (dbname == _roomsdb_name && _firstTime == true) {requestMapImages(0, requestMapImages, null); _firstTime = false;}
     }).on('error', function (err) {
-        console.log("[replicating...] on error");
+        console.log("[replicating...] ("+dbname+") on error");
         console.log(err);
     });
 }
@@ -107,8 +173,8 @@ function syncDB(db, dbname) {
 function checkChanges(db, dbalias, dbname) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
         db.get('_local/sequence_number_version').then(function (result2) {
-            console.log("sequence_number_version (local)="+result2.seq_version);
-            console.log("update_seq (remote)="+result);
+            console.log("sequence_number_version ["+dbalias+"] (local)="+result2.seq_version);
+            console.log("update_seq ["+dbalias+"] (remote)="+result);
             if (result2.seq_version < result) {syncDB(db, dbname);} // If the local sequence number is smaller than the 'update_seq' in the server, we sync databases.
         }).catch(function (err) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
@@ -123,8 +189,8 @@ function checkMapChanges(floor, dbalias, callback) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
         setTimeout(function() {
             _dbrooms.get("map"+floor.toString()).then(function (result2) {
-                console.log("map version (local)="+result2.v);
-                console.log("map version (remote)="+result);
+                console.log("map version [floor "+floor+"] (local)="+result2.v);
+                console.log("map version [floor "+floor+"] (remote)="+result);
                 if (result2.v < result) {requestMapImages(floor, null, result);}
                 if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} else {checkChanges(_dbrooms, dbalias, _roomsdb_name);} // We call recursively once again. Watch out! "CheckChanges"
                                                                                                                                     // is called now because otherwise, if it was called in "createDB"
@@ -139,7 +205,7 @@ function checkMapChanges(floor, dbalias, callback) {
 }
 
 // This function creates a local document which is a metadata document.
-// This document stores the sequence number (number of changes over the database) of the database after loading the initial data.
+// This document stores the sequence number (number of changes made in the database) of the database after loading the initial data.
 // This sequence number is used as a version number of the database, pretty much the same as the vanilla "update_seq".
 // This local document and the sequence number is only stored in local databases, not in remote databases. The latter ones have their own "update_seq".
 // The problem is that when replication is done, the local database doesn't track the changes done by replicate which doesn't update "update_seq" number either.
@@ -152,7 +218,7 @@ function createLocalDocument(db) {
             console.log("'_local/sequence_number_version' document created.");
         });
     }).catch(function (err) {
-        console.log("error retrieving info of the database");
+        console.log("error retrieving info of the database when creating local document");
         console.log(err);
     });
 }
@@ -202,24 +268,22 @@ function updateLocalDocument(db, new_seq) {
 // This function recursively retrieves all floor images from the remote database starting from the floor given by the parameter.
 // It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
 function requestMapImages(floor, callback, new_version){
-    var mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"];
-        console.log("hello loop (k="+floor+")");
+        console.log("Requesting map image #"+floor+" (floor)");
         var fimage = new XMLHttpRequest();
-        fimage.open("GET", _server_domain+'/maps/'+mapNames[floor], true); // 'true' means asynchronous
+        fimage.open("GET", _server_domain+'/maps/'+_mapNames[floor], true); // 'true' means asynchronous
         // fimage.setRequestHeader("Content-Type","image/png"); // This is not necessary
         fimage.responseType = "arraybuffer"; // If we had used 'blob' it wouldn't have worked in Phonegap, I don't knnow why. There is no way to make Phonegap to understand Blob type if it is not with the plugin "blob-util"
         fimage.onreadystatechange = function () // once the request finished this function is executed
         // more info at: http://www.w3schools.com/Ajax/ajax_xmlhttprequest_onreadystatechange.asp
         {
-            if(fimage.readyState == 4) // aqui tendria que añadir: ""&& fimage.status == 200", pero en el browser del atom no funciona
+            if(fimage.readyState == 4) // aqui tendria que añadir: ""&& fimage.status == 200", pero en el browser del Atom no funciona
             {
-                // var response = fimage.response; // This doesn't work on Phonegap, but it does in Desktop browsers.
                 // var response = new Blob([fimage.response], {type: "image/png"}); // This doesn't work on Phonegap, but it does in Desktop browsers.
                 var blob = blobUtil.createBlob([fimage.response], {type: 'image/jpeg'}); // We convert the read image into blob
                 blobUtil.blobToBase64String(blob).then(function (base64String) { // We convert the blob into base64
                     console.log(base64String);
                     saveMapImage(floor.toString(), base64String, new_version); // Now we save the image in the local database as a base64 string
-                    if (floor < (mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again until we finish retrieving all floor maps from remote database.
+                    if (floor < (_mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again until we finish retrieving all floor maps from remote database.
                 }).catch(function (err) {
                     console.log("error converting from blob to base64");
                     console.log(err);
@@ -236,7 +300,7 @@ function requestMapImages(floor, callback, new_version){
         // More info about XMLhttprequest at: http://www.w3schools.com/ajax/ajax_xmlhttprequest_send.asp
 }
 
-// This function saves the image as base64 string in the local database in the corresponding field as it appears in rooms.json file.
+// This function saves the image as base64 string in the local database.
 // Map images are saved separated from the information of each floor in the database. The document contains an image field where the image is saved as a string.
 // The images are not saved as attachements!
 // It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
@@ -250,7 +314,7 @@ function saveMapImage(floor, base64, new_version) {
             image: base64,
             v: ver
         }).then(function (response) {
-            console.log("Floor map image inserted SUCCESSFULLY! (floor"+floor+")");
+            console.log("Floor map image inserted SUCCESSFULLY! #"+floor+"");
             // updateLocalDocument(_dbrooms, null); // We must update the local document to prevent unnecesary updates and syncs from remote DB. // Este codigo comentado es para evitar que rooms.js se actualice solo cuando hay que actualizar un mapa. No esta acabado del todo. Falta evitar que se ejecute cuando la app se inicia por primera vez.
         }).catch(function (err) {
             console.log("error saving the image in the local database");

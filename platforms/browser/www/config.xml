@@ -8,9 +8,7 @@
         DeustoTech-Internet department
     </author>
     <content src="index.html" />
-    <gap:platform name="ios" />
     <gap:platform name="android" />
-    <preference name="permissions" value="none" />
     <preference name="orientation" value="default" />
     <preference name="target-device" value="universal" />
     <preference name="fullscreen" value="false" />
@@ -33,6 +31,8 @@
     <gap:plugin name="cordova-plugin-ble" source="npm" />
     <gap:plugin name="cordova-plugin-eddystone" source="npm" />
     <gap:plugin name="cordova-plugin-x-toast" version="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin" />
+    <gap:plugin source="git" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git">
+    </gap:plugin>
     <icon src="icon.png" />
     <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
     <icon gap:platform="android" gap:qualifier="mdpi" src="www/res/icon/android/icon-48-mdpi.png" />

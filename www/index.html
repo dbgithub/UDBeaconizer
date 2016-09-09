@@ -11,13 +11,11 @@
     <link rel="stylesheet" type="text/css" href="css/jquery.mobile.structure-1.4.5.min.css" />
     <link rel="stylesheet" type="text/css" href="css/index.css" />
     <link href='https://fonts.googleapis.com/css?family=PT+Sans:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-    <!-- <link rel="stylesheet" type="text/css" href="css/map.css" /> -->
-    <!-- <link rel="stylesheet" type="text/css" href="css/contact.css" /> -->
     <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
     <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
-    <title>UD Beaconizer</title>
+    <title>UD Finder</title>
 </head>
-<body onresize="softKeyboard(window.innerHeight);">
+<body ondblclick="DBinfo(_db); DBinfo(_dbrooms); DBinfo(_dbbeacons)" onresize="softKeyboard(window.innerHeight);">
 
     <!-- INDEX page -->
     <div id="spa_index" data-role="page">
@@ -38,6 +36,16 @@
 
     <!-- MAP page -->
     <div id="spa_map" data-role="page">
+        <a id="gear_tab" href="#sidepanel_map" class="ui-btn ui-btn-icon-left ui-btn-inline ui-icon-gear ui-alt-icon"></a>
+        <div data-role="panel" data-position="right" data-position-fixed="true" data-theme="none" data-display="overlay" id="sidepanel_map">
+            <p>
+                Should you find inaccurate information, feel free to get your hands dirty:
+            </p>
+            <a href="#spa_mapEdit" class="ui-btn ui-btn-icon-left ui-icon-edit btn_edit" ontouchstart="showOnPressedToolTip('Edit map details')" ontouchend="abortTimer()">Edit</a>
+            <p id="p_oauth_email"></p>
+            <a href="#" class="ui-btn ui-btn-icon-left ui-icon-power btn_signout" ontouchstart="showOnPressedToolTip('Sign out from your account')" ontouchend="abortTimer()" onclick="disconnectOAuth()">Sign Out</a>
+        </div>
+
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
             <a id="backarrow" href="#spa_index" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
             <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
@@ -75,11 +83,15 @@
 
     <!-- CONTACT page -->
     <div id="spa_contact" data-role="page">
-        <div data-role="panel" data-position="right" data-display="overlay" id="sidepanel">
+        <div data-role="panel" data-position="right" data-position-fixed="true" data-theme="none" data-display="overlay" id="sidepanel_contact">
             <p>
-                hello
+                Should you find inaccurate information, feel free to get your hands dirty:
             </p>
+            <a href="#spa_contactEdit" class="ui-btn ui-btn-icon-left ui-icon-edit btn_edit" ontouchstart="showOnPressedToolTip('Edit contact details')" ontouchend="abortTimer()" onclick="signInOAuth()">Edit</a>
+            <p id="p_oauth_email"></p>
+            <a href="#" class="ui-btn ui-btn-icon-left ui-icon-power btn_signout" ontouchstart="showOnPressedToolTip('Sign out from your account')" ontouchend="abortTimer()" onclick="disconnectOAuth()">Sign Out</a>
         </div>
+
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
             <a id="backarrow" href="#spa_index" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
             <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
@@ -89,29 +101,30 @@
             <span class="ui-title"></span> <!-- This is used supposidly to make the height of the header look good. -->
         </div>
 
-            <div data-role="main" class="ui-content ui-shadow">
-                <div id="div_profile_header">
-                    <img src="img/profilepic.png" alt="profile pic" />
-                    <p id="p_profile_header"></p>
-                </div><hr>
-                <div id="div_profile_body"></div>
-            </div>
+        <div data-role="main" class="ui-content ui-shadow">
+            <a id="gear_tab" href="#sidepanel_contact" class="ui-btn ui-btn-icon-left ui-btn-inline ui-icon-gear ui-alt-icon" onclick="silentLoginOAuth()"></a>
+            <div id="div_profile_header">
+                <img src="img/profilepic.png" alt="profile pic" />
+                <p id="p_profile_header"></p>
+            </div><hr>
+            <div id="div_profile_body"></div>
+        </div>
 
-            <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
-                <img src="./img/logo_UD-badge.png" alt="UD badge">
-            </div>
+        <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
+            <img src="./img/logo_UD-badge.png" alt="UD badge">
+        </div>
     </div>
     <!-- /CONTACT page -->
 
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
-    <script type="text/javascript" src="js/evothings.eddystone.js"></script>
-    <script type="text/javascript" src="js/jquery.flip.min.js"></script>
+    <script type="text/javascript" src="js/evothings.eddystone.js"></script> <!-- I should remove this when as soon as I make the BLE-Central plugin work-->
+    <script type="text/javascript" src="js/jquery.flip.min.js"></script> <!-- I'm not using it for the moment! -->
     <script type="text/javascript" src="js/blob-util.min.js"></script>
     <!-- <script type="text/javascript" src="js/iscroll-zoom.js"></script> -->
     <script type="text/javascript" src="js/jquery.panzoom.min.js"></script>
-    <script src="js/pouchdb-5.3.1.min.js"></script>
+    <script src="js/pouchdb-5.3.1.min.js"></script> <!-- Updatin PouchDB to version 6 gave me huge headache. Replication stoped working and so on..., so watch out with that! -->
     <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();
