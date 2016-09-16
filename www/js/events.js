@@ -199,13 +199,13 @@ function loadEditContactDetails() {
     var carrete_minutos = "";
     var input_yesno = "";
     // We will generate the "carretes" (in spanish) of the 'hours' and 'minutes':
-    // hours
+    // hours:
     for (var h = 0; h < 24; h++) {
         var num = "";
         if (h < 10) {num = "0"+h} else {num = h}
         carrete_horas += "<option value='"+num+"'>"+num+"</option>"
     }
-    // minutes
+    // minutes:
     for (var h = 0; h < 60; h++) {
         var num = "";
         if (h < 10) {num = "0"+h} else {num = h}
@@ -239,12 +239,10 @@ function loadEditContactDetails() {
     }
     // Now we will see whether the person is working at DeustoTech or not, and set the widget accordingly:
     if (person.dtech) {
-        console.log("YES");
-        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' checked type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' type='radio'><label for='editContact_radioButton_no'>No</label>"
+        input_yesno = "<input name='editContact_radioButton' id='editContact_radioButton_yes' value='true' checked='checked' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton' id='editContact_radioButton_no' value='false' type='radio'><label for='editContact_radioButton_no'>No</label>"
     }
     else {
-        console.log("NO");
-        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' checked type='radio'><label for='editContact_radioButton_no'>No</label>"
+        input_yesno = "<input name='editContact_radioButton' id='editContact_radioButton_yes' value='true' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton' id='editContact_radioButton_no' value='false' checked='checked' type='radio'><label for='editContact_radioButton_no'>No</label>"
     }
     document.getElementById("editContact_input_name").innerHTML = person.name;
     document.getElementById("div_profile_editContact_body").innerHTML =

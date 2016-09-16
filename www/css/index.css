@@ -182,20 +182,20 @@ h1 {
     position: absolute;
 }
 
-.header { /* ALSO USED IN 'CONTACT' PAGE */
+.header { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT CONTACT' */
     height: 60px !important; /*  valor que le he asignado yo */
     background-image: url("../img/bg-noisy-grey.jpg") !important;
     border-bottom: 8px solid rgba(51,53,55,1) !important;
 }
 
-#spa_map .input_search_bar, #spa_contact .input_search_bar{ /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map .input_search_bar, #spa_contact .input_search_bar, #spa_edit_contact .input_search_bar{ /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     font-size: 20px;
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
     user-select: text; /* allows copy, paste and manipulating text within text field*/
 }
 
-#spa_map #backarrow.ui-btn, #spa_contact #backarrow.ui-btn { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #backarrow.ui-btn, #spa_contact #backarrow.ui-btn, #spa_edit_contact #backarrow.ui-btn { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     background-color: transparent;
     border-style: none;
     margin-top: -5px;
@@ -203,16 +203,16 @@ h1 {
     height: 100%;
     padding: 0px 20px 0px 20px;
 }
-#spa_map #backarrow.ui-btn:focus, #spa_contact #backarrow.ui-btn:focus { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #backarrow.ui-btn:focus, #spa_contact #backarrow.ui-btn:focus, #spa_edit_contact #backarrow.ui-btn:focus { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
  -moz-box-shadow: none !important;
  -webkit-box-shadow: none !important;
  box-shadow: none !important;
 }
-#spa_map #backarrow.ui-btn:active, #spa_contact #backarrow.ui-btn:active { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #backarrow.ui-btn:active, #spa_contact #backarrow.ui-btn:active, #spa_edit_contact #backarrow.ui-btn:active { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     background-color: #0053ce;
 }
-#spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE */
-    background-size: 110%; /* This changes the size of the icon*/
+#spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after, #spa_edit_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
+    background-size: 100%; /* This changes the size of the icon*/
 }
 
 #spa_map .footer, #spa_contact .footer{ /* ALSO USED IN 'CONTACT' PAGE */
@@ -267,7 +267,7 @@ h1 {
     line-height: 45px; /* This is an approximate value to div's height so as to center the text vertically */
 }
 
-#spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults, #spa_edit_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     margin-left: -45%;
 }
 
@@ -340,18 +340,18 @@ h1 {
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% CONTACT %%%%%%%%%%%%%%%%%%%%%%%%%%% */
 
-#spa_contact {
+#spa_contact, #spa_edit_contact { /* ALSO USED IN 'EDIT CONTACT' PAGE */
     background-image: url("../img/bg-gray-bars.jpg");
     height: 100%;
 }
 
-#spa_contact .ui-content {
+#spa_contact .ui-content, #spa_edit_contact .ui-content { /* ALSO USED IN 'EDIT CONTACT' PAGE */
     /*background-color: rgba(124, 124, 124,0.0);*/
     margin: 8px 8px 8px 8px;
     padding-bottom: 0px;
     padding: 8px;
 }
-#spa_contact .ui-content hr {
+#spa_contact .ui-content hr, #spa_edit_contact .ui-content hr { /* ALSO USED IN 'EDIT CONTACT' PAGE */
     display: block;
     width: 80%;
     margin-left: auto;
@@ -425,7 +425,7 @@ h1 {
     width: 60px;
 }
 #gear_tab.ui-btn::after { /* ALSO USED IN 'MAP' PAGE */
-    background-size: 110%; /* This changes the size of the icon*/
+    background-size: 100%; /* This changes the size of the icon*/
 }
 #gear_tab:active{ /* ALSO USED IN 'MAP' PAGE */
     background-color: #0053ce;

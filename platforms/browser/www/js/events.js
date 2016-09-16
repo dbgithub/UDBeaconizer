@@ -199,13 +199,13 @@ function loadEditContactDetails() {
     var carrete_minutos = "";
     var input_yesno = "";
     // We will generate the "carretes" (in spanish) of the 'hours' and 'minutes':
-    // hours
+    // hours:
     for (var h = 0; h < 24; h++) {
         var num = "";
         if (h < 10) {num = "0"+h} else {num = h}
         carrete_horas += "<option value='"+num+"'>"+num+"</option>"
     }
-    // minutes
+    // minutes:
     for (var h = 0; h < 60; h++) {
         var num = "";
         if (h < 10) {num = "0"+h} else {num = h}
@@ -239,12 +239,10 @@ function loadEditContactDetails() {
     }
     // Now we will see whether the person is working at DeustoTech or not, and set the widget accordingly:
     if (person.dtech) {
-        console.log("YES");
-        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' checked type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' type='radio'><label for='editContact_radioButton_no'>No</label>"
+        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' checked='checked' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' type='radio'><label for='editContact_radioButton_no'>No</label>"
     }
     else {
-        console.log("NO");
-        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' checked type='radio'><label for='editContact_radioButton_no'>No</label>"
+        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' checked='checked' type='radio'><label for='editContact_radioButton_no'>No</label>"
     }
     document.getElementById("editContact_input_name").innerHTML = person.name;
     document.getElementById("div_profile_editContact_body").innerHTML =
@@ -258,7 +256,7 @@ function loadEditContactDetails() {
     "<p>FAX: </p>" + ((person.fax != " ") ? "<input id='editContact_input_fax' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_fax' oninput='' onfocus='' onblur='' value='"+person.fax+"'>" : "-") +
     "<p>PERSONAL WEBSITE: </p>" + ((person.website != " ") ? "<input id='editContact_input_website' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_website' oninput='' onfocus='' onblur='' value='"+person.website+"'>" : "-") +
     "<p>LINKEDIN: </p>" + ((person.linkedin != " ") ? "<input id='editContact_input_linkedin' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_linkedin' oninput='' onfocus='' onblur='' value='"+person.linkedin+"'>" : "-") +
-    "<p>WORKING AT DeustoTech?: </p> <fieldset data-role='controlgroup' data-type='horizontal'>" + input_yesno + "</fieldset>" +
+    "<p>WORKING AT DeustoTech?: </p> <fieldset data-role='controlgroup' data-theme='b' data-type='horizontal'>" + input_yesno + "</fieldset>" +
     "<p>NOTES: </p>" + ((person.notes != " ") ? "<textarea name='editContact_input_notes' id='editContact_input_notes'>"+person.notes+"</textarea>" : "-");
 }
 // This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
