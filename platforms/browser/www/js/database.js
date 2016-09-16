@@ -9,7 +9,7 @@ function fetchDB() {
     _db = new PouchDB(_staffdb_name); // Fetching the database for staff.
     _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
     _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for beacons.
-    // initializeDB();
+    initializeDB();
 }
 
 // This function initializes the 'staff' database. Depending whether is the first time or not, it will create for the first time the database or

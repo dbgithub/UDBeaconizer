@@ -185,8 +185,82 @@ function loadContactDetails() {
             }
         }
     });
+
+    // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
+     silentLoginOAuth();
 }
 
+function loadEditContactDetails() {
+    var person = _searched_people[_index];
+    var rows = " ";
+    var officehours = " - ";
+    var office = "";
+    var carrete_horas = "";
+    var carrete_minutos = "";
+    var input_yesno = "";
+    // We will generate the "carretes" (in spanish) of the 'hours' and 'minutes':
+    // hours
+    for (var h = 0; h < 24; h++) {
+        var num = "";
+        if (h < 10) {num = "0"+h} else {num = h}
+        carrete_horas += "<option value='"+num+"'>"+num+"</option>"
+    }
+    // minutes
+    for (var h = 0; h < 60; h++) {
+        var num = "";
+        if (h < 10) {num = "0"+h} else {num = h}
+        carrete_minutos += "<option value='"+num+"'>"+num+"</option>"
+    }
+    // Based on the office hours retrieved from the database, we will format it as a table:
+    if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
+        var dropdowns =
+        "<fieldset data-role='controlgroup' data-type='horizontal'>"+
+            "<select name='editContact_dropdown_startHour"+k+"' id='editContact_dropdown_startHour"+k+"'>"+
+                carrete_horas+
+            "</select>"+
+            "<select name='editContact_dropdown_startMinute"+k+"' id='editContact_dropdown_startMinute"+k+"'>"+
+                carrete_minutos+
+            "</select>"+
+            "<select name='editContact_dropdown_endHour"+k+"' id='editContact_dropdown_endHour"+k+"'>"+
+                carrete_horas+
+            "</select>"+
+            "<select name='editContact_dropdown_endMinute"+k+"' id='editContact_dropdown_endMinute"+k+"'>"+
+                carrete_minutos+
+            "</select>"+
+        "</fieldset>";
+        rows += "<tr><td>"+ dropdowns + " </td></tr>";
+        // rows += "<tr><td>"+ person.officehours[k].start +"</td><td>"+ person.officehours[k].end +" </td></tr>"; // LO QUE HABIA ANTETS. 'person.officehours[k].end' es el campo de datos que se me tió en la BD.
+    } officehours = "<table>"+rows+"</table>"}
+    // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
+    if (person.office != " ") {
+        office  = "<input id='editContact_input_office' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_office' oninput='' onfocus='' onblur='' value='"+person.office+"'>"
+    } else {
+        office = "-";
+    }
+    // Now we will see whether the person is working at DeustoTech or not, and set the widget accordingly:
+    if (person.dtech) {
+        console.log("YES");
+        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' checked type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' type='radio'><label for='editContact_radioButton_no'>No</label>"
+    }
+    else {
+        console.log("NO");
+        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' checked type='radio'><label for='editContact_radioButton_no'>No</label>"
+    }
+    document.getElementById("editContact_input_name").innerHTML = person.name;
+    document.getElementById("div_profile_editContact_body").innerHTML =
+    "<p>POSITION: </p>" + ((person.position != " ") ? "<input id='editContact_input_position' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_position' oninput='' onfocus='' onblur='' value='"+person.position+"'>" : "-") +
+    "<p>FACULTY: </p>" + ((person.faculty != " ") ? "<input id='editContact_input_faculty' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_faculty' oninput='' onfocus='' onblur='' value='"+person.faculty+"'>" : "-") +
+    "<p>OFFICE: </p>" + office +
+    "<p>OFFICE HOURS: </p>" + officehours +
+    "<p>EMAIL: </p>" + ((person.email != " ") ? "<input id='editContact_input_email' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_email' oninput='' onfocus='' onblur='' value='"+person.email+"'>" : "-") +
+    "<p>PHONE: </p>" + ((person.phone != " ") ? "<input id='editContact_input_phone' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_phone' oninput='' onfocus='' onblur='' value='"+person.phone+"'>" : "-") +
+    "<p>EXTENSION: </p>" + ((person.extension != " ") ? "<input id='editContact_input_extension' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_extension' oninput='' onfocus='' onblur='' value='"+person.extension+"'>" : "-") +
+    "<p>FAX: </p>" + ((person.fax != " ") ? "<input id='editContact_input_fax' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_fax' oninput='' onfocus='' onblur='' value='"+person.fax+"'>" : "-") +
+    "<p>PERSONAL WEBSITE: </p>" + ((person.website != " ") ? "<input id='editContact_input_website' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_website' oninput='' onfocus='' onblur='' value='"+person.website+"'>" : "-") +
+    "<p>LINKEDIN: </p>" + ((person.linkedin != " ") ? "<input id='editContact_input_linkedin' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_linkedin' oninput='' onfocus='' onblur='' value='"+person.linkedin+"'>" : "-") +
+    "<p>WORKING AT DeustoTech?: </p> <fieldset data-role='controlgroup' data-type='horizontal'>" + input_yesno + "</fieldset>" +
+    "<p>NOTES: </p>" + ((person.notes != " ") ? "<textarea name='editContact_input_notes' id='editContact_input_notes'>"+person.notes+"</textarea>" : "-");
+}
 // This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
 // and searches for it.
 function linkSearch(x) {
@@ -196,7 +270,6 @@ function linkSearch(x) {
 
 // This methods is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
-    fetchDB(); // ESTA LLAMDA HABRIA QUE QUITARLA LO MAS SEGURO
     // var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     // localStorage.removeItem('_room');
@@ -342,6 +415,9 @@ function loadMap() {
         }
     });
 
+    // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
+     silentLoginOAuth();
+
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
     // and here too: http://api.jquery.com/animate/#animate-properties-options
@@ -464,7 +540,7 @@ function abortTimer(){
     clearTimeout(tooltipTimer);
 }
 
-// This function loads the map html page within the SPA (Single Page Application) context.
+// This function performs several things before loading the map html page within the SPA (Single Page Application) context.
 function goMap(index) {
     // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
@@ -473,7 +549,7 @@ function goMap(index) {
     loadMap();
 }
 
-// This function loads the contact html page within the SPA (Single Page Application) context.
+// This function performs several things before loading the contact html page within the SPA (Single Page Application) context.
 function goContact(index) {
     // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
@@ -482,6 +558,17 @@ function goContact(index) {
     clearInterval(_trilaterationTimer);
     loadContactDetails();
     evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+}
+
+// This function performs several things before loading the "edit contact" page within the SPA (Single Page Application) context.
+function goEditContact() {
+    if (_signedInUser != null) {
+        hideLiveSearchResults();
+        window.location = "#spa_edit_contact";
+        loadEditContactDetails();
+    } else {
+        signInOAuth();
+    }
 }
 
 // This function tries to hide the footer when the soft keyboard is shown in the screen and tries to display it when the soft keyboard disappears. Currently it does not work very well.
@@ -497,7 +584,7 @@ function softKeyboard(height) {
 // PLUGIN CORDOVA-PLUGIN-GOOGLE+ (OAuth):
 // Ojo al dato, con este plugin lo que hace es autenticarte con alguna cuenta que tengas vinculada en el propio dispositivo
 // Es decir, no te deja introducir email y contraseña como lo harias mediante una pagina web. Has de acceder mediante una cuenta
-// vinculada/registrada en el dispositivo. Es un approach mas nativo que otras opciones.
+// vinculada/registrada en el dispositivo. Es un approach mas nativo que otras opciones. Sí que te deja la opcion de vincular una cuenta.
 // Siguiendo los pasos al pie de la letra funciona correctamente todo. Cuidado en el campo "webClientId" de esta función dado que ha de ser el WEBclientID, no el del Android.
 // Puede que tengas que comentar el metatag de index.html de "google-signin-client_id".
 // OJO! OJo con el config.xml, has de poner el mismo id de la aplicacion en Google Developer Console.
@@ -508,7 +595,6 @@ function softKeyboard(height) {
 // Google Developers products: https://developers.google.com/products/
 // Apps connected to your device/account: https://security.google.com/settings/security/permissions?pli=1
 function signInOAuth() {
-    if (!_signedIn) {
         try {
             window.plugins.googleplus.login(
                 {
@@ -517,10 +603,8 @@ function signInOAuth() {
                 function (obj) {
                     // On success:
                     console.log("Sign in successful!");
-                    console.log(JSON.stringify(obj));
-                    // SHOW SIGN OUT BUTTON
-                    // SET ANY VARIABLE BY MYSELF
-                    signInOperations();
+                    afterSignedIn(obj);
+                    goEditContact(); // This function is called again because after successful log in, the page is not changed automatically.
                 },
                 function (msg) {
                     // On error:
@@ -531,11 +615,9 @@ function signInOAuth() {
             // On error:
             console.log("ERROR! (signInOAuth): " + e);
         }
-    } else {
-        // CAMBIAR DE PAGE E IR DIRECTOS A LA EDICION
-    }
 }
 
+// This function logs out the user from the app. It forgets the OAuth2 token as well as which account was used to log in.
 function disconnectOAuth() {
     try {
         window.plugins.googleplus.disconnect(
@@ -543,12 +625,12 @@ function disconnectOAuth() {
                 // On success:
                 console.log("Disconnection successful!");
                 console.log(msg);
-                showToolTip("Signing out was successful! Come back soon ;-)");
-                // REMOVE SING OUT BUTTON!
-                // CLEAR ANY VARIABLE SET BY MYSELF
-                _signedIn = false;
-                $(".btn_signout").fadeToggle("slow");
-                $("#p_oauth_email").fadeToggle("slow");
+                showToolTip("Signed out was successfully! Come back soon ;-)");
+                // We reset the variable concerning the user and hide the logging button and text.
+                _signedInUser = null;
+                $(".btn_signout").fadeOut("slow");
+                $(".p_oauth_name").fadeOut("slow");
+                $(".p_oauth_email").fadeOut("slow");
             }
         );
     } catch (e) {
@@ -557,6 +639,8 @@ function disconnectOAuth() {
     }
 }
 
+// This funtion tries to sign in silently within the Google account in case the user was already signed in before and did not sign out.
+// Even though the app was closed, the logging information will remain somewhere so that it can be accessed again without forcing the user to introduce again the credentials.
 function silentLoginOAuth() {
     try {
         window.plugins.googleplus.trySilentLogin(
@@ -566,10 +650,7 @@ function silentLoginOAuth() {
             function (obj) {
                 // On success:
                 console.log("Silent login successful!");
-                console.log(JSON.stringify(obj));
-                // SHOW SIGN OUT BUTTON
-                // SET ANY VARIABLE BY MYSELF
-                signInOperations();
+                afterSignedIn(obj);
             },
             function (msg) {
                 // On warning or error:
@@ -582,8 +663,12 @@ function silentLoginOAuth() {
     }
 }
 
-function signInOperations() {
-    $(".btn_signout").fadeToggle("slow");
-    $("#p_oauth_email").fadeToggle("slow");
-    _signedIn = true;
+// This function is executed after the user has signed in. It displays her/his name and email. The "sign out" button appears too.
+function afterSignedIn(user) {
+    $(".btn_signout").css("display", "inline");
+    $(".p_oauth_name").css("display", "inline");
+    $(".p_oauth_email").css("display", "inline");
+    $(".p_oauth_name").text(user.displayName +",");
+    $(".p_oauth_email").text(user.email);
+    _signedInUser = user; // The containing fields are: 'email', 'idToken', 'userId', 'displayName', 'imageUrl'. More info at: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
 }

@@ -54,7 +54,7 @@ var _sameFloor = -1; // A boolean indicating whether the user is at the same flo
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
-var _signedIn = false; // A boolean representing whether the user is signed in through OAuth.
+var _signedInUser = null; // This is a Javascript object representing the user just signed in. The containing fields are: 'email', 'idToken', 'userId', 'displayName', 'imageUrl'. More info at: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
 var app = {
     // Application Constructor
     initialize: function() {

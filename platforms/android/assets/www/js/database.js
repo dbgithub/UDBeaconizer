@@ -9,7 +9,7 @@ function fetchDB() {
     _db = new PouchDB(_staffdb_name); // Fetching the database for staff.
     _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
     _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for beacons.
-    // initializeDB();
+    initializeDB();
 }
 
 // This function initializes the 'staff' database. Depending whether is the first time or not, it will create for the first time the database or
@@ -20,7 +20,6 @@ function fetchDB() {
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
 function initializeDB() {
-    console.log("ENTERING staffDB");
     // STAFF database:
     _db.info().then(function (result) {
         // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
@@ -29,7 +28,6 @@ function initializeDB() {
         console.log("error getting info about database:");
         console.log(err);
     });
-    console.log("FINISHED staffDB");
     iniRoomsDB();
 }
 
@@ -41,7 +39,6 @@ function initializeDB() {
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
 function iniRoomsDB() {
-    console.log("ENTERING roomsDB");
     //ROOMS database:
     _dbrooms.info().then(function (result) {
         // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
@@ -52,7 +49,6 @@ function iniRoomsDB() {
         console.log("error getting info about database:");
         console.log(err);
     });
-    console.log("FINISHED roomsDB");
     iniBeaconsDB();
 }
 
@@ -64,7 +60,6 @@ function iniRoomsDB() {
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
 function iniBeaconsDB() {
-    console.log("ENTERING beaconsDB");
     // BEACONS database:
     _dbbeacons.info().then(function (result) {
         // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
@@ -73,7 +68,6 @@ function iniBeaconsDB() {
         console.log("error getting info about database:");
         console.log(err);
     });
-    console.log("FINISHED beaconsDB");
 }
 
 // TO DELETE IN THE FUTURE! IT HAS BEEN IMPLEMENTED IN A DIFFERENT WAY TAKING INTO ACCOUNT CALLBACKS.
@@ -173,41 +167,14 @@ function syncDB(db, dbname) {
     });
 }
 
-function hola() {
-    _db = new PouchDB(_staffdb_name); // Fetching the database for staff.
-    var remotedb = new PouchDB(_database_domain+'/'+_staffdb_name); // We fetch here the remote database
-    DBinfo(_db);
-    DBinfo(remotedb);
-    _db.replicate.from(remotedb).on('change', function (info) {
-        console.log("[replicating...] on change:");
-        console.log(info);
-    }).on('paused', function (err) {
-        console.log("[replicating...] on paused:");
-        console.log(err);
-        console.log("(the user might have gone offline)");
-    }).on('active', function () {
-        console.log("[replicating...] on active");
-        console.log("(the user went back online)");
-    }).on('denied', function (err) {
-        console.log("[replicating...] on denied:");
-        console.log(err);
-        console.log("(a document might have failed to replicate due to permissions)");
-    }).on('complete', function (info) {
-        console.log("Replication from remote database to local '"+dbname+"' database successfully DONE!");
-        updateLocalDocument(db, info.last_seq); // 'info.last_seq' corresponds to the 'update_seq' of the remote database, this way we can track the changes done in the local database.
-    }).on('error', function (err) {
-        console.log("[replicating...] ("+dbname+") on error");
-        console.log(err);
-    });
-}
 // This function checks for changes in the local database.
 // It compares the 'update_seq' of the remote database with the 'sequence_number_version' of the local document of the local database.
 // 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
 function checkChanges(db, dbalias, dbname) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
         db.get('_local/sequence_number_version').then(function (result2) {
-            console.log("sequence_number_version (local)="+result2.seq_version);
-            console.log("update_seq (remote)="+result);
+            console.log("sequence_number_version ["+dbalias+"] (local)="+result2.seq_version);
+            console.log("update_seq ["+dbalias+"] (remote)="+result);
             if (result2.seq_version < result) {syncDB(db, dbname);} // If the local sequence number is smaller than the 'update_seq' in the server, we sync databases.
         }).catch(function (err) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
@@ -222,8 +189,8 @@ function checkMapChanges(floor, dbalias, callback) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
         setTimeout(function() {
             _dbrooms.get("map"+floor.toString()).then(function (result2) {
-                console.log("map version (local)="+result2.v);
-                console.log("map version (remote)="+result);
+                console.log("map version [floor "+floor+"] (local)="+result2.v);
+                console.log("map version [floor "+floor+"] (remote)="+result);
                 if (result2.v < result) {requestMapImages(floor, null, result);}
                 if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} else {checkChanges(_dbrooms, dbalias, _roomsdb_name);} // We call recursively once again. Watch out! "CheckChanges"
                                                                                                                                     // is called now because otherwise, if it was called in "createDB"
