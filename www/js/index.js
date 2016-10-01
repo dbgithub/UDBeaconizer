@@ -55,6 +55,10 @@ var _input; // A boolean representing whether an text input has gained focus or 
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
 var _signedInUser = null; // This is a Javascript object representing the user just signed in. The containing fields are: 'email', 'idToken', 'userId', 'displayName', 'imageUrl'. More info at: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
+var _carrete_horas = ""; // This will contain a snippet of HTML code of a dropdown object, it will exactly have a list of <option> indicating the hour
+var _carrete_minutos = "";// This will contain a snippet of HTML code of a dropdown object, it will exactly have a list of <option> indicating the minutes
+var _editingInProgress = false; // This variable controls whether the user has changed anything in the EDIT_CONTACT page. If a change occured, then, the corresponding prompt dialog will appear whenever he/she tries to swich between GUIs.
+var _amountOfRowsAdded = 0; // This integer represent IN TOTAL how many rows have been added to the GUI (in EDIT_CONTACT). It doesn't matter wether some of them (from the begining or the ending) were deleted or not. It's like a counter so that it doesn't crash when saving the profile.
 var app = {
     // Application Constructor
     initialize: function() {
@@ -78,13 +82,25 @@ var app = {
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
     onBackButton: function() {
-        // app.receivedEvent('backbutton'); ESTO CREO QUE SE PUED QUITAR
+        // Common (interesting) actions:
         // navigator.app.exitApp();  // To Exit Application
         // navigator.app.backHistory(); // To go back
-        evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
-        cleanGUI();
-        clearInterval(_trilaterationTimer); // In case we go back from Map page, this is to avoid applying trilateration for ever.
-        window.location = "#spa_index";
+
+        // We need to distinguish between different pages. Normally, you'd want to go home. Some other times, you'd want just to go back one step in history.
+        if (window.location.hash == "#spa_edit_contact") {
+            if (_editingInProgress) {
+                prompt_savecancel("DISCARD changes", 0); // The text here can be anything you want
+            } else {
+                // GO BACK ONE STEP IN HISTORY:
+                navigator.app.backHistory();
+                _editingInProgress = false; // We reset the variable for the next ocasion
+            }
+        } else {
+            evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+            cleanGUI();
+            clearInterval(_trilaterationTimer); // In case we go back from Map page, this is to avoid applying trilateration for ever.
+            window.location = "#spa_index";
+        }
     },
     // Update DOM on a Received Event
     receivedEvent: function(id) {

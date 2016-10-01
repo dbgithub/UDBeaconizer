@@ -182,20 +182,20 @@ h1 {
     position: absolute;
 }
 
-.header { /* ALSO USED IN 'CONTACT' PAGE */
+.header { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' */
     height: 60px !important; /*  valor que le he asignado yo */
     background-image: url("../img/bg-noisy-grey.jpg") !important;
     border-bottom: 8px solid rgba(51,53,55,1) !important;
 }
 
-#spa_map .input_search_bar, #spa_contact .input_search_bar{ /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map .input_search_bar, #spa_contact .input_search_bar, #spa_edit_contact .input_search_bar{ /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     font-size: 20px;
     -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
     -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
     user-select: text; /* allows copy, paste and manipulating text within text field*/
 }
 
-#spa_map #backarrow.ui-btn, #spa_contact #backarrow.ui-btn { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #backarrow.ui-btn, #spa_contact #backarrow.ui-btn, #spa_edit_contact #backarrow.ui-btn { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     background-color: transparent;
     border-style: none;
     margin-top: -5px;
@@ -203,16 +203,16 @@ h1 {
     height: 100%;
     padding: 0px 20px 0px 20px;
 }
-#spa_map #backarrow.ui-btn:focus, #spa_contact #backarrow.ui-btn:focus { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #backarrow.ui-btn:focus, #spa_contact #backarrow.ui-btn:focus, #spa_edit_contact #backarrow.ui-btn:focus { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
  -moz-box-shadow: none !important;
  -webkit-box-shadow: none !important;
  box-shadow: none !important;
 }
-#spa_map #backarrow.ui-btn:active, #spa_contact #backarrow.ui-btn:active { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #backarrow.ui-btn:active, #spa_contact #backarrow.ui-btn:active, #spa_edit_contact #backarrow.ui-btn:active { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     background-color: #0053ce;
 }
-#spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE */
-    background-size: 110%; /* This changes the size of the icon*/
+#spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after, #spa_edit_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
+    background-size: 100%; /* This changes the size of the icon*/
 }
 
 #spa_map .footer, #spa_contact .footer{ /* ALSO USED IN 'CONTACT' PAGE */
@@ -267,7 +267,7 @@ h1 {
     line-height: 45px; /* This is an approximate value to div's height so as to center the text vertically */
 }
 
-#spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE */
+#spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults, #spa_edit_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     margin-left: -45%;
 }
 
@@ -340,18 +340,18 @@ h1 {
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% CONTACT %%%%%%%%%%%%%%%%%%%%%%%%%%% */
 
-#spa_contact {
+#spa_contact, #spa_edit_contact { /* ALSO USED IN 'EDIT CONTACT' PAGE */
     background-image: url("../img/bg-gray-bars.jpg");
     height: 100%;
 }
 
-#spa_contact .ui-content {
+#spa_contact .ui-content, #spa_edit_contact .ui-content { /* ALSO USED IN 'EDIT CONTACT' PAGE */
     /*background-color: rgba(124, 124, 124,0.0);*/
     margin: 8px 8px 8px 8px;
     padding-bottom: 0px;
     padding: 8px;
 }
-#spa_contact .ui-content hr {
+#spa_contact .ui-content hr, #spa_edit_contact .ui-content hr { /* ALSO USED IN 'EDIT CONTACT' PAGE */
     display: block;
     width: 80%;
     margin-left: auto;
@@ -361,11 +361,12 @@ h1 {
     clear: left;
 }
 
-#div_profile_header {
+#div_profile_header { /* ALSO USED IN 'EDIT CONTACT' PAGE */
+    /*background-color: yellow;*/
     padding-bottom: 10px;
     height: auto;
 }
-#div_profile_header img {
+#spa_contact #div_profile_header img {
     width: 100px;
     float: left;
     margin-right: 20px;
@@ -425,7 +426,7 @@ h1 {
     width: 60px;
 }
 #gear_tab.ui-btn::after { /* ALSO USED IN 'MAP' PAGE */
-    background-size: 110%; /* This changes the size of the icon*/
+    background-size: 100%; /* This changes the size of the icon*/
 }
 #gear_tab:active{ /* ALSO USED IN 'MAP' PAGE */
     background-color: #0053ce;
@@ -504,9 +505,151 @@ h1 {
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% EDIT CONTACT %%%%%%%%%%%%%%%%%%%%%%%%%%% */
+#spa_edit_contact #div_profile_header {
+    text-align: center;
+    padding-bottom: 0px;
+}
+#spa_edit_contact #div_profile_header img {
+    width: 100px;
+}
+#spa_edit_contact #div_profile_header textarea {
+    text-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
+    font-size:30px;
+    font-weight:normal;
+    text-align:center;
+    width: 100%;
+    padding: 5px 0px 0px 0px;
+    margin: 0px;
+}
+#spa_edit_contact #div_profile_header .ui-input-text,  #spa_edit_contact #div_profile_editContact_body .ui-input-text{
+    background-color: rgba(255, 176, 0, 0.70);
+    border: none;
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8) !important;
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8) !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8) !important;
+    -webkit-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    -moz-user-select: text; /* allows copy, paste and manipulating text within text field*/
+    user-select: text; /* allows copy, paste and manipulating text within text field*/
+}
+#div_profile_editContact_body table fieldset {
+    border-radius: 0px;
+    display: inline
+}
+#div_profile_editContact_body table {
+    border-spacing: 0px 0px;
+}
 
+#div_profile_editContact_body table fieldset .ui-btn {
+    background-color: gray !important;
+    border-color: black !important;
+    border-width: 0px !important;
+    border-style: solid !important;
+    color: #FFF !important;
+}
+#div_profile_editContact_body table fieldset p {
+    display: inline;
+    float: left;
+    font-size: 35px;
+    line-height: 96%; /* A number that will be multiplied with the current font size to set the line height */
+}
+#div_profile_editContact_body table fieldset p:nth-of-type(2) { /* This means the second 'p' found */
+    padding-left: 3px;
+    padding-right: 3px;
+}
+/* This CSS snippet is to modify the 'placeholder' text within the inputs or textareas */
+::-webkit-input-placeholder {
+    text-shadow: none;
+    color: rgba(128, 128, 128, 0.5);
+    font-style: italic;
+    font-weight: normal;
+    font-size: 20px;
+}
+/* This CSS snippet is to modify the 'placeholder' text within the inputs or textareas */
+:-moz-placeholder { /* Firefox 18- */
+    text-shadow: none;
+    color: rgba(128, 128, 128, 0.5);
+    font-style: italic;
+    font-weight: normal;
+    font-size: 20px;
+}
+/* This CSS snippet is to modify the 'placeholder' text within the inputs or textareas */
+::-moz-placeholder {  /* Firefox 19+ */
+    text-shadow: none;
+    color: rgba(128, 128, 128, 0.5);
+    font-style: italic;
+    font-weight: normal;
+    font-size: 20px;
+}
+/* This CSS snippet is to modify the 'placeholder' text within the inputs or textareas */
+:-ms-input-placeholder {
+    text-shadow: none;
+    color: rgba(128, 128, 128, 0.5);
+    font-style: italic;
+    font-weight: normal;
+    font-size: 20px;
+}
+.btn_add_row:active {
+    background-color: #FFF !important;
+    color: #0053ce !important;
+    -webkit-transform: scale3d(0.9, 0.9, 1);
+    -moz-transform: scale3d(0.9, 0.9, 1);
+    transform: scale3d(0.9, 0.9, 1);
+}
+.btn_add_row:focus {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+#div_profile_editContact_body .btn_delete_row {
+    background-color: red;
+}
+#div_profile_editContact_body .btn_delete_row:active {
+    background-color: #FFF !important;
+}
+#div_profile_editContact_body .btn_delete_row:focus {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
 .footer_save_cancel {
-
+    height: 100px !important;
+}
+.footer_save_cancel button {
+    height: 100%;
+    margin: 0px;
+    width: 50% !important;
+    float: left;
+    text-shadow:  !important;
+    background-color: silver !important;
+    color: white;
+    line-height: 0;
+}
+.footer_save_cancel button:focus {
+    -moz-box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    box-shadow: none !important;
+}
+.footer_save_cancel button:first-child {
+    text-shadow: 0px 0px 3px rgba(0,0,0,1), -1px 0px 0px rgb(0,255,0), 1px 0px 0px rgb(0,255,0), 0px -1px 0px rgb(0,255,0), 0px 1px 0px rgb(0,255,0) !important;
+    font-size: 8vw; /* More info about 'vw' units! They're amazing! awesome! */
+}
+.footer_save_cancel button:first-child:active {
+    text-shadow: none !important;
+    background-color: green !important;
+    -webkit-transform: scale3d(0.9, 0.9, 1);
+    -moz-transform: scale3d(0.9, 0.9, 1);
+    transform: scale3d(0.9, 0.9, 1);
+}
+.footer_save_cancel button:last-child {
+    text-shadow: 0px 0px 3px rgba(0,0,0,1), -1px 0px 0px rgb(255,0,0), 1px 0px 0px rgb(255,0,0), 0px -1px 0px rgb(255,0,0), 0px 1px 0px rgb(255,0,0) !important;
+    font-size: 8vw; /* More info about 'vw' units! They're amazing! awesome! */
+}
+.footer_save_cancel button:last-child:active {
+    text-shadow: none !important;
+    background-color: red !important;
+    -webkit-transform: scale3d(0.9, 0.9, 1);
+    -moz-transform: scale3d(0.9, 0.9, 1);
+    transform: scale3d(0.9, 0.9, 1);
 }
 
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
@@ -521,6 +664,13 @@ h1 {
 /* Landscape layout: media rules (@media) are used to change some CSS properties only if a certain condition is true.*/
 /* The CSS classes you might want to modify must be above the @media rules */
 @media screen and (orientation: landscape) {
+    /* media queries for EDIT_CONTACT: */
+    .footer_save_cancel {
+        height: 50px !important;
+    }
+    .footer_save_cancel button {
+        font-size: 4vw !important;
+    }
     /*body {
       background-color:#000;
     }

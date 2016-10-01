@@ -152,27 +152,27 @@ function loadContactDetails() {
         rows += "<tr><td>"+ person.officehours[k].start +"</td><td>"+ person.officehours[k].end +" </td></tr>";
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
-    if (person.office != " ") {
+    if (person.office != null) {
         office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#spa_contact' data-transition='slide' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
         // console.log(office);
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
         office = "-";
     }
-    document.getElementById("p_profile_header").innerHTML = person.name;
+    document.getElementById("p_profile_header").innerHTML = ((person.name != null) ? person.name : "-"); // Name and surname
     document.getElementById("div_profile_body").innerHTML =
-    "<p>POSITION: </p><p>" + ((person.position != " ") ? person.position : "-") + "</p>" +
-    "<p>FACULTY: </p><p>" + ((person.faculty != " ") ? person.faculty : "-") + "</p>"+
+    "<p>POSITION: </p><p>" + ((person.position != null) ? person.position : "-") + "</p>" +
+    "<p>FACULTY: </p><p>" + ((person.faculty != null) ? person.faculty : "-") + "</p>"+
     "<p>OFFICE: </p><p>" + office + "</p>"+
     "<p>OFFICE HOURS: </p><p>" + officehours +"</p>" +
-    "<p>EMAIL: </p><p>" + ((person.email != " ") ? person.email : "-") + "</p>"+
-    "<p>PHONE: </p><p>" + ((person.phone != " ") ? person.phone : "-") + "</p>"+
-    "<p>EXTENSION: </p><p>" + ((person.extension != " ") ? person.extension : "-") + "</p>"+
-    "<p>FAX: </p><p>" + ((person.fax != " ") ? person.fax : "-") + "</p>"+
-    "<p>PERSONAL WEBSITE: </p><p>" + ((person.website != " ") ? person.website : "-") + "</p>"+
-    "<p>LINKEDIN: </p><p>" + ((person.linkedin != " ") ? person.linkedin : "-") + "</p>"+
+    "<p>EMAIL: </p><p>" + ((person.email != null) ? person.email : "-") + "</p>"+
+    "<p>PHONE: </p><p>" + ((person.phone != null) ? person.phone : "-") + "</p>"+
+    "<p>EXTENSION: </p><p>" + ((person.extension != null) ? person.extension : "-") + "</p>"+
+    "<p>FAX: </p><p>" + ((person.fax != null) ? person.fax : "-") + "</p>"+
+    "<p>PERSONAL WEBSITE: </p><p>" + ((person.website != null) ? person.website : "-") + "</p>"+
+    "<p>LINKEDIN: </p><p>" + ((person.linkedin != null) ? person.linkedin : "-") + "</p>"+
     "<p>WORKING AT DeustoTech?: </p><p>" + ((person.dtech) ? "Yes" : "No") + "</p>"+
-    "<p>NOTES: </p><p>" + ((person.notes != " ") ? person.notes : "-") + "</p>";
+    "<p>NOTES: </p><p>" + ((person.notes != null) ? person.notes : "-") + "</p>";
 
     // This code snippet initializes the swiping effect panel in the CONTACT page
     $(document).on("swipeleft", "#spa_contact", function(e) {
@@ -192,72 +192,99 @@ function loadContactDetails() {
 
 function loadEditContactDetails() {
     var person = _searched_people[_index];
-    var rows = " ";
-    var officehours = " - ";
+    var rows = "";
+    var officehours = "";
     var office = "";
-    var carrete_horas = "";
-    var carrete_minutos = "";
     var input_yesno = "";
     // We will generate the "carretes" (in spanish) of the 'hours' and 'minutes':
     // hours:
     for (var h = 0; h < 24; h++) {
         var num = "";
         if (h < 10) {num = "0"+h} else {num = h}
-        carrete_horas += "<option value='"+num+"'>"+num+"</option>"
+        _carrete_horas += "<option value='"+num+"'>"+num+"</option>"
     }
     // minutes:
     for (var h = 0; h < 60; h++) {
         var num = "";
         if (h < 10) {num = "0"+h} else {num = h}
-        carrete_minutos += "<option value='"+num+"'>"+num+"</option>"
+        _carrete_minutos += "<option value='"+num+"'>"+num+"</option>"
     }
     // Based on the office hours retrieved from the database, we will format it as a table:
-    if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
+    if (person.officehours != null) {for (k = 0; k < person.officehours.length; k++) {
         var dropdowns =
-        "<fieldset data-role='controlgroup' data-type='horizontal'>"+
-            "<select name='editContact_dropdown_startHour"+k+"' id='editContact_dropdown_startHour"+k+"'>"+
-                carrete_horas+
+        "<fieldset id='editContact_officehours"+k+"' data-role='controlgroup' data-type='horizontal' data-mini='true' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\">"+
+            "<select name='editContact_dropdown_startHour"+k+"' id='editContact_dropdown_startHour"+k+"' data-corners='false'>"+
+                _carrete_horas+
             "</select>"+
-            "<select name='editContact_dropdown_startMinute"+k+"' id='editContact_dropdown_startMinute"+k+"'>"+
-                carrete_minutos+
+            "<p>:</p>" +
+            "<select name='editContact_dropdown_startMinute"+k+"' id='editContact_dropdown_startMinute"+k+"' data-corners='false'>"+
+                _carrete_minutos+
             "</select>"+
-            "<select name='editContact_dropdown_endHour"+k+"' id='editContact_dropdown_endHour"+k+"'>"+
-                carrete_horas+
+            "<p>-</p>" +
+            "<select name='editContact_dropdown_endHour"+k+"' id='editContact_dropdown_endHour"+k+"' data-corners='false'>"+
+                _carrete_horas+
             "</select>"+
-            "<select name='editContact_dropdown_endMinute"+k+"' id='editContact_dropdown_endMinute"+k+"'>"+
-                carrete_minutos+
+            "<p>:</p>" +
+            "<select name='editContact_dropdown_endMinute"+k+"' id='editContact_dropdown_endMinute"+k+"' data-corners='false'>"+
+                _carrete_minutos+
             "</select>"+
         "</fieldset>";
-        rows += "<tr><td>"+ dropdowns + " </td></tr>";
+        rows += "<tr><td>"+ dropdowns + " </td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true;\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button></td></tr>";
+        // FALTA CAPTURAR LOS VALORES DEL JSON Y METERLOS EN LOS DROPDOWNS
         // rows += "<tr><td>"+ person.officehours[k].start +"</td><td>"+ person.officehours[k].end +" </td></tr>"; // LO QUE HABIA ANTETS. 'person.officehours[k].end' es el campo de datos que se me tió en la BD.
-    } officehours = "<table>"+rows+"</table>"}
-    // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
-    if (person.office != " ") {
-        office  = "<input id='editContact_input_office' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_office' oninput='' onfocus='' onblur='' value='"+person.office+"'>"
-    } else {
-        office = "-";
-    }
+        _amountOfRowsAdded = k; // We update the amount of rows that were added to the GUI
+    } officehours = "<table>"+rows+"</table><button onclick='add_row(); _editingInProgress = true;' class='btn_add_row ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-left' data-corners='false'>Add row</button>"}
     // Now we will see whether the person is working at DeustoTech or not, and set the widget accordingly:
     if (person.dtech) {
-        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' checked='checked' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' type='radio'><label for='editContact_radioButton_no'>No</label>"
+        input_yesno = "<input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_yes' value='true' checked='checked' type='radio'><label for='editContact_radioButton_deustotech_yes'>Yes</label><input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_no' value='false' type='radio'><label for='editContact_radioButton_deustotech_no'>No</label>"
     }
     else {
-        input_yesno = "<input name='editContact_radioButton_yes' id='editContact_radioButton_yes' value='true' type='radio'><label for='editContact_radioButton_yes'>Yes</label><input name='editContact_radioButton_no' id='editContact_radioButton_no' value='false' checked='checked' type='radio'><label for='editContact_radioButton_no'>No</label>"
+        input_yesno = "<input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_yes' value='true' type='radio'><label for='editContact_radioButton_deustotech_yes'>Yes</label><input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_no' value='false' checked='checked' type='radio'><label for='editContact_radioButton_deustotech_no'>No</label>"
     }
-    document.getElementById("editContact_input_name").innerHTML = person.name;
+    document.getElementById("editContact_input_name").innerHTML = ((person.name != null) ? person.name : ""); // Name and surname
     document.getElementById("div_profile_editContact_body").innerHTML =
-    "<p>POSITION: </p>" + ((person.position != " ") ? "<input id='editContact_input_position' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_position' oninput='' onfocus='' onblur='' value='"+person.position+"'>" : "-") +
-    "<p>FACULTY: </p>" + ((person.faculty != " ") ? "<input id='editContact_input_faculty' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_faculty' oninput='' onfocus='' onblur='' value='"+person.faculty+"'>" : "-") +
-    "<p>OFFICE: </p>" + office +
+    "<p>POSITION: </p>" + "<input id='editContact_input_position' placeholder='Current position, job or task at the moment' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_position' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.position != null) ? person.position : "")+"'>" +
+    "<p>FACULTY: </p>" + "<input id='editContact_input_faculty' placeholder='Faculty name he/she belongs to' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_faculty' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.faculty != null) ? person.faculty : "")+"'>" +
+    "<p>OFFICE: </p>" + "<input id='editContact_input_office' placeholder='Office number or name' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_office' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.office != null) ? person.office : "")+"'>" +
     "<p>OFFICE HOURS: </p>" + officehours +
-    "<p>EMAIL: </p>" + ((person.email != " ") ? "<input id='editContact_input_email' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_email' oninput='' onfocus='' onblur='' value='"+person.email+"'>" : "-") +
-    "<p>PHONE: </p>" + ((person.phone != " ") ? "<input id='editContact_input_phone' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_phone' oninput='' onfocus='' onblur='' value='"+person.phone+"'>" : "-") +
-    "<p>EXTENSION: </p>" + ((person.extension != " ") ? "<input id='editContact_input_extension' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_extension' oninput='' onfocus='' onblur='' value='"+person.extension+"'>" : "-") +
-    "<p>FAX: </p>" + ((person.fax != " ") ? "<input id='editContact_input_fax' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_fax' oninput='' onfocus='' onblur='' value='"+person.fax+"'>" : "-") +
-    "<p>PERSONAL WEBSITE: </p>" + ((person.website != " ") ? "<input id='editContact_input_website' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_website' oninput='' onfocus='' onblur='' value='"+person.website+"'>" : "-") +
-    "<p>LINKEDIN: </p>" + ((person.linkedin != " ") ? "<input id='editContact_input_linkedin' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_linkedin' oninput='' onfocus='' onblur='' value='"+person.linkedin+"'>" : "-") +
-    "<p>WORKING AT DeustoTech?: </p> <fieldset data-role='controlgroup' data-theme='b' data-type='horizontal'>" + input_yesno + "</fieldset>" +
-    "<p>NOTES: </p>" + ((person.notes != " ") ? "<textarea name='editContact_input_notes' id='editContact_input_notes'>"+person.notes+"</textarea>" : "-");
+    "<p>EMAIL: </p>" + "<input id='editContact_input_email' placeholder='Email address' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_email' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.email != null) ? person.email : "")+"'>" +
+    "<p>PHONE: </p>" + "<input id='editContact_input_phone' placeholder='Land line or mobile number' data-corners='false' data-clear-btn='true' type='number' name='editContact_input_phone' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.phone != null) ? person.phone : "")+"'>" +
+    "<p>EXTENSION: </p>" + "<input id='editContact_input_extension' placeholder='Phone extension, e.g. 2548' data-corners='false' data-clear-btn='true' type='number' name='editContact_input_extension' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.extension != null) ? person.extension : "")+"'>" +
+    "<p>FAX: </p>" + "<input id='editContact_input_fax' placeholder='Fax number' data-corners='false' data-clear-btn='true' type='number' name='editContact_input_fax' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.fax != null) ? person.fax : "")+"'>" +
+    "<p>PERSONAL WEBSITE: </p>" + "<input id='editContact_input_website' placeholder='Personal or corporate website' data-corners='false' data-clear-btn='true' type='url' name='editContact_input_website' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.website != null) ? person.website : "")+"'>" +
+    "<p>LINKEDIN: </p>" + "<input id='editContact_input_linkedin' placeholder='Linkedin profile URL' data-corners='false' data-clear-btn='true' type='url' name='editContact_input_linkedin' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.linkedin != null) ? person.linkedin : "")+"'>" +
+    "<p>WORKING AT DeustoTech?: </p> <fieldset id='editContact_deustotech' data-role='controlgroup' data-type='horizontal' data-theme='b' data-corners='false' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\">" + input_yesno + "</fieldset>" +
+    "<p>NOTES: </p>" + "<textarea name='editContact_input_notes' id='editContact_input_notes' placeholder='Write anything you consider interesting or an aside note' data-corners='false' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\">"+((person.notes != null) ? person.notes : "")+"</textarea>";
+    // I'm not sure whether this is necessary or not, but when adding dynamically content to the DOM with jQuery Mobile
+    // it may happen that the styles are not set approptiatelly. To fix this, you have to refresh somehow the content with "enhanceWithin"
+    // More info at: http://stackoverflow.com/questions/14550396/jquery-mobile-markup-enhancement-of-dynamically-added-content
+    $("#div_profile_editContact_body").enhanceWithin();
+}
+
+function add_row() {
+    // Now we are defining and declaring a standard row with the corresponding dropdown elements. This structure will be added every time the user taps on "Add Row":
+    // First of all, let's see how many rows have already been added and we will follow up that number:
+    _amountOfRowsAdded++;
+    var standard_row =
+    "<tr><td><fieldset id='editContact_officehours"+_amountOfRowsAdded+"' data-role='controlgroup' data-type='horizontal' data-mini='true' data-changes='true' onchange='_editingInProgress = true;'>"+ // in this ocassion (adding a new row) there is no need to add handler for onchange method detecting wethere there has been a change or not, because whenever you add something, it will always be NEW.
+        "<select name='editContact_dropdown_startHour"+_amountOfRowsAdded+"' id='editContact_dropdown_startHour"+_amountOfRowsAdded+"' data-corners='false' >"+
+            _carrete_horas+
+        "</select>"+
+        "<p>:</p>" +
+        "<select name='editContact_dropdown_startMinute"+_amountOfRowsAdded+"' id='editContact_dropdown_startMinute"+_amountOfRowsAdded+"' data-corners='false'>"+
+            _carrete_minutos+
+        "</select>"+
+        "<p>-</p>" +
+        "<select name='editContact_dropdown_endHour"+_amountOfRowsAdded+"' id='editContact_dropdown_endHour"+_amountOfRowsAdded+"' data-corners='false'>"+
+            _carrete_horas+
+        "</select>"+
+        "<p>:</p>" +
+        "<select name='editContact_dropdown_endMinute"+_amountOfRowsAdded+"' id='editContact_dropdown_endMinute"+_amountOfRowsAdded+"' data-corners='false'>"+
+            _carrete_minutos+
+        "</select>"+
+    "</fieldset></td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true;\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button>"+
+    "</td></tr>";
+    $($("#spa_edit_contact table").children()[0], this).append(standard_row).enhanceWithin(); // Here, as it happens in "loadEditContactDetails" function, it is necessary to refresh the elements for jQuery styles to work.
 }
 // This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
 // and searches for it.
@@ -669,4 +696,74 @@ function afterSignedIn(user) {
     $(".p_oauth_name").text(user.displayName +",");
     $(".p_oauth_email").text(user.email);
     _signedInUser = user; // The containing fields are: 'email', 'idToken', 'userId', 'displayName', 'imageUrl'. More info at: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
+}
+
+// This function prompts the user either saving (or not) the changes made or discarding the changes made.
+// Meaning of the bolean (bol) variable:
+// 1 = SAVE
+// 0 = CANCEL
+function prompt_savecancel(action, bol) {
+    // bolean meaning:
+    // 1 = SAVE
+    // 0 = CANCEL
+    navigator.notification.confirm("Are you sure you want to " + action+"?", callback, action, ["Yes", "No"]);
+
+    function callback(pressedIndex) {
+        if(bol==1) {
+            // It is not necessary to define a Swich statement because we are just going to do someting with response #1.
+            // This statement corresponds to saying 'YES' to SAVE.
+            if(pressedIndex == 1) {
+                // SAVE
+                savechanges();
+                // _editingInProgress = false; // We reset the variable for the next ocasion ???????????????????''
+            }
+        } else if(bol==0) {
+            // It is not necessary to define a Swich statement because we are just going to do someting with response #1.
+            // This statement corresponds to saying 'YES' to DISCARD.
+            if(pressedIndex == 1) {
+                navigator.app.backHistory();
+                _editingInProgress = false; // We reset the variable for the next ocasion
+            }
+        } // END if
+    }
+}
+
+function savechanges() {
+    // The following dictionary or Object will store key-value records regarding the changes made by the user.
+    // More info at: http://stackoverflow.com/questions/456932/hash-table-in-javascript#answer-457035
+    // https://www.tutorialspoint.com/javascript/javascript_objects.htm
+    var changes_dictionary = {}
+    $("[data-changes]").each(function() {
+        var id_attribute_name = this.id.substring(this.id.lastIndexOf("_")+1); // The 'id_attribute_name' is a substring of the ID of the DOM element. Its purpose is to identify which property was changed e.g. position, email, phone etc.
+
+        if (id_attribute_name == "deustotech") { // This statement is for the radio buttons of 'DeustoTech' item
+            changes_dictionary["deustotech"] = $("#"+this.id+" input:checked").val(); // 'val' captures the value set of the radio buttons
+        } else if (id_attribute_name.includes("officehours")) { // This statement is for the 'office hours' item
+            $("#"+this.id+" select").each(function(row){
+                var row = this.id.substring(this.id.search(/[0-9]/)); // the row number of the officehours item, e.g. 10:00 - 12:00
+                console.log(this.id);
+                console.log("row="+row);
+                if (changes_dictionary["officehours"] != null) {
+                    if(changes_dictionary["officehours"][row] != null) {
+                        changes_dictionary["officehours"][row].push(this.value);
+                    } else {
+                        changes_dictionary["officehours"][row] = [this.value];
+                    }
+                } else {
+                    changes_dictionary["officehours"] = [];
+                    changes_dictionary["officehours"][row] = [this.value];
+                }
+            });
+        } else { // This statement is for the rest of the options
+            changes_dictionary[id_attribute_name] = this.value;
+        }
+    })
+    // Now, remember that the rows (office hours) that were deleted are represented as NULL withing the 'changes_dictionary'.
+    // e.g. changes_dictionary[0] = null; changes_dictionary[1] = [...], changes_dictionary[2] = null;
+    // Even though before deleting the rows there was information in there, now, it's null. Thus, ensuring the system deletes
+    // the corresponding office hours in server-side.
+
+console.log(changes_dictionary);
+console.log(_searched_people[_index]); // IMPORTANTE!!!!!!!!!!
+
 }
