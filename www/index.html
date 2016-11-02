@@ -130,9 +130,9 @@
         </div>
 
         <div data-role="main" class="ui-content ui-shadow">
-            <div id="div_profile_header">
-                <img src="img/profilepic.png" alt="profile pic" />
-                <textarea name="editContact_input_name" id="editContact_input_name" placeholder="Name and surname" data-corners="false" onchange="_editingInProgress = true; $(this).attr('data-changes', 'true');"></textarea>
+            <div id="div_profile_editContact_header">
+                <!-- <img src="img/profilepic.png" alt="profile pic" /> -->
+                <!-- <textarea name="editContact_input_name" id="editContact_input_name" placeholder="Name and surname" data-corners="false" onchange="_editingInProgress = true; $(this).attr('data-changes', 'true');"></textarea> -->
             </div><hr>
             <div id="div_profile_editContact_body"></div>
         </div>
@@ -147,12 +147,12 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
-    <script type="text/javascript" src="js/evothings.eddystone.js"></script> <!-- I should remove this when as soon as I make the BLE-Central plugin work-->
+    <script type="text/javascript" src="js/evothings.eddystone.js"></script> <!-- I should remove this as soon as I make the BLE-Central plugin work-->
     <script type="text/javascript" src="js/jquery.flip.min.js"></script> <!-- I'm not using it for the moment! -->
     <script type="text/javascript" src="js/blob-util.min.js"></script>
     <!-- <script type="text/javascript" src="js/iscroll-zoom.js"></script> -->
     <script type="text/javascript" src="js/jquery.panzoom.min.js"></script>
-    <script src="js/pouchdb-5.3.1.min.js"></script> <!-- Updatin PouchDB to version 6 gave me huge headache. Replication stoped working and so on..., so watch out with that! -->
+    <script src="js/pouchdb-5.3.1.min.js"></script> <!-- Updatin PouchDB to version 6 gave me huge headache. Replication stoped working and so on..., so watch out! -->
     <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();

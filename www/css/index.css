@@ -361,7 +361,7 @@ h1 {
     clear: left;
 }
 
-#div_profile_header { /* ALSO USED IN 'EDIT CONTACT' PAGE */
+#div_profile_header, #div_profile_editContact_header {
     /*background-color: yellow;*/
     padding-bottom: 10px;
     height: auto;
@@ -505,14 +505,14 @@ h1 {
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% EDIT CONTACT %%%%%%%%%%%%%%%%%%%%%%%%%%% */
-#spa_edit_contact #div_profile_header {
+#spa_edit_contact #div_profile_editContact_header {
     text-align: center;
     padding-bottom: 0px;
 }
-#spa_edit_contact #div_profile_header img {
+#spa_edit_contact #div_profile_editContact_header img {
     width: 100px;
 }
-#spa_edit_contact #div_profile_header textarea {
+#spa_edit_contact #div_profile_editContact_header textarea {
     text-shadow: 0px 1px 10px rgba(0, 0, 0, 0.8);
     font-size:30px;
     font-weight:normal;
@@ -521,7 +521,7 @@ h1 {
     padding: 5px 0px 0px 0px;
     margin: 0px;
 }
-#spa_edit_contact #div_profile_header .ui-input-text,  #spa_edit_contact #div_profile_editContact_body .ui-input-text{
+#spa_edit_contact #div_profile_editContact_header .ui-input-text,  #spa_edit_contact #div_profile_editContact_body .ui-input-text{
     background-color: rgba(255, 176, 0, 0.70);
     border: none;
     -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.8) !important;

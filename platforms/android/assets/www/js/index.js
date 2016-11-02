@@ -19,6 +19,7 @@
 // GLOBAL VARIABLES for all javascript files:
 var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
 var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
+var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google's Developer page as a credential. This one is for WEB applications.
 // var _server_domain = "http://192.168.1.51:8888";
 // var _database_domain = "http://192.168.1.51:5984";
 var _staffdb_name='staffdb'; // Real database name in server-side.
@@ -58,6 +59,8 @@ var _signedInUser = null; // This is a Javascript object representing the user j
 var _carrete_horas = ""; // This will contain a snippet of HTML code of a dropdown object, it will exactly have a list of <option> indicating the hour
 var _carrete_minutos = "";// This will contain a snippet of HTML code of a dropdown object, it will exactly have a list of <option> indicating the minutes
 var _editingInProgress = false; // This variable controls whether the user has changed anything in the EDIT_CONTACT page. If a change occured, then, the corresponding prompt dialog will appear whenever he/she tries to swich between GUIs.
+var _amountOfRowsAdded = 0; // This integer represent IN TOTAL how many rows have been added to the GUI (in EDIT_CONTACT) starting at 0 index. It doesn't matter whether some of them (from the begining or the ending) were deleted or not. It's like a counter so that it doesn't crash when saving the profile.
+var _removedRows = []; // This array contains the INDEXes of the rows within "changes_dictionary" that were deleted intentionally by the user.
 var app = {
     // Application Constructor
     initialize: function() {

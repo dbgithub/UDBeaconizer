@@ -76,7 +76,7 @@
         <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus" />
 
     <!-- Define app icon for each platform. -->
-    <icon src="icon.png" />
+    <!-- <icon src="icon.png" /> --> <!-- me da error si lo descomento porque no existe icono -->
     <icon gap:platform="android" gap:qualifier="ldpi" src="www/res/icon/android/icon-36-ldpi.png" />
     <icon gap:platform="android" gap:qualifier="mdpi" src="www/res/icon/android/icon-48-mdpi.png" />
     <icon gap:platform="android" gap:qualifier="hdpi" src="www/res/icon/android/icon-72-hdpi.png" />

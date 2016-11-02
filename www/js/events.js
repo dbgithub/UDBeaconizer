@@ -149,7 +149,8 @@ function loadContactDetails() {
     var office = "";
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
-        rows += "<tr><td>"+ person.officehours[k].start +"</td><td>"+ person.officehours[k].end +" </td></tr>";
+        var hour_minute = person.officehours[k].split(","); // split works as a tokenizer, in this case the token is ','
+        rows += "<tr><td>"+ hour_minute[0]+":"+ hour_minute[1] +"</td><td>"+ hour_minute[2]+":"+ hour_minute[3] +" </td></tr>";
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != null) {
@@ -196,7 +197,11 @@ function loadEditContactDetails() {
     var officehours = "";
     var office = "";
     var input_yesno = "";
-    // We will generate the "carretes" (in spanish) of the 'hours' and 'minutes':
+    _removedRows = []; // we reset the variable just in case
+    _editingInProgress = false; // we reset the variable just in case
+    _carrete_horas = ""; // we reset the variable just in case
+    _carrete_minutos = ""; // we reset the variable just in case
+    // We will generate the "carretes" (in spanish) representing 'hours' and 'minutes':
     // hours:
     for (var h = 0; h < 24; h++) {
         var num = "";
@@ -211,28 +216,27 @@ function loadEditContactDetails() {
     }
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != null) {for (k = 0; k < person.officehours.length; k++) {
+        var hour_minute = person.officehours[k].split(","); // split works as a tokenizer, in this case the token is ','
         var dropdowns =
-        "<fieldset id='editContact_officehours"+k+"' data-role='controlgroup' data-type='horizontal' data-mini='true' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\">"+
+        "<fieldset id='editContact_officehours"+k+"' data-role='controlgroup' data-type='horizontal' data-mini='true' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true')\">"+
             "<select name='editContact_dropdown_startHour"+k+"' id='editContact_dropdown_startHour"+k+"' data-corners='false'>"+
-                _carrete_horas+
+                _carrete_horas.replace("'"+hour_minute[0]+"'", "'"+hour_minute[0]+"' selected='true'")+
             "</select>"+
             "<p>:</p>" +
             "<select name='editContact_dropdown_startMinute"+k+"' id='editContact_dropdown_startMinute"+k+"' data-corners='false'>"+
-                _carrete_minutos+
+                _carrete_minutos.replace("'"+hour_minute[1]+"'", "'"+hour_minute[1]+"' selected='true'")+
             "</select>"+
             "<p>-</p>" +
             "<select name='editContact_dropdown_endHour"+k+"' id='editContact_dropdown_endHour"+k+"' data-corners='false'>"+
-                _carrete_horas+
+                _carrete_horas.replace("'"+hour_minute[2]+"'", "'"+hour_minute[2]+"' selected='true'")+
             "</select>"+
             "<p>:</p>" +
             "<select name='editContact_dropdown_endMinute"+k+"' id='editContact_dropdown_endMinute"+k+"' data-corners='false'>"+
-                _carrete_minutos+
+                _carrete_minutos.replace("'"+hour_minute[3]+"'", "'"+hour_minute[3]+"' selected='true'")+
             "</select>"+
         "</fieldset>";
-        rows += "<tr><td>"+ dropdowns + " </td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true;\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button></td></tr>";
-        // FALTA CAPTURAR LOS VALORES DEL JSON Y METERLOS EN LOS DROPDOWNS
-        // rows += "<tr><td>"+ person.officehours[k].start +"</td><td>"+ person.officehours[k].end +" </td></tr>"; // LO QUE HABIA ANTETS. 'person.officehours[k].end' es el campo de datos que se me tió en la BD.
-        _amountOfRowsAdded = k; // We update the amount of rows that were added to the GUI
+        rows += "<tr><td>"+ dropdowns + " </td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true; _removedRows.push("+k+");\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button></td></tr>";
+        _amountOfRowsAdded = k; // We update the amount of rows that were added to the GUI starting at 0 index! It's like a counter.
     } officehours = "<table>"+rows+"</table><button onclick='add_row(); _editingInProgress = true;' class='btn_add_row ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-left' data-corners='false'>Add row</button>"}
     // Now we will see whether the person is working at DeustoTech or not, and set the widget accordingly:
     if (person.dtech) {
@@ -241,7 +245,9 @@ function loadEditContactDetails() {
     else {
         input_yesno = "<input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_yes' value='true' type='radio'><label for='editContact_radioButton_deustotech_yes'>Yes</label><input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_no' value='false' checked='checked' type='radio'><label for='editContact_radioButton_deustotech_no'>No</label>"
     }
-    document.getElementById("editContact_input_name").innerHTML = ((person.name != null) ? person.name : ""); // Name and surname
+    // Now we add the corresponding form fields in the page:
+    document.getElementById("div_profile_editContact_header").innerHTML = "<img src='img/profilepic.png' alt='profile pic' />" +
+                                                                        "<textarea name='editContact_input_name' id='editContact_input_name' placeholder='Name and surname' data-corners='false' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\">"+((person.name != null) ? person.name : "")+"</textarea>"
     document.getElementById("div_profile_editContact_body").innerHTML =
     "<p>POSITION: </p>" + "<input id='editContact_input_position' placeholder='Current position, job or task at the moment' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_position' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.position != null) ? person.position : "")+"'>" +
     "<p>FACULTY: </p>" + "<input id='editContact_input_faculty' placeholder='Faculty name he/she belongs to' data-corners='false' data-clear-btn='true' type='text' name='editContact_input_faculty' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\" onreset='_editingInProgress = true;'  value='"+((person.faculty != null) ? person.faculty : "")+"'>" +
@@ -258,6 +264,7 @@ function loadEditContactDetails() {
     // I'm not sure whether this is necessary or not, but when adding dynamically content to the DOM with jQuery Mobile
     // it may happen that the styles are not set approptiatelly. To fix this, you have to refresh somehow the content with "enhanceWithin"
     // More info at: http://stackoverflow.com/questions/14550396/jquery-mobile-markup-enhancement-of-dynamically-added-content
+    $("#div_profile_editContact_header").enhanceWithin();
     $("#div_profile_editContact_body").enhanceWithin();
 }
 
@@ -282,7 +289,7 @@ function add_row() {
         "<select name='editContact_dropdown_endMinute"+_amountOfRowsAdded+"' id='editContact_dropdown_endMinute"+_amountOfRowsAdded+"' data-corners='false'>"+
             _carrete_minutos+
         "</select>"+
-    "</fieldset></td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true;\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button>"+
+    "</fieldset></td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true; _removedRows.push("+_amountOfRowsAdded+");\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button>"+
     "</td></tr>";
     $($("#spa_edit_contact table").children()[0], this).append(standard_row).enhanceWithin(); // Here, as it happens in "loadEditContactDetails" function, it is necessary to refresh the elements for jQuery styles to work.
 }
@@ -623,7 +630,7 @@ function signInOAuth() {
         try {
             window.plugins.googleplus.login(
                 {
-                    'webClientId': '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com' // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                    'webClientId': _webClientID // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
                 },
                 function (obj) {
                     // On success:
@@ -670,7 +677,7 @@ function silentLoginOAuth() {
     try {
         window.plugins.googleplus.trySilentLogin(
             {
-                'webClientId': '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com' // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
+                'webClientId': _webClientID // optional clientId of your Web application from Credentials settings of your project - On Android, this MUST be included to get an idToken. On iOS, it is not required.
             },
             function (obj) {
                 // On success:
@@ -714,15 +721,15 @@ function prompt_savecancel(action, bol) {
             // This statement corresponds to saying 'YES' to SAVE.
             if(pressedIndex == 1) {
                 // SAVE
-                savechanges();
-                // _editingInProgress = false; // We reset the variable for the next ocasion ???????????????????''
+                if (_editingInProgress) {savechanges();} else {
+                    navigator.notification.alert("There is nothing to SAVE! 😃", null, "Nothing to save", "Oki Doki!");
+                }
             }
         } else if(bol==0) {
             // It is not necessary to define a Swich statement because we are just going to do someting with response #1.
             // This statement corresponds to saying 'YES' to DISCARD.
             if(pressedIndex == 1) {
                 navigator.app.backHistory();
-                _editingInProgress = false; // We reset the variable for the next ocasion
             }
         } // END if
     }
@@ -732,6 +739,7 @@ function savechanges() {
     // The following dictionary or Object will store key-value records regarding the changes made by the user.
     // More info at: http://stackoverflow.com/questions/456932/hash-table-in-javascript#answer-457035
     // https://www.tutorialspoint.com/javascript/javascript_objects.htm
+    // http://www.w3schools.com/js/js_objects.asp
     var changes_dictionary = {}
     $("[data-changes]").each(function() {
         var id_attribute_name = this.id.substring(this.id.lastIndexOf("_")+1); // The 'id_attribute_name' is a substring of the ID of the DOM element. Its purpose is to identify which property was changed e.g. position, email, phone etc.
@@ -739,17 +747,18 @@ function savechanges() {
         if (id_attribute_name == "deustotech") { // This statement is for the radio buttons of 'DeustoTech' item
             changes_dictionary["deustotech"] = $("#"+this.id+" input:checked").val(); // 'val' captures the value set of the radio buttons
         } else if (id_attribute_name.includes("officehours")) { // This statement is for the 'office hours' item
-            $("#"+this.id+" select").each(function(row){
+            $("#"+this.id+" select").each(function(){
                 var row = this.id.substring(this.id.search(/[0-9]/)); // the row number of the officehours item, e.g. 10:00 - 12:00
-                console.log(this.id);
-                console.log("row="+row);
                 if (changes_dictionary["officehours"] != null) {
                     if(changes_dictionary["officehours"][row] != null) {
+                        // This occurs when the array representing the four 'selects' already exists
                         changes_dictionary["officehours"][row].push(this.value);
                     } else {
+                        // This occurs when a new array has to be created for a new row.
                         changes_dictionary["officehours"][row] = [this.value];
                     }
                 } else {
+                    // This occurs when 'changes_dictionary' is empty for the first time. A new array is created and then the value caputes is assigned:
                     changes_dictionary["officehours"] = [];
                     changes_dictionary["officehours"][row] = [this.value];
                 }
@@ -758,25 +767,46 @@ function savechanges() {
             changes_dictionary[id_attribute_name] = this.value;
         }
     })
-    // Now, remember that the rows (office hours) that were deleted are represented as NULL withing the 'changes_dictionary'.
-    // e.g. changes_dictionary[0] = null; changes_dictionary[1] = [...], changes_dictionary[2] = null;
-    // Even though before deleting the rows there was information in there, now, it's null. Thus, ensuring the system deletes
-    // the corresponding office hours in server-side.
+    // Now, remember that the rows of "officehours" array that were deleted intentionally by the user are represented as UNDEFINED (by default in Javascript).
+    // e.g. changes_dictionary["officehours"][0] = unefined;
+    // Even though before deleting the rows there was information in there, now, it's undefined. Thus, ensuring the system deletes
+    // the corresponding office hours in server-side. '_removedRows' array is used to save the indexes of the rows deleted by the user.
+    // So, now we will loop over the "_removedRows" in order to set NULL value to the corresponding rows in "changes_dictionary['officehours']".
+    // This is done like that, becasue there has to be a way to figure out when the row was DELETED and when the row contains a DEFAULT (predefined, not changed, coming from the DB) value.
+    for (k=0; k < _removedRows.length; k++) {
+        if (changes_dictionary["officehours"] == undefined) {changes_dictionary["officehours"] = [];} // This is necessary for the cases where the DEFAULT rows are deleted without adding more.
+        changes_dictionary["officehours"][_removedRows[k]] = null;
+        console.log("changes_dictionary['officehours']["+_removedRows[k]+"]" + changes_dictionary["officehours"][_removedRows[k]]);
+    }
+    // There is one thing to take into consideration, in Javascript there exist UNDEFINED values, which is somewhat similar to NULL values.
+    // BUT! When you "stringify" a Javascript object and you obtain a JSON representation, there are NOT "UNDEFINED" values in JSON. So,
+    // you cannot represent an UNDEFINED values in JSON. This has to be done in a different way.
+    // In this case, the rows that were not touched by the user (UNDEFINED within the changes_dictionary["officehours"]), are going to take
+    // the value -1. This int will represent that the row was not changed.
+    for (l in changes_dictionary["officehours"]) {
+        if (changes_dictionary["officehours"][l] == undefined) {changes_dictionary["officehours"][l] = -1;}
+    }
+    // After ALL this, in "changes_dictionary['officehours']" array, we will have rows with any of the following possible content:
+    // · Useful information regarding 'officehours', e.g '23','00','14','15'
+    // · -1 -> This corresponds to the rows that were not changed by the user but were loaded at the begining (info coming from the DB)
+    // · NULL -> This corresponds to the rows that were intentionally deleted by the user
+    // Remember that (http://www.w3schools.com/js/js_datatypes.asp):
+    // null === undefined -> false
+    // null == null -> true
+    // null == undefined -> true !!
 
     // Now, it's time to make an AJAX call and send the data to server-side. The backend will process the requesst, saving the changes and
     // updating the database (local and remote):
-    $.ajax({type:"POST", url: _server_domain+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
-        db.get('_local/sequence_number_version').then(function (result2) {
-            console.log("sequence_number_version ["+dbalias+"] (local)="+result2.seq_version);
-            console.log("update_seq ["+dbalias+"] (remote)="+result);
-            if (result2.seq_version < result) {syncDB(db, dbname);} // If the local sequence number is smaller than the 'update_seq' in the server, we sync databases.
-        }).catch(function (err) {
-            console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
-            console.log(err);
-        });
-    }, error: function(xhr,status,error) {console.log("error in 'checkChanges', AJAX call");console.log(error +":"+status);}});
-
-console.log(changes_dictionary);
-console.log(_searched_people[_index]); // IMPORTANTE!!!!!!!!!!
+    (function ajaxPOST() {
+        console.log("officehours0"+changes_dictionary["officehours"][0]);
+        console.log("officehours1"+changes_dictionary["officehours"][1]);
+        $.ajax({type:"POST", url: _server_domain+'/editcontact?auth=admin', contentType:"application/json", data: JSON.stringify([_signedInUser.idToken, changes_dictionary, _searched_people[_index]]), success: function(result){
+            console.log("[Client side]: Ajax POST request done, status:" + result);
+            // now we should go back one step in the history and loead
+        }, statusCode: {400:function(){
+            // Most likely this has happened because the authentication failed. Probably because the authentication token has expired.
+            // Therefore, we should call silentLoginOAuth again:
+            silentLoginOAuth(); ajaxPOST()}}, error: function(xhr,status,error) {console.log("warning in POST 'savechanges', AJAX call");console.log(error +":"+status);}});
+    })();
 
 }

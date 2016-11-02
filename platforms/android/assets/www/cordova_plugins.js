@@ -54,13 +54,6 @@ module.exports = [
 ];
 module.exports.metadata = 
 // TOP OF METADATA
-{
-    "cordova-plugin-ble": "1.3.1",
-    "cordova-plugin-dialogs": "1.2.1",
-    "cordova-plugin-eddystone": "1.2.0",
-    "cordova-plugin-googleplus": "4.0.9",
-    "cordova-plugin-whitelist": "1.2.1",
-    "cordova-plugin-x-toast": "2.5.1"
-};
+{}
 // BOTTOM OF METADATA
 });
