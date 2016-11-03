@@ -776,15 +776,14 @@ function savechanges() {
     for (k=0; k < _removedRows.length; k++) {
         if (changes_dictionary["officehours"] == undefined) {changes_dictionary["officehours"] = [];} // This is necessary for the cases where the DEFAULT rows are deleted without adding more.
         changes_dictionary["officehours"][_removedRows[k]] = null;
-        console.log("changes_dictionary['officehours']["+_removedRows[k]+"]" + changes_dictionary["officehours"][_removedRows[k]]);
     }
     // There is one thing to take into consideration, in Javascript there exist UNDEFINED values, which is somewhat similar to NULL values.
     // BUT! When you "stringify" a Javascript object and you obtain a JSON representation, there are NOT "UNDEFINED" values in JSON. So,
     // you cannot represent an UNDEFINED values in JSON. This has to be done in a different way.
     // In this case, the rows that were not touched by the user (UNDEFINED within the changes_dictionary["officehours"]), are going to take
     // the value -1. This int will represent that the row was not changed.
-    for (l in changes_dictionary["officehours"]) {
-        if (changes_dictionary["officehours"][l] == undefined) {changes_dictionary["officehours"][l] = -1;}
+    for (l=0; l < changes_dictionary["officehours"].length; l++) { // YOU CANNOT do "for(l in changes_dictionary["officehours"])" because it eventually takes only indexes with real values, not the ones with UNDEFINED!
+        if (changes_dictionary["officehours"][l] === undefined) {changes_dictionary["officehours"][l] = -1; console.log("after... " +changes_dictionary["officehours"][l]);}
     }
     // After ALL this, in "changes_dictionary['officehours']" array, we will have rows with any of the following possible content:
     // · Useful information regarding 'officehours', e.g '23','00','14','15'
@@ -802,6 +801,7 @@ function savechanges() {
         console.log("officehours1"+changes_dictionary["officehours"][1]);
         $.ajax({type:"POST", url: _server_domain+'/editcontact?auth=admin', contentType:"application/json", data: JSON.stringify([_signedInUser.idToken, changes_dictionary, _searched_people[_index]]), success: function(result){
             console.log("[Client side]: Ajax POST request done, status:" + result);
+            if (result == "OK") {syncDB(_db, _staffdb_name); app.onBackButton();}
             // now we should go back one step in the history and loead
         }, statusCode: {400:function(){
             // Most likely this has happened because the authentication failed. Probably because the authentication token has expired.
