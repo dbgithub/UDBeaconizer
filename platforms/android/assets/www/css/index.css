@@ -139,6 +139,7 @@ h1 {
     overflow: hidden;
 }
 #div_liveSearchResults li a {
+    display: list-item;
     text-decoration: none;
     color: inherit;
     font-size: inherit;
@@ -323,6 +324,13 @@ h1 {
     visibility: hidden;
 }
 
+#sidepanel_map p:first-of-type {
+    font-family: mypurisa;
+    font-size: 25px;
+    text-align: center;
+    padding: 10px;
+}
+
 /* To delete: */
 #test_beacons p {
     font-size: 19px;
@@ -409,7 +417,7 @@ h1 {
     padding: 0px;
     height: 100%;
 }
-#sidepanel_contact p:first-of-type { /* ALSO USED IN 'MAP' PAGE */
+#sidepanel_contact p:first-of-type {
     font-family: mypurisa;
     font-size: 25px;
     text-align: center;
@@ -620,7 +628,7 @@ h1 {
     width: 50% !important;
     float: left;
     text-shadow:  !important;
-    background-color: silver !important;
+    background-color: #a1a1a1 !important;
     color: white;
     line-height: 0;
 }

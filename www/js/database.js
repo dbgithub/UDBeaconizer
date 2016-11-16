@@ -180,7 +180,7 @@ function checkChanges(db, dbalias, dbname) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
             console.log(err);
         });
-    }, error: function(xhr,status,error) {console.log("error in 'checkChanges', AJAX call");console.log(error +":"+status);}});
+    }, error: function(xhr,status,error) {checkInternetConnection(); console.log("error in 'checkChanges', AJAX call");console.log(error +":"+status);}});
 }
 
 // This function checks for changes in the local database corresponding to maps' images.
@@ -201,7 +201,7 @@ function checkMapChanges(floor, dbalias, callback) {
                 console.log(err);
             });
         },0);
-    }, error: function(xhr,status,error) {console.log("error in 'checkMapChanges', AJAX call");console.log(error +":"+status);}});
+    }, error: function(xhr,status,error) {checkInternetConnection(); console.log("error in 'checkMapChanges', AJAX call");console.log(error +":"+status);}});
 }
 
 // This function creates a local document which is a metadata document.

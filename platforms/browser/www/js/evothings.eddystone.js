@@ -158,9 +158,12 @@ function startScan()
 			if (undefinedCounter == 50) { // If 30 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
 				undefinedCounter = -1;
 				_allowYOUlabel = false;
-				navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
-				"are received, make sure you have the Bluetooth feature enabled in your device " +
-				" and ensure you are inside the building! :)", null, "Serious interferences :(", "Oki Doki!");
+				if (!_showingToolTip) {
+					_showingToolTip = true;
+					navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
+					"are received, make sure you have the Bluetooth feature enabled in your device " +
+					" and ensure you are inside the building! :)", function() {_showingToolTip = false;}, "Serious interferences :(", "Oki Doki!");
+				}
 			}
 			return null;
 		}

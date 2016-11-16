@@ -61,6 +61,9 @@ var _carrete_minutos = "";// This will contain a snippet of HTML code of a dropd
 var _editingInProgress = false; // This variable controls whether the user has changed anything in the EDIT_CONTACT page. If a change occured, then, the corresponding prompt dialog will appear whenever he/she tries to swich between GUIs.
 var _amountOfRowsAdded = 0; // This integer represent IN TOTAL how many rows have been added to the GUI (in EDIT_CONTACT) starting at 0 index. It doesn't matter whether some of them (from the begining or the ending) were deleted or not. It's like a counter so that it doesn't crash when saving the profile.
 var _removedRows = []; // This array contains the INDEXes of the rows within "changes_dictionary" that were deleted intentionally by the user.
+var _showingToolTip = false; // A boolean used to check whether there is already a notification dialog on the device's screen or not. The idea is to avoid DUPLICATE dialogs!!
+var _preventClick = false; // A boolean that is used to prevent buttons from running their ontouchend event when the finger leaves the hoover space. It's like a trick.
+var _wentOffline = false; // A boolean to avoid the message of 'online' event when the app starts up.
 var app = {
     // Application Constructor
     initialize: function() {
@@ -73,6 +76,8 @@ var app = {
     bindEvents: function() {
         document.addEventListener('deviceready', this.onDeviceReady, false);
         document.addEventListener("backbutton", this.onBackButton, false);
+        document.addEventListener("offline", this.onOffline, false);
+        document.addEventListener("online", this.onOnline, false);
     },
     // 'deviceready' Event Handler
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
@@ -80,17 +85,35 @@ var app = {
     onDeviceReady: function() {
         app.receivedEvent('deviceready');
     },
+    // 'offline' network connection loss
+    onOffline: function() {
+        if (!_showingToolTip) {
+            _showingToolTip = true;
+            navigator.notification.alert("Seems like there is a network connection problem! Please check your WiFi or Data connection and try again 😢", function() {_showingToolTip = false;}, "No Internet connection", "Oki Doki!");
+            console.log("Internet connection is OFFLINE");
+            _wentOffline = true;
+        }
+    },
+    // 'online' network connection comes back!
+    onOnline: function() {
+        if (_wentOffline) {
+            window.plugins.toast.show("Seems like your Internet connection came back to life! Yesss!! 😃", 'long', 'bottom', null, function(e){console.log("error showing toast:")});
+            console.log("Internet connection is ONLINE");
+            _wentOffline = false;
+        }
+    },
     // 'backkeydown' Event Handler
     // The scope of 'this' is the event. In order to call the 'receivedEvent'
     // function, we must explicitly call 'app.receivedEvent(...);'
-    onBackButton: function() {
+    // skip_prompt parameter is a boolean that can be set to true when you want to go back without showing the prompt
+    onBackButton: function(skip_prompt) { // In JavaScript, remember that it is NOT necessary to indicate the parameter when you call this function for instance. You can make: hola(true) or hola(), it doesn't matter.
         // Common (interesting) actions:
         // navigator.app.exitApp();  // To Exit Application
         // navigator.app.backHistory(); // To go back
 
         // We need to distinguish between different pages. Normally, you'd want to go home. Some other times, you'd want just to go back one step in history.
         if (window.location.hash == "#spa_edit_contact") {
-            if (_editingInProgress) {
+            if (_editingInProgress && !skip_prompt) {
                 prompt_savecancel("DISCARD changes", 0); // The text here can be anything you want
             } else {
                 // GO BACK ONE STEP IN HISTORY:
@@ -120,9 +143,5 @@ var app = {
         $(".ui-input-clear").on("click", function() {
             hideLiveSearchResults();
         });
-
-        // createDB("staff"); // to DELETE in the near future
-        // createDB("rooms"); // to DELETE in the near future
-        // createDB("beacons"); // to DELETE in the near future
     }
 };

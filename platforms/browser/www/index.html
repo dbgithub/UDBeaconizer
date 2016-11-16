@@ -15,7 +15,7 @@
     <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
     <title>UD Finder</title>
 </head>
-<body ondblclick="window.location = '#spa_edit_contact'; loadEditContactDetails();" onresize="softKeyboard(window.innerHeight);">
+<body ondblclick="window.location='#spa_edit_contact'; loadEditContactDetails()" onresize="softKeyboard(window.innerHeight);">
 
     <!-- INDEX page -->
     <div id="spa_index" data-role="page">
@@ -25,14 +25,13 @@
                 <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
             </div>
             <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
-            <button class="button ui-btn" data-corners="false" type="button" ontouchend="livesearch(document.getElementById('searchbar').value)" ontouchstart="return true;">GO!</button>
+            <button class="button ui-btn" data-corners="false" type="button" ontouchend="if(_preventClick){_preventClick=false;return true;}; livesearch(document.getElementById('searchbar').value)" ontouchmove="_preventClick=true;" ontouchstart="return true;">GO!</button>
         </div>
         <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
             <img id="imgprueba" src="./img/logo_UD-standard.svg" alt="logo">
         </div>
     </div>
     <!-- /INDEX page -->
-
 
     <!-- MAP page -->
     <div id="spa_map" data-role="page">
@@ -41,14 +40,14 @@
             <p>
                 Should you find inaccurate information, feel free to get your hands dirty:
             </p>
-            <a href="#spa_mapEdit" class="ui-btn ui-btn-icon-left ui-icon-edit btn_edit" ontouchstart="showOnPressedToolTip('Edit map details')" ontouchend="abortTimer()">Edit</a>
+            <a data-prefetch="true" class="ui-btn ui-btn-icon-left ui-icon-edit btn_edit" ontouchstart="showOnPressedToolTip('Edit map details')" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; goEditMap()" ontouchmove="_preventClick=true;">Edit</a>
             <p class="p_oauth_name">Prueba DB,</p>
             <p class="p_oauth_email">prueba@prueba.com</p>
-            <a href="#" class="ui-btn ui-btn-icon-left ui-icon-power btn_signout" ontouchstart="showOnPressedToolTip('Sign out from your account')" ontouchend="abortTimer()" onclick="disconnectOAuth()">Sign Out</a>
+            <a class="ui-btn ui-btn-icon-left ui-icon-power btn_signout" ontouchstart="showOnPressedToolTip('Sign out from your account')" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; disconnectOAuth()" ontouchmove="_preventClick=true;">Sign Out</a>
         </div>
 
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
-            <a id="backarrow" href="#spa_index" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
+            <a id="backarrow" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchmove="_preventClick=true;"></a>
             <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
                 <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
             </div>
@@ -71,7 +70,7 @@
         </div>
         <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
         <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
-            <img src="./img/floors.png" onclick="switchMaps()" ontouchstart="showOnPressedToolTip('Switch between maps')" ontouchend="abortTimer()" alt="switch maps" />
+            <img src="./img/floors.png" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; switchMaps()" ontouchstart="showOnPressedToolTip('Switch between maps')" ontouchmove='_preventClick=true;' alt="switch maps" />
             <div id="div_distanceTillDestination">
                 <img src="./img/destination_ico.png" alt="distace to target" />
                 <p id="p_distanceTillDest"></p>
@@ -81,21 +80,20 @@
     </div>
     <!-- /MAP page -->
 
-
     <!-- CONTACT page -->
     <div id="spa_contact" data-role="page">
         <div data-role="panel" data-position="right" data-position-fixed="true" data-theme="none" data-display="overlay" id="sidepanel_contact"> <!-- data-theme = none sets the theme and background to transparent-->
             <p>
                 Should you find inaccurate information, feel free to get your hands dirty:
             </p>
-            <a href="#" class="ui-btn ui-btn-icon-left ui-icon-edit btn_edit" ontouchstart="showOnPressedToolTip('Edit contact details')" ontouchend="abortTimer()" onclick="goEditContact()">Edit</a>
+            <a class="ui-btn ui-btn-icon-left ui-icon-edit btn_edit" ontouchstart="showOnPressedToolTip('Edit contact details')" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; goEditContact()" ontouchmove="_preventClick=true;">Edit</a>
             <p class="p_oauth_name"></p>
             <p class="p_oauth_email"></p>
-            <a href="#" class="ui-btn ui-btn-icon-left ui-icon-power btn_signout" ontouchstart="showOnPressedToolTip('Sign out from your account')" ontouchend="abortTimer()" onclick="disconnectOAuth()">Sign Out</a>
+            <a class="ui-btn ui-btn-icon-left ui-icon-power btn_signout" ontouchstart="showOnPressedToolTip('Sign out from your account')" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; disconnectOAuth()" ontouchmove="_preventClick=true;">Sign Out</a>
         </div>
 
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
-            <a id="backarrow" href="#spa_index" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
+            <a id="backarrow" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchmove="_preventClick=true;"></a>
             <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
                 <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
             </div>
@@ -121,7 +119,7 @@
     <!-- EDIT CONTACT page -->
     <div id="spa_edit_contact" data-role="page">
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
-            <a id="backarrow" href="#" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" onclick="app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchend="abortTimer()"></a>
+            <a id="backarrow" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchmove="_preventClick=true;"></a>
             <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
                 <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
             </div>
@@ -138,8 +136,8 @@
         </div>
 
         <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer_save_cancel">
-            <button class="ui-btn ui-btn-inline" onclick="prompt_savecancel('SAVE', 1);">SAVE</button>  <!-- The text in the function can be anything you want -->
-            <button class="ui-btn ui-btn-inline" onclick="prompt_savecancel('DISCARD changes', 0);">CANCEL</button>  <!-- The text in the function can be anything you want -->
+            <button class="ui-btn ui-btn-inline" ontouchend="if(_preventClick){_preventClick=false;return true;}; prompt_savecancel('SAVE', 1);" ontouchmove='_preventClick=true;'>SAVE</button>  <!-- The text in the function can be anything you want -->
+            <button class="ui-btn ui-btn-inline" ontouchend="if(_preventClick){_preventClick=false;return true;}; prompt_savecancel('DISCARD changes', 0);" ontouchmove='_preventClick=true;'>CANCEL</button>  <!-- The text in the function can be anything you want -->
         </div>
     </div>
     <!-- /EDIT CONTACT page -->

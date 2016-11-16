@@ -19,6 +19,9 @@
         "cordova-plugin-googleplus": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },

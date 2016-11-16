@@ -22,7 +22,7 @@ function fetchDB() {
 function initializeDB() {
     // STAFF database:
     _db.info().then(function (result) {
-        // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
+        // If it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
         if (result.doc_count == 0) {createLocalDocument(_db); syncDB(_db, _staffdb_name);} else {checkChanges(_db, _db_alias, _staffdb_name);}
     }).catch(function (err) {
         console.log("error getting info about database:");
@@ -180,7 +180,7 @@ function checkChanges(db, dbalias, dbname) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
             console.log(err);
         });
-    }, error: function(xhr,status,error) {console.log("error in 'checkChanges', AJAX call");console.log(error +":"+status);}});
+    }, error: function(xhr,status,error) {checkInternetConnection(); console.log("error in 'checkChanges', AJAX call");console.log(error +":"+status);}});
 }
 
 // This function checks for changes in the local database corresponding to maps' images.
@@ -201,7 +201,7 @@ function checkMapChanges(floor, dbalias, callback) {
                 console.log(err);
             });
         },0);
-    }, error: function(xhr,status,error) {console.log("error in 'checkMapChanges', AJAX call");console.log(error +":"+status);}});
+    }, error: function(xhr,status,error) {checkInternetConnection(); console.log("error in 'checkMapChanges', AJAX call");console.log(error +":"+status);}});
 }
 
 // This function creates a local document which is a metadata document.

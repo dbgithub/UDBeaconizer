@@ -74,7 +74,7 @@ function showRoomsList() {
         if (_searched_rooms.length != 0) {
             var list = "";
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
             }
             // var div = document.getElementById("div_liveSearchResults");
             var div = $("[data-id='liveSearchResults']");
@@ -106,13 +106,14 @@ function showBothStaffNRooms() {
         var list = "";
         if (_searched_people.length != 0) {
             for (j = 0; j < _searched_people.length; j++) {
-                list += "<li><a onclick='goContact("+j+")' data-transition='slide' href='#spa_contact'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
+                // window.location.replace() -> evita que vayas atras en el history
+                list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
                 // ontouchstart='return true; attribute needed??'
             }
         }
         if (_searched_rooms.length != 0) {
             for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a onclick='goMap("+j+")' data-transition='slide' href='#spa_map'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+                list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
                 // ontouchstart='return true; attribute needed??'
             }
         }
@@ -144,17 +145,19 @@ function loadContactDetails() {
     // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     // localStorage.removeItem('_person');
     var person = _searched_people[_index];
-    var rows = " ";
+    var rows = "";
     var officehours = " - ";
     var office = "";
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
-        var hour_minute = person.officehours[k].split(","); // split works as a tokenizer, in this case the token is ','
-        rows += "<tr><td>"+ hour_minute[0]+":"+ hour_minute[1] +"</td><td>"+ hour_minute[2]+":"+ hour_minute[3] +" </td></tr>";
+        if (person.officehours[k] != null) {
+            var hour_minute = person.officehours[k].split(","); // split works as a tokenizer, in this case the token is ','
+            rows += "<tr><td>"+ hour_minute[0]+":"+ hour_minute[1] +"</td><td>"+ hour_minute[2]+":"+ hour_minute[3] +" </td></tr>";
+        }
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != null) {
-        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a href='#spa_contact' data-transition='slide' onclick='linkSearch(this.innerHTML)'+>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
+        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a data-transition='slide' ontouchend='if(_preventClick){_preventClick=false;return true;}; linkSearch(this.innerHTML)' ontouchmove='_preventClick=true;'>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
         // console.log(office);
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
@@ -165,7 +168,7 @@ function loadContactDetails() {
     "<p>POSITION: </p><p>" + ((person.position != null) ? person.position : "-") + "</p>" +
     "<p>FACULTY: </p><p>" + ((person.faculty != null) ? person.faculty : "-") + "</p>"+
     "<p>OFFICE: </p><p>" + office + "</p>"+
-    "<p>OFFICE HOURS: </p><p>" + officehours +"</p>" +
+    "<p>OFFICE HOURS: </p><p>" + ((rows != "") ? officehours : "-") +"</p>" +
     "<p>EMAIL: </p><p>" + ((person.email != null) ? person.email : "-") + "</p>"+
     "<p>PHONE: </p><p>" + ((person.phone != null) ? person.phone : "-") + "</p>"+
     "<p>EXTENSION: </p><p>" + ((person.extension != null) ? person.extension : "-") + "</p>"+
@@ -191,6 +194,7 @@ function loadContactDetails() {
      silentLoginOAuth();
 }
 
+// This is called when 'edit_contact' page loads
 function loadEditContactDetails() {
     var person = _searched_people[_index];
     var rows = "";
@@ -198,6 +202,7 @@ function loadEditContactDetails() {
     var office = "";
     var input_yesno = "";
     _removedRows = []; // we reset the variable just in case
+    _amountOfRowsAdded = -1; // Set this to -1, otherwise 'add_row' won't work (due to the increment)
     _editingInProgress = false; // we reset the variable just in case
     _carrete_horas = ""; // we reset the variable just in case
     _carrete_minutos = ""; // we reset the variable just in case
@@ -216,6 +221,7 @@ function loadEditContactDetails() {
     }
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != null) {for (k = 0; k < person.officehours.length; k++) {
+        if (person.officehours[k] == null) {continue;} // This way, we skip erros when reading null values within the officehours array
         var hour_minute = person.officehours[k].split(","); // split works as a tokenizer, in this case the token is ','
         var dropdowns =
         "<fieldset id='editContact_officehours"+k+"' data-role='controlgroup' data-type='horizontal' data-mini='true' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true')\">"+
@@ -235,9 +241,9 @@ function loadEditContactDetails() {
                 _carrete_minutos.replace("'"+hour_minute[3]+"'", "'"+hour_minute[3]+"' selected='true'")+
             "</select>"+
         "</fieldset>";
-        rows += "<tr><td>"+ dropdowns + " </td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true; _removedRows.push("+k+");\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button></td></tr>";
+        rows += "<tr><td>"+ dropdowns + " </td><td><button ontouchend=\"if(_preventClick){_preventClick=false;return true;};$(this).parents().remove('tr'); _editingInProgress = true; _removedRows.push("+k+");\" ontouchmove='_preventClick=true;' class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button></td></tr>";
         _amountOfRowsAdded = k; // We update the amount of rows that were added to the GUI starting at 0 index! It's like a counter.
-    } officehours = "<table>"+rows+"</table><button onclick='add_row(); _editingInProgress = true;' class='btn_add_row ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-left' data-corners='false'>Add row</button>"}
+    } officehours = "<table><tbody>"+rows+"</tbody></table><button ontouchend='if(_preventClick){_preventClick=false;return true;};add_row(); _editingInProgress = true;' ontouchmove='_preventClick=true;' class='btn_add_row ui-btn ui-btn-inline ui-icon-plus ui-btn-icon-left' data-corners='false'>Add row</button>"}
     // Now we will see whether the person is working at DeustoTech or not, and set the widget accordingly:
     if (person.dtech) {
         input_yesno = "<input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_yes' value='true' checked='checked' type='radio'><label for='editContact_radioButton_deustotech_yes'>Yes</label><input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_no' value='false' type='radio'><label for='editContact_radioButton_deustotech_no'>No</label>"
@@ -245,7 +251,7 @@ function loadEditContactDetails() {
     else {
         input_yesno = "<input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_yes' value='true' type='radio'><label for='editContact_radioButton_deustotech_yes'>Yes</label><input name='editContact_radioButton_deustotech' id='editContact_radioButton_deustotech_no' value='false' checked='checked' type='radio'><label for='editContact_radioButton_deustotech_no'>No</label>"
     }
-    // document.getElementById("editContact_input_name").textContent = ((person.name != null) ? person.name : ""); // Name and surname
+    // Now we add the corresponding form fields in the page:
     document.getElementById("div_profile_editContact_header").innerHTML = "<img src='img/profilepic.png' alt='profile pic' />" +
                                                                         "<textarea name='editContact_input_name' id='editContact_input_name' placeholder='Name and surname' data-corners='false' onchange=\"_editingInProgress = true; $(this).attr('data-changes', 'true');\">"+((person.name != null) ? person.name : "")+"</textarea>"
     document.getElementById("div_profile_editContact_body").innerHTML =
@@ -289,7 +295,7 @@ function add_row() {
         "<select name='editContact_dropdown_endMinute"+_amountOfRowsAdded+"' id='editContact_dropdown_endMinute"+_amountOfRowsAdded+"' data-corners='false'>"+
             _carrete_minutos+
         "</select>"+
-    "</fieldset></td><td><button onclick=\"$(this).parents().remove('tr'); _editingInProgress = true; _removedRows.push("+_amountOfRowsAdded+");\" class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button>"+
+    "</fieldset></td><td><button ontouchend=\"if(_preventClick){_preventClick=false;return true;}; $(this).parents().remove('tr'); _editingInProgress = true; _removedRows.push("+_amountOfRowsAdded+");\" ontouchmove='_preventClick=true;' class='btn_delete_row ui-btn ui-icon-delete ui-btn-icon-notext ui-corner-all ui-mini'></button>"+
     "</td></tr>";
     $($("#spa_edit_contact table").children()[0], this).append(standard_row).enhanceWithin(); // Here, as it happens in "loadEditContactDetails" function, it is necessary to refresh the elements for jQuery styles to work.
 }
@@ -603,6 +609,12 @@ function goEditContact() {
     }
 }
 
+// This function performs several things before loading the "edit map" page within the SPA (Single Page Application) context.
+function goEditMap() {
+    showToolTip("Currently this feature is not available :(  I'm sorry!");
+    // window.location = "#spa_mapEdit";
+}
+
 // This function tries to hide the footer when the soft keyboard is shown in the screen and tries to display it when the soft keyboard disappears. Currently it does not work very well.
 // _input is a boolean representing whether an text input has gained focus or not.
 // _viewportHeight is the Height of the Viewport of the application at some point in time.
@@ -713,16 +725,23 @@ function prompt_savecancel(action, bol) {
     // bolean meaning:
     // 1 = SAVE
     // 0 = CANCEL
-    navigator.notification.confirm("Are you sure you want to " + action+"?", callback, action, ["Yes", "No"]);
+    if (!_showingToolTip) {
+        _showingToolTip = true;
+        navigator.notification.confirm("Are you sure you want to " + action+"?", callback, action, ["Yes", "No"]);
+    }
 
     function callback(pressedIndex) {
+        _showingToolTip = false;
         if(bol==1) {
             // It is not necessary to define a Swich statement because we are just going to do someting with response #1.
             // This statement corresponds to saying 'YES' to SAVE.
             if(pressedIndex == 1) {
                 // SAVE
                 if (_editingInProgress) {savechanges();} else {
-                    navigator.notification.alert("There is nothing to SAVE! 😃", null, "Nothing to save", "Oki Doki!");
+                    if (!_showingToolTip) {
+                        _showingToolTip = true;
+                        navigator.notification.alert("There is nothing to SAVE! 😃", function() {_showingToolTip = false;}, "Nothing to save", "Oki Doki!");
+                    }
                 }
             }
         } else if(bol==0) {
@@ -735,6 +754,9 @@ function prompt_savecancel(action, bol) {
     }
 }
 
+// This function saves the changes done on the EditContact SPA. An ajax call is made passing as parameters
+// the tokenID of the OAuth from Google, the changes done in the form of a dictionary and the contact with
+// the original information.
 function savechanges() {
     // The following dictionary or Object will store key-value records regarding the changes made by the user.
     // More info at: http://stackoverflow.com/questions/456932/hash-table-in-javascript#answer-457035
@@ -751,7 +773,7 @@ function savechanges() {
                 var row = this.id.substring(this.id.search(/[0-9]/)); // the row number of the officehours item, e.g. 10:00 - 12:00
                 if (changes_dictionary["officehours"] != null) {
                     if(changes_dictionary["officehours"][row] != null) {
-                        // This occurs when the array representing the four selects already exists
+                        // This occurs when the array representing the four 'selects' already exists
                         changes_dictionary["officehours"][row].push(this.value);
                     } else {
                         // This occurs when a new array has to be created for a new row.
@@ -767,20 +789,29 @@ function savechanges() {
             changes_dictionary[id_attribute_name] = this.value;
         }
     })
-    // Now, remember that the rows (office hours) that were deleted are represented as UNDEFINED within the 'changes_dictionary'.
-    // e.g. changes_dictionary[0] = unefined; changes_dictionary[1] = [...], changes_dictionary[2] = undefined;
+    // Now, remember that the rows of "officehours" array that were deleted intentionally by the user are represented as UNDEFINED (by default in Javascript).
+    // e.g. changes_dictionary["officehours"][0] = unefined;
     // Even though before deleting the rows there was information in there, now, it's undefined. Thus, ensuring the system deletes
-    // the corresponding office hours in server-side. '_removedRows' array was used to save the indexes of the rows deleted by the user.
-    // So, now we will loop over the "_removedRows" in order to set NULL value to the corresponding rows in "changes_dictionary".
+    // the corresponding office hours in server-side. '_removedRows' array is used to save the indexes of the rows deleted by the user.
+    // So, now we will loop over the "_removedRows" in order to set NULL value to the corresponding rows in "changes_dictionary['officehours']".
     // This is done like that, becasue there has to be a way to figure out when the row was DELETED and when the row contains a DEFAULT (predefined, not changed, coming from the DB) value.
     for (k=0; k < _removedRows.length; k++) {
         if (changes_dictionary["officehours"] == undefined) {changes_dictionary["officehours"] = [];} // This is necessary for the cases where the DEFAULT rows are deleted without adding more.
         changes_dictionary["officehours"][_removedRows[k]] = null;
-        console.log("changes_dictionary['officehours']["+_removedRows[k]+"]" + changes_dictionary["officehours"][_removedRows[k]]);
     }
-    // After this, in "changes_dictionary['officehours']" Object we will have rows with any of the following possible content:
+    // There is one thing to take into consideration, in Javascript there exist UNDEFINED values, which is somewhat similar to NULL values.
+    // BUT! When you "stringify" a Javascript object and you obtain a JSON representation, there are NOT "UNDEFINED" values in JSON. So,
+    // you cannot represent an UNDEFINED values in JSON. This has to be done in a different way.
+    // In this case, the rows that were not touched by the user (UNDEFINED within the changes_dictionary["officehours"]), are going to take
+    // the value -1. This int will represent that the row was not changed.
+    if (changes_dictionary["officehours"] != null) {
+        for (l=0; l < changes_dictionary["officehours"].length; l++) { // YOU CANNOT do "for(l in changes_dictionary["officehours"])" because it eventually takes only indexes with real values, not the ones with UNDEFINED!
+        if (changes_dictionary["officehours"][l] === undefined) {changes_dictionary["officehours"][l] = -1;}
+        }
+    }
+    // After ALL this, in "changes_dictionary['officehours']" array, we will have rows with any of the following possible content:
     // · Useful information regarding 'officehours', e.g '23','00','14','15'
-    // · undefined -> This corresponds to the rows that were not changed by the user but were loaded at the begining (info coming from the DB)
+    // · -1 -> This corresponds to the rows that were not changed by the user but were loaded at the begining (info coming from the DB)
     // · NULL -> This corresponds to the rows that were intentionally deleted by the user
     // Remember that (http://www.w3schools.com/js/js_datatypes.asp):
     // null === undefined -> false
@@ -790,12 +821,24 @@ function savechanges() {
     // Now, it's time to make an AJAX call and send the data to server-side. The backend will process the requesst, saving the changes and
     // updating the database (local and remote):
     (function ajaxPOST() {
-        $.ajax({type:"POST", url: _server_domain+'/editcontact?auth=admin', contentType:"application/json", data: JSON.stringify([_signedInUser.idToken, changes_dictionary, _searched_people[_index]]), success: function(result){
-            console.log("[Client side]: Ajax POST request done:" + result);
+        $.ajax({type:"POST", url: _server_domain+'/editcontact?auth=admin', contentType:"application/json", data: JSON.stringify([_signedInUser.idToken, changes_dictionary, _searched_people[_index]]), success: function(staff_edited, status){
+            // The parameter 'staff_edited' is the contact that was edited.
+            // Server side sends back the contact to make it available here in client side to be able to use it now:
+            console.log("[Client side]: Ajax POST request done successfuly (id= " + staff_edited._id+")");
+            // status is a predefined string defined by jQuery, if the request is 200, then the status text is "success"
+            if (status == "success") {syncDB(_db, _staffdb_name); _searched_people[_index] = staff_edited; loadContactDetails(); app.onBackButton(true);}
         }, statusCode: {400:function(){
             // Most likely this has happened because the authentication failed. Probably because the authentication token has expired.
             // Therefore, we should call silentLoginOAuth again:
-            silentLoginOAuth(); ajaxPOST()}}, error: function(xhr,status,error) {console.log("warning in POST 'savechanges', AJAX call");console.log(error +":"+status);}});
+            silentLoginOAuth(); ajaxPOST()}}, error: function(xhr,status,error) {checkInternetConnection(); console.log("warning in POST 'savechanges', AJAX call");console.log(error +":"+status);}});
     })();
 
+}
+
+// This function checks for Internet connection on the device. It makes use of the Cordova API "cordova.network.information" and
+// a native function of the browser to check whether it is online or not.
+function checkInternetConnection() {
+    if (navigator.connection.type === Connection.NONE || !window.navigator.onLine) {
+        showToolTip("Seems like there is a network connection problem! Please check your WiFi or Data connection and try again 😢");
+    }
 }

@@ -139,6 +139,7 @@ h1 {
     overflow: hidden;
 }
 #div_liveSearchResults li a {
+    display: list-item;
     text-decoration: none;
     color: inherit;
     font-size: inherit;
@@ -620,7 +621,7 @@ h1 {
     width: 50% !important;
     float: left;
     text-shadow:  !important;
-    background-color: silver !important;
+    background-color: #a1a1a1 !important;
     color: white;
     line-height: 0;
 }
