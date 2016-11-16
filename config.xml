@@ -9,13 +9,6 @@
     </author>
     <content src="index.html" />
     <!--
-        By default PhoneGap Build builds your application for every platform.
-        If you only want to build for certain platforms you can specify these
-        platforms with the gap:platform tag:
-    -->
-    <!-- <gap:platform name="ios" /> --> <!-- For the moment, let's not build for iOS. The aim is not focused on that platform yet -->
-    <gap:platform name="android" />
-    <!--
         If you do not want any permissions to be added to your app, add the
         following tag to your config.xml (you will still have the INTERNET
         permission on your app, which PhoneGap requires):
@@ -67,6 +60,7 @@
     <!-- <plugin name="cordova-plugin-media" source="npm" /> -->
     <plugin name="cordova-plugin-network-information" source="npm" />
     <!-- <plugin name="cordova-plugin-splashscreen" source="npm" /> -->
+    <!-- <plugin name="cordova-plugin-statusbar" source="npm" /> -->
     <!-- <plugin name="cordova-plugin-vibration" source="npm" /> -->
     <plugin name="cordova-plugin-whitelist" source="npm" />
 
@@ -80,6 +74,12 @@
     </plugin>
     <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus" />
 
+    <!--
+        By default PhoneGap Build builds your application for every platform.
+        If you only want to build for certain platforms you can specify these
+        platforms with the <platform name="platform_name"></platform tag.
+        If not specified, then, no application build will be created for that platform.
+    -->
     <!-- Define app icon + app splash screen for each platform. -->
     <!-- <icon src="icon.png" /> --> <!-- me da error si lo descomento porque no existe icono -->
     <platform name="android">
