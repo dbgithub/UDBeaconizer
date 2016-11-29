@@ -33,25 +33,29 @@ var _dbrooms_alias = "rooms";
 var _dbbeacons_alias = "beacons";
 var _reva; // returned value for any function
 var _index; // the index value for "searched rooms" and "searched people"
-var _trilaterationTimer; // This is the timer triggered by setInterval in the trilateration function
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
-var _sortedList; // a list of beacons sorted by signal strength
-var _floor // the floor number corresponding to the room or place the user is searching for
-var _b1X, _b1Y; // X and Y coordinates of beacon 1
-var _b2X; // X coordinate of beacon 2, Y coordinate it's not needed for calculations
-var _b3X, _b3Y; // X and Y coordinates of beacon 3
-var _destX, _destY; // X and Y coordinates of the destination point over the map
-var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
-var _currentfloor; // This int indicates the floor where the user is at.
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
 var _mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"]; // This array contains the names of the images representing the maps. Whenever we declare a new map or we change its name, we should ONLY do it here, not anywhere else in the code.
-var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon is so as to calculate an average of the values.
-var _lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
-var _lastKnownXcoordinate; // This value saves the last available, correct, accurate and known X coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
-var _lastKnownYcoordinate; // This value saves the last available, correct, accurate and known Y coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
-var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
-var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because is the initial one.
+    // GLOBAL VARIABLES used in "evothings.eddystone.js":
+    var _trilaterationTimer; // This is the timer triggered by setInterval in the trilateration function
+    var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon is so as to calculate an average of the values.
+    var _nearestbeacons = []; // An array containing the three NEAREST beacons from the total list of beacons.
+    var _sortedList; // a list of beacons sorted by signal strength
+    var _lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+    var _lastKnownXcoordinate; // This value saves the last available, correct, accurate and known X coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
+    var _lastKnownYcoordinate; // This value saves the last available, correct, accurate and known Y coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
+    var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
+    var _floor // the floor number corresponding to the room or place the user is searching for
+    var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because is the initial one.
+    var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
+    var _currentfloor; // This int indicates the floor where the user is at.
+    var _destX, _destY; // X and Y coordinates of the destination point over the map
+    var _b1X, _b1Y; // X and Y coordinates of beacon 1
+    var _b2X; // X coordinate of beacon 2, Y coordinate it's not needed for calculations
+    var _b3X, _b3Y; // X and Y coordinates of beacon 3
+    var _real_X; // This represents the X coordinate of the locatin of the person (device)
+    var _real_Y; // This represents the Y coordinate of the locatin of the person (device)
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
@@ -64,6 +68,7 @@ var _removedRows = []; // This array contains the INDEXes of the rows within "ch
 var _showingToolTip = false; // A boolean used to check whether there is already a notification dialog on the device's screen or not. The idea is to avoid DUPLICATE dialogs!!
 var _preventClick = false; // A boolean that is used to prevent buttons from running their ontouchend event when the finger leaves the hoover space. It's like a trick.
 var _wentOffline = false; // A boolean to avoid the message of 'online' event when the app starts up.
+var _paddingMap = 600; // The padding around the map image used to allow the user pan over something more than just the image
 var app = {
     // Application Constructor
     initialize: function() {
