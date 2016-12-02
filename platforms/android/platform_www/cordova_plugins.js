@@ -1,74 +1,77 @@
 cordova.define('cordova/plugin_list', function(require, exports, module) {
 module.exports = [
     {
-        "file": "plugins/cordova-plugin-ble/ble.js",
-        "id": "cordova-plugin-ble.BLE",
-        "clobbers": [
-            "evothings.ble"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-dialogs/www/notification.js",
         "id": "cordova-plugin-dialogs.notification",
+        "file": "plugins/cordova-plugin-dialogs/www/notification.js",
+        "pluginId": "cordova-plugin-dialogs",
         "merges": [
             "navigator.notification"
         ]
     },
     {
-        "file": "plugins/cordova-plugin-dialogs/www/android/notification.js",
         "id": "cordova-plugin-dialogs.notification_android",
+        "file": "plugins/cordova-plugin-dialogs/www/android/notification.js",
+        "pluginId": "cordova-plugin-dialogs",
         "merges": [
             "navigator.notification"
         ]
     },
     {
-        "file": "plugins/cordova-plugin-eddystone/js/eddystone-plugin.js",
-        "id": "cordova-plugin-eddystone.eddystoneplugin",
-        "clobbers": [
-            "evothings.eddystone"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
-        "id": "cordova-plugin-googleplus.GooglePlus",
-        "clobbers": [
-            "window.plugins.googleplus"
-        ]
-    },
-    {
-        "file": "plugins/cordova-plugin-network-information/www/network.js",
         "id": "cordova-plugin-network-information.network",
+        "file": "plugins/cordova-plugin-network-information/www/network.js",
+        "pluginId": "cordova-plugin-network-information",
         "clobbers": [
             "navigator.connection",
             "navigator.network.connection"
         ]
     },
     {
-        "file": "plugins/cordova-plugin-network-information/www/Connection.js",
         "id": "cordova-plugin-network-information.Connection",
+        "file": "plugins/cordova-plugin-network-information/www/Connection.js",
+        "pluginId": "cordova-plugin-network-information",
         "clobbers": [
             "Connection"
         ]
     },
     {
-        "file": "plugins/cordova-plugin-whitelist/whitelist.js",
-        "id": "cordova-plugin-whitelist.whitelist",
-        "runs": true
+        "id": "cordova-plugin-ble.BLE",
+        "file": "plugins/cordova-plugin-ble/ble.js",
+        "pluginId": "cordova-plugin-ble",
+        "clobbers": [
+            "evothings.ble"
+        ]
     },
     {
-        "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
         "id": "cordova-plugin-x-toast.Toast",
+        "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
+        "pluginId": "cordova-plugin-x-toast",
         "clobbers": [
             "window.plugins.toast"
         ]
     },
     {
+        "id": "cordova-plugin-x-toast.tests",
         "file": "plugins/cordova-plugin-x-toast/test/tests.js",
-        "id": "cordova-plugin-x-toast.tests"
+        "pluginId": "cordova-plugin-x-toast"
+    },
+    {
+        "id": "cordova-plugin-googleplus.GooglePlus",
+        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+        "pluginId": "cordova-plugin-googleplus",
+        "clobbers": [
+            "window.plugins.googleplus"
+        ]
     }
 ];
 module.exports.metadata = 
 // TOP OF METADATA
-{}
+{
+    "cordova-plugin-dialogs": "1.3.0",
+    "cordova-plugin-network-information": "1.3.0",
+    "cordova-plugin-whitelist": "1.3.0",
+    "cordova-plugin-ble": "2.0.1",
+    "cordova-plugin-x-toast": "2.5.2",
+    "cordova-plugin-googleplus": "5.1.1"
+};
 // BOTTOM OF METADATA
 });

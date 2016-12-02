@@ -29,6 +29,7 @@
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <button onclick="disconnect()">Disconnect</button>
     <br/><br/>
+    <button onclick="window.plugins.googleplus.getSigningCertificateFingerprint(function(res){alert(res)}, function(res){alert(res)})">get cert fingerprint (Android)</button>
   </div>
 </div>
 <script type="text/javascript" src="cordova.js"></script>
@@ -74,6 +75,9 @@
         function (msg) {
           document.querySelector("#image").style.visibility = 'hidden';
           document.querySelector("#feedback").innerHTML = msg;
+        },
+        function (msg) {
+          document.querySelector("#feedback").innerHTML = msg;
         }
     );
   }
@@ -82,6 +86,9 @@
     window.plugins.googleplus.disconnect(
         function (msg) {
           document.querySelector("#image").style.visibility = 'hidden';
+          document.querySelector("#feedback").innerHTML = msg;
+        },
+        function (msg) {
           document.querySelector("#feedback").innerHTML = msg;
         }
     );

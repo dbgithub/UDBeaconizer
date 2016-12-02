@@ -38,8 +38,9 @@ var _searched_rooms; // an array containing all the rooms which have been found 
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
 var _mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"]; // This array contains the names of the images representing the maps. Whenever we declare a new map or we change its name, we should ONLY do it here, not anywhere else in the code.
     // GLOBAL VARIABLES used in "evothings.eddystone.js":
-    var _trilaterationTimer; // This is the timer triggered by setInterval in the trilateration function
-    var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon is so as to calculate an average of the values.
+    var _trilaterationTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function
+    var _beaconRemoverTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function to remove the old beacons from time to tijme
+    var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon so as to calculate an average of the values.
     var _nearestbeacons = []; // An array containing the three NEAREST beacons from the total list of beacons.
     var _sortedList; // a list of beacons sorted by signal strength
     var _lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
@@ -128,7 +129,8 @@ var app = {
         } else {
             evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
             cleanGUI();
-            clearInterval(_trilaterationTimer); // In case we go back from Map page, this is to avoid applying trilateration for ever.
+            clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
+            clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
             window.location = "#spa_index";
         }
     },

@@ -311,7 +311,7 @@ function loadMap() {
     // var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     // localStorage.removeItem('_room');
-    console.log("YOU ARE LOADING ROOM -"+ _searched_rooms[_index][0].label + "-"); // eliminar esta traza
+    console.log("LOADING ROOM -"+ _searched_rooms[_index][0].label + "-"); // eliminar esta traza
     setTimeout(function() {
         retrieveMap(_searched_rooms[_index][1]); // Here we are retrieving the map corresponding to the floor given by the room[] array.
                              // If I take this call out of setTimeout function, JavaScripts yields errors.
@@ -325,37 +325,17 @@ function loadMap() {
     var svg_circle = document.getElementById("svg_circle_destinationpoint");
     var label_dest = document.getElementById("p_dest_label");
     svg_circle.style.visibility="visible";
-    svg_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-    svg_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+    svg_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 + _paddingMap+"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+    svg_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 + _paddingMap+"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
     // svg_circle.setAttribute("cx", _searched_rooms[_index][0].x); // esto habia antes de quitar el SVG circle
     // svg_circle.setAttribute("cy", _searched_rooms[_index][0].y); // esto habia antes de quitar el SVG circle
-    label_dest.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +"px";
-    label_dest.style.top= parseInt(_searched_rooms[_index][0].y) + 40 +"px";
+    label_dest.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +_paddingMap +"px";
+    label_dest.style.top= parseInt(_searched_rooms[_index][0].y) + 40 + _paddingMap+"px";
     label_dest.innerHTML=_searched_rooms[_index][0].label;
     label_dest.style.visibility="visible";
     _destX = _searched_rooms[_index][0].x; // Coordinate X of destination office/room
     _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
-    /* IScroll 5 */
-    // document.getElementById("spa_map").addEventListener('touchmove', function (e) { e.preventDefault(); }, false); // This is needed apparently for IScroll5
-    // If you change the elements or the structure of your DOM you should call the refresh method: myScroll.refresh();
-    // There are multiple events you can handle:
-    // zoomEnd
-    // zoomStart
-    // scrollStart ...
-    // like this: myScroll.on('scrollEnd', doSomething);
-    // more info at: https://github.com/cubiq/iscroll
-    // var myScroll = new IScroll('#map_wrapper', {
-    //     zoom: true, // It allows zooming
-    //     scrollX: true, // It allows to scroll in the X axis
-    //     scrollY: true, // It allows to scroll in the Y axis
-    //     mouseWheel: true, // It listens to mouse wheel event
-    //     zoomMin:0.5, // Default: 1
-    //     zoomMax:1.2,
-    //     freeScroll:true, // It allows to perform a free scroll within the wrapper. Not only strict X and Y scrolling.
-    //     deceleration: 0.0001,
-    //     wheelAction: 'zoom' // It regulates the wheel behaviour (zoom level vs scrolling position)
-    // });
     /* jQuery panzoom by timmywil */
     $("#map_wrapper").panzoom({
         // Should always be non-empty
@@ -378,15 +358,18 @@ function loadMap() {
         which: 1,
         // The increment at which to zoom
         // adds/subtracts to the scale each time zoomIn/Out is called
-        increment: 0.3,
-        // Turns on exponential zooming
-        // If false, zooming will be incremented linearly
-        exponential: true,
+        increment: 0.33,
+        // When no scale is passed, this option tells
+         // the `zoom` method to increment
+         // the scale *linearly* based on the increment option.
+         // This often ends up looking like very little happened at larger zoom levels.
+         // The default is to multiply/divide the scale based on the increment.
+        linearZoom: true,
         // Pan only when the scale is greater than minScale
         panOnlyWhenZoomed: false,
         // min and max zoom scales
-        minScale: 0.4,
-        maxScale: 1.2,
+        minScale: 0.2,
+        maxScale: 0.8,
         // The default step for the range input
         // Precendence: default < HTML attribute < option setting
         rangeStep: 0.05,
@@ -394,14 +377,17 @@ function loadMap() {
         duration: 400,
         // CSS easing used for scale transition
         easing: "ease-in-out",
-        // Indicate that the element should be contained within its parent when panning
+        // Indicate how the element should be contained within its parent when panning
         // Note: this does not affect zooming outside of the parent
-        // Set this value to 'invert' to only allow panning outside of the parent element (the opposite of the normal use of contain)
-        // 'invert' is useful for a large Panzoom element where you don't want to show anything behind it
-        contain: true
+        // Set this value to 'invert' to only allow panning when the bounds of the element are bigger than the parent. You'd be able to pan from outside the parent.
+        // Set this value to 'automatic' to let the script decide when to apply "true" or "invert". It all depends on the size of the element and whether it exceeds the bounds of the parent.
+        // Set this value to true to only allow panning when the element is contained within the parent. It will bounce against the borders when it approaches the borders.
+        // You can set padding values to the inner element so that you can make a little more space between the element and the parent.
+        contain: false
         // Transform value to which to always reset (string)
         // Defaults to the original transform on the element when Panzoom is initialized
         // startTransform: undefined,
+
         // This optional jQuery collection can be set to specify all of the elements
         // on which the transform should always be set.
         // It should have at least one element.
@@ -433,12 +419,11 @@ function loadMap() {
     // We pan over the floor image to show the corresponding spot to the user:
     var map = document.getElementById("map");
     map.onload = function () {
-        $("#map_wrapper").panzoom("resetPan", false);
-        $("#map_wrapper").panzoom("resetZoom", false);
-        $("#map_wrapper").panzoom("pan", -_destX, -_destY);
-        $("#map_wrapper").panzoom("zoom", 0.7, { animate: true });
-        // myScroll.scrollBy(-_destX, -_destY, 0, IScroll.utils.ease.elastic);
-        // myScroll.zoom(0.7, (map.clientWidth)/2, (map.clientHeight)/2, 1000);
+        // $("#map_wrapper").panzoom("resetPan", false); // maybe not useful anymore
+        // $("#map_wrapper").panzoom("resetZoom", false); // maybe not useful anymore
+        $("#map_wrapper").panzoom("pan", -_destX +(document.getElementById("map_wrapper").parentNode.clientWidth/2) - _paddingMap, -_destY +(document.getElementById("map_wrapper").parentNode.clientHeight/2) - _paddingMap);
+        $("#map_wrapper").panzoom("zoom", 0.5, { animate: true });
+        $("#map_wrapper").panzoom("pan", -600, 50, { relative: true }); // OJO! Cuando se hace zoom out, la imagen se desplaza no se por que. Tengo que corregirlo con estas instrucciones.
     }
 
     // This code snippet initializes the swiping effect panel in the MAP page
@@ -527,7 +512,7 @@ function showYOUlabel() {
     var map2 = document.getElementById("map_sourcePoint");
     var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
     var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
-    console.log("sameFLorr = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
+    console.log("sameFloor = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
     if ((_sameFloor == true && _allowYOUlabel == true) || (map2.style.display == "inline" && _allowYOUlabel)) {
         // We show the corresponding label and the svg point:
         // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
@@ -550,7 +535,7 @@ function removeDuplicatedMaps() {
     var dest_point = document.getElementById("svg_circle_destinationpoint");
     var you = document.getElementById("p_you");
     var dest_label = document.getElementById("p_dest_label");
-    $("footer > img:first-child").fadeOut(2500);
+    $("#spa_map #footer > img:first-child").fadeOut(2500);
     map1.style.display = "inline";
     map2.style.display = "none";
     you.style.visibility = "visible";
@@ -593,7 +578,7 @@ function goContact(index) {
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
     hideLiveSearchResults();
-    clearInterval(_trilaterationTimer);
+    clearInterval(_trilaterationTimerID);
     loadContactDetails();
     evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
 }

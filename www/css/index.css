@@ -165,22 +165,23 @@ h1 {
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% MAP %%%%%%%%%%%%%%%%%%%%%%%%%%% */
 
 #spa_map {
-    /*background-color: yellow;  *//* The color is for debuggin purposes */
+    /*background-color: yellow;*/  /* The color is for debuggin purposes */
     background-color: none;
     height: 100%;
 }
 
 #spa_map .ui-content {
-    background-color: red;/* The color is for debuggin purposes */
+    /*background-color: red;*/ /* The color is for debuggin purposes */
+    background-color: white;
     padding: 0px;
-    margin-left: 0px;
-    margin-right: 0px;
-    overflow: visible;
     width: 100%;
     height: 100%;
-    display:flex; /* This new feature in CSS3 is used to distribute the space between objects within a container */
-    justify-content: center; /* This new feature in CSS3 is used to distribute the space between objects within a container */
-    position: absolute;
+    margin-left: 0px;
+    margin-right: 0px;
+    overflow: hidden;
+    /*display:flex;*/ /* This new feature in CSS3 is used to distribute the space between objects within a container */
+    /*justify-content: center;*/ /* This new feature in CSS3 is used to distribute the space between objects within a container */
+    /*position: absolute;*/
 }
 
 .header { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' */
@@ -214,6 +215,15 @@ h1 {
 }
 #spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after, #spa_edit_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     background-size: 100%; /* This changes the size of the icon*/
+}
+
+#map_wrapper {
+    /*background-color: #ccc;*/ /* The color is for debuggin purposes */
+    background-color: white;
+    height: auto;
+    width: auto;
+    display: inline-block;
+    padding: 600px; /* If you CHANGE this value, you should change also "_paddingMap" global variable*/
 }
 
 #spa_map .footer, #spa_contact .footer{ /* ALSO USED IN 'CONTACT' PAGE */
@@ -270,24 +280,6 @@ h1 {
 
 #spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults, #spa_edit_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     margin-left: -45%;
-}
-
-#map_wrapper {
-    background-color: #ccc; /* The color is for debuggin purposes */
-    height: auto;
-    width: auto;
-    position: relative;
-}
-#div_maplimits {
-    width: auto;
-    height: auto;
-    padding: 5%;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: green;
-    position: relative;
-    margin-bottom: auto;
-    margin-top: auto;
 }
 
 #svg_circle_destinationpoint, #svg_circle_sourcepoint {
@@ -432,6 +424,7 @@ h1 {
     margin: 0px;
     padding: 22px 35px 22px 0px;
     width: 60px;
+    z-index: 2;
 }
 #gear_tab.ui-btn::after { /* ALSO USED IN 'MAP' PAGE */
     background-size: 100%; /* This changes the size of the icon*/

@@ -512,7 +512,7 @@ function showYOUlabel() {
     var map2 = document.getElementById("map_sourcePoint");
     var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
     var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
-    console.log("sameFLorr = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
+    console.log("sameFloor = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
     if ((_sameFloor == true && _allowYOUlabel == true) || (map2.style.display == "inline" && _allowYOUlabel)) {
         // We show the corresponding label and the svg point:
         // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
@@ -535,7 +535,7 @@ function removeDuplicatedMaps() {
     var dest_point = document.getElementById("svg_circle_destinationpoint");
     var you = document.getElementById("p_you");
     var dest_label = document.getElementById("p_dest_label");
-    $("footer > img:first-child").fadeOut(2500);
+    $("#spa_map #footer > img:first-child").fadeOut(2500);
     map1.style.display = "inline";
     map2.style.display = "none";
     you.style.visibility = "visible";
@@ -578,7 +578,7 @@ function goContact(index) {
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
     hideLiveSearchResults();
-    clearInterval(_trilaterationTimer);
+    clearInterval(_trilaterationTimerID);
     loadContactDetails();
     evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
 }

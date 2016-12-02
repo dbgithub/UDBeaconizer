@@ -185,6 +185,15 @@ static id styling;
 
 - (void)toastTimerDidFinish:(NSTimer *)timer {
     [self hideToast:(UIView *)timer.userInfo];
+    
+    // also send an event back to JS
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:msg, @"message", @"hide", @"event", nil];
+    if (data != nil) {
+        [dict setObject:data forKey:@"data"];
+    }
+    
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsDictionary:dict];
+    [commandDelegate sendPluginResult:pluginResult callbackId:callbackId];
 }
 
 - (void)handleToastTapped:(UITapGestureRecognizer *)recognizer {
@@ -357,7 +366,7 @@ static id styling;
         titleLabel = [[UILabel alloc] init];
         titleLabel.numberOfLines = CSToastMaxTitleLines;
         titleLabel.font = [UIFont boldSystemFontOfSize:theTextSize];
-        titleLabel.textAlignment = NSTextAlignmentLeft;
+        titleLabel.textAlignment = NSTextAlignmentCenter;
         titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
         titleLabel.textColor = theTitleLabelTextColor;
         titleLabel.backgroundColor = [UIColor clearColor];
@@ -378,6 +387,7 @@ static id styling;
         messageLabel.numberOfLines = CSToastMaxMessageLines;
         messageLabel.font = [UIFont systemFontOfSize:theTextSize];
         messageLabel.lineBreakMode = NSLineBreakByWordWrapping;
+        messageLabel.textAlignment = NSTextAlignmentCenter;
         messageLabel.textColor = theMessageLabelTextColor;
         messageLabel.backgroundColor = [UIColor clearColor];
         messageLabel.alpha = 1.0;

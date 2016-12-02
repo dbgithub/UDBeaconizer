@@ -15,7 +15,7 @@
     <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
     <title>UD Finder</title>
 </head>
-<body onresize="softKeyboard(window.innerHeight);">
+<body ondblclick="$('#map_wrapper').panzoom('zoom', 0.5, { animate: true });" onresize="softKeyboard(window.innerHeight);">
 
     <!-- INDEX page -->
     <div id="spa_index" data-role="page">
@@ -35,7 +35,6 @@
 
     <!-- MAP page -->
     <div id="spa_map" data-role="page">
-        <a id="gear_tab" href="#sidepanel_map" class="ui-btn ui-btn-icon-left ui-btn-inline ui-icon-gear ui-alt-icon"></a>
         <div data-role="panel" data-position="right" data-position-fixed="true" data-theme="none" data-display="overlay" id="sidepanel_map"> <!-- data-theme = none sets the theme and background to transparent-->
             <p>
                 Should you find inaccurate information, feel free to get your hands dirty:
@@ -56,16 +55,15 @@
         </div>
 
         <div data-role="main" class="ui-content">
-            <div id="div_maplimits">
-                <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
-                    <img id="svg_circle_sourcepoint" src="./img/red_circle.png" width="70" height="70" alt="youicon">
-                    <img id="svg_circle_destinationpoint" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
-                    <p id="p_you">YOU</p>
-                    <p id="p_dest_label">destination</p>
-                    <!-- <p id="p_upstairs_downstairs"></p> -->
-                    <img id="map" src="" alt="map">
-                    <img id="map_sourcePoint" src="" alt="map">
-                </div>
+            <a id="gear_tab" href="#sidepanel_map" class="ui-btn ui-btn-icon-left ui-btn-inline ui-icon-gear ui-alt-icon"></a>
+            <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
+                <img id="svg_circle_sourcepoint" src="./img/red_circle.png" width="70" height="70" alt="youicon">
+                <img id="svg_circle_destinationpoint" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
+                <p id="p_you">YOU</p>
+                <p id="p_dest_label">destination</p>
+                <!-- <p id="p_upstairs_downstairs"></p> -->
+                <img id="map" src="" alt="map">
+                <img id="map_sourcePoint" src="" alt="map">
             </div>
         </div>
         <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
@@ -145,10 +143,10 @@
     <script type="text/javascript" src="cordova.js"></script>
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" src="js/events.js"></script>
-    <script type="text/javascript" src="js/evothings.eddystone.js"></script> <!-- I should remove this as soon as I make the BLE-Central plugin work-->
+    <script type="text/javascript" src="js/eddystone.dist.js"></script> <!-- long script that handles the detection of eddystone beacons -->
+    <script type="text/javascript" src="js/evothings.eddystone.js"></script> <!-- Business logic to detect, capture and interpret the Eddystone frames + proceed with trilateration --> <!-- I should remove this as soon as I make the BLE-Central plugin work-->
     <script type="text/javascript" src="js/jquery.flip.min.js"></script> <!-- I'm not using it for the moment! -->
     <script type="text/javascript" src="js/blob-util.min.js"></script>
-    <!-- <script type="text/javascript" src="js/iscroll-zoom.js"></script> -->
     <script type="text/javascript" src="js/jquery.panzoom.min.js"></script>
     <script src="js/pouchdb-5.3.1.min.js"></script> <!-- Updatin PouchDB to version 6 gave me huge headache. Replication stoped working and so on..., so watch out! -->
     <script src="js/database.js"></script>
