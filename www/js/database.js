@@ -281,7 +281,8 @@ function requestMapImages(floor, callback, new_version){
                 // var response = new Blob([fimage.response], {type: "image/png"}); // This doesn't work on Phonegap, but it does in Desktop browsers.
                 var blob = blobUtil.createBlob([fimage.response], {type: 'image/jpeg'}); // We convert the read image into blob
                 blobUtil.blobToBase64String(blob).then(function (base64String) { // We convert the blob into base64
-                    console.log(base64String);
+                    // console.log(base64String);
+                    console.log("base64String obtained! -> " + base64String.substr(1, 100) + "...");
                     saveMapImage(floor.toString(), base64String, new_version); // Now we save the image in the local database as a base64 string
                     if (floor < (_mapNames.length -1) && callback != null) {callback(++floor, requestMapImages);} // We call recursively once again until we finish retrieving all floor maps from remote database.
                 }).catch(function (err) {
@@ -327,7 +328,7 @@ function saveMapImage(floor, base64, new_version) {
 }
 
 // This function retrieves a person or several persons based on the given name from the database
-function retrievePerson(name) {
+function retrievePerson(name, callback) {
     _db.allDocs({
         include_docs: true
         // attachments: true // This is not used for the moment
@@ -339,8 +340,7 @@ function retrievePerson(name) {
                 _searched_people.push(result.rows[i].doc); // Inserting people found with the query
             }
         }
-        console.log(_searched_people);
-        showBothStaffNRooms(); // displays all people and/or rooms found with the query
+        callback(); // displays all people and/or rooms found with the query
     }).catch(function (err) {
         console.log(err);
     });
@@ -350,7 +350,7 @@ function retrievePerson(name) {
 // The boolean controls whether to show the results or not. This is done like that because when the searching item contains a number
 // retrieveRoom is exclusively executed, but if the searching item doesn't contain a number retrieveStaff is executed first and
 // is responsible of showing the corresponding results.
-function retrieveRoom(room, bool) {
+function retrieveRoom(room, bool, callback) {
     _dbrooms.allDocs({
         include_docs: true,
         startkey: '0', // We are including startkey and endkey so that we skip the floor documents which are not part of the search.
@@ -386,11 +386,10 @@ function retrieveRoom(room, bool) {
                 }
             }
         }
-        console.log(_searched_rooms);
         // if the text introduced by the user contains digits, then it means that "retrieveStaff" has not been executed, hence
         // we have the responsibility of showing the list.
         if (bool) {
-            showRoomsList(); // displays all rooms found with the query
+            callback(); // displays all rooms found with the query
         }
     }).catch(function (err) {
         console.log("error retrieving a room or several rooms from the database");
@@ -399,13 +398,13 @@ function retrieveRoom(room, bool) {
 }
 
 // This function is part of an AJAX call that retrieves an image/map
-function retrieveMap(floor) {
+function retrieveMap(floor, callback) {
         _dbrooms.get("map"+floor).then(function (doc) {
             blobUtil.base64StringToBlob(doc.image).then(function (blob) {
                 // success
-                // console.log(blob);
                 _reva = blobUtil.createObjectURL(blob);
                 showMap();
+                callback();
             }).catch(function (err) {
                 // error
                 console.log("error converting from base64 to blob");

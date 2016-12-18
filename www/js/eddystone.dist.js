@@ -2480,7 +2480,6 @@ evothings.eddystone.startScan = function(scanCallback, failCallback)
  */
 evothings.eddystone.stopScan = function()
 {
-	console.log("----------------------------------------------------------------- STOP SCAN called!");
 	evothings.easyble.stopScan();
 	isScanning = false;
 }

@@ -37,9 +37,12 @@ var _searched_people; // an array containing the staff/people who have been foun
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
 var _mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"]; // This array contains the names of the images representing the maps. Whenever we declare a new map or we change its name, we should ONLY do it here, not anywhere else in the code.
+var _searchTimer; // A timer that executes a certain function when the user stops writing something in the search bar.
+var _tooltipTimer; // Timer for a tooltip message on the screen.
     // GLOBAL VARIABLES used in "evothings.eddystone.js":
     var _trilaterationTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function
     var _beaconRemoverTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function to remove the old beacons from time to tijme
+    var _blestatusTimerID; // This is the ID of the timer that checks periodically (every second) whether Bluetooth is enabled or not.
     var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon so as to calculate an average of the values.
     var _nearestbeacons = []; // An array containing the three NEAREST beacons from the total list of beacons.
     var _sortedList; // a list of beacons sorted by signal strength
@@ -69,7 +72,7 @@ var _removedRows = []; // This array contains the INDEXes of the rows within "ch
 var _showingToolTip = false; // A boolean used to check whether there is already a notification dialog on the device's screen or not. The idea is to avoid DUPLICATE dialogs!!
 var _preventClick = false; // A boolean that is used to prevent buttons from running their ontouchend event when the finger leaves the hoover space. It's like a trick.
 var _wentOffline = false; // A boolean to avoid the message of 'online' event when the app starts up.
-var _paddingMap = 600; // The padding around the map image used to allow the user pan over something more than just the image
+var _paddingMap = 1500; // The padding around the map image used to allow the user pan over something more than just the image
 var app = {
     // Application Constructor
     initialize: function() {
@@ -127,11 +130,10 @@ var app = {
                 _editingInProgress = false; // We reset the variable for the next ocasion
             }
         } else {
-            evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
             cleanGUI();
-            clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
-            clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
             window.location = "#spa_index";
+            parenLasRotativas(); // This stops the scan and reseets the values for both Intervals set to calculate trilateration
+            clearInterval(_blestatusTimerID);
         }
     },
     // Update DOM on a Received Event
@@ -145,10 +147,5 @@ var app = {
         // deleteDB("roomsdb");
         // deleteDB("beaconsdb");
         _viewportHeight = window.innerHeight; // Here we set the Height of the Viewport to the corresponding variable.
-        // The following event is fired/triggered when the "clear" icon in the main seearch bar text input is pressed.
-        // This might have to be changed in the future because no all inputs have to have this behaviour. Selectors are crazy, I cannot select what I want.
-        $(".ui-input-clear").on("click", function() {
-            hideLiveSearchResults();
-        });
     }
 };

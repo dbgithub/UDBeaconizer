@@ -10,6 +10,7 @@
 
 	function startScan() {
 		console.log('Scan in progress.');
+		beacons = {}; // Reset the dictionary containing all detected/scanned beacons
 		_beaconsDistances = {}; // The object containing a set of 5 measured distances of every beacon is reset.
 		_lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
 		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from one of the beacons.
@@ -50,15 +51,21 @@
 			if (undefinedCounter != -1) {
 				undefinedCounter++;
 				if (undefinedCounter == 16) {showToolTip('You might be experimenting some interferences! Beacons might not be reachable! :('); return null;}  // If 16 consecutive frames are not received, we warn the user.
-				if (undefinedCounter == 30) {_allowYOUlabel = false; showYOUlabel(); return null;} // If 30 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
-				if (undefinedCounter == 50) { // If 50 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
+				if (undefinedCounter == 20) {_allowYOUlabel = false; showYOUlabel(); return null;} // If 20 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
+				if (undefinedCounter < 20) {_real_X=undefined; _real_Y=undefined; updateGUI();} // We want to show the user's last known position in gray scale.
+				if (undefinedCounter == 28) { // If 28 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
 					undefinedCounter = -1;
 					_allowYOUlabel = false;
+					parenLasRotativas();
+					_blestatusTimerID = setInterval(checkBLEStatus, 1000);
 					if (!_showingToolTip) {
 						_showingToolTip = true;
 						navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
 						"are received, make sure you have the Bluetooth feature enabled in your device " +
-						" and ensure you are inside the building! :)", function() {_showingToolTip = false;}, "Serious interferences :(", "Oki Doki!");
+						" and ensure you are inside the building! :)", function() {
+							_showingToolTip = false;
+							bluetoothSerial.enable(function(){console.log("The user enabled Bluetooth in purpose");}, function(){console.log("The user declined enabling Bluetooth");})
+						}, "Serious interferences :(", "Oki Doki!");
 					}
 					return null;
 				}
@@ -79,14 +86,14 @@
 		// displayBeacons();
 	}
 
-	// Removes beacons older than 20 seconds (readings not received) from the beacons' dictionary
+	// Removes beacons older than 10 seconds (readings not received) from the beacons' dictionary
 	function removeOldBeacons()	{
 		var timeNow = Date.now();
 		for (var key in beacons)
 		{
-			// Only keep beacons updated during the last 20 seconds.
+			// Only keep beacons updated during the last 10 seconds.
 			var beacon = beacons[key];
-			if (beacon.timeStamp + 20000 < timeNow)
+			if (beacon.timeStamp + 10000 < timeNow)
 			{
 				// console.log("Beacon REMOVED: " + key);
 				delete beacons[key];
@@ -236,7 +243,7 @@
 		setTimeout(startScan, 500);
 		// Evothings.eddystone.js: Timer that refreshes the display.
 		_trilaterationTimerID = setInterval(updateBeaconList, 500);
-		_beaconRemoverTimerID = setInterval(removeOldBeacons, 15000);
+		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
 	}
 
 	// Calculate an average of measured distances of beacons.
@@ -429,4 +436,19 @@
 				});
 			})
 		})
+	}
+
+	// Stops the scanning process of BLE devices
+	// Resets the IDs for the Intervals that were launched to calculate trilateration
+	function parenLasRotativas() {
+		evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+		clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
+		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
+	}
+
+	function checkBLEStatus() {
+		// Checking whether Bluetooth feature is enabled or not:
+		bluetoothSerial.isEnabled(
+			function() {clearInterval(_blestatusTimerID);locateUser();}, function() {console.log("BLE is not enabled in the device!");} // Sucess and failure callbacks
+		);
 	}

@@ -1,142 +1,123 @@
-var searchtimer; // GLOBAL VARIABLE. A timer that executes a certain function when the user stops writing something in the search bar.
-var inputValue; // GLOBAL VARIABLE. Value/text introduced by the user
-var tooltipTimer; // GLOBAL VARIABLE. Timer for the tooltip functionality. It is used when the user maintains pressure over an object triggering a tooltip explaining the use of that button, action or whatever.
-
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
-function livesearch(text) {
+function livesearch(inputvalue) {
     // var re = /\s/g; // this is a regular expression checking for one or more space characters in the whole string, "g" means global.
     // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
     // hence the search would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
-    text = text.trim().toLowerCase(); // Here we "validate"/filter the input. We avoid "all whitespaces" and empty strings among others.
+    inputvalue = inputvalue.trim().toLowerCase(); // Here we "validate"/filter the input. We avoid "all whitespaces" and empty strings among others.
     // We check whether the input text introduced by the user contains numbers (rooms, offices...) or a simple name:
-    if (text.length != 0 && text != "" && !/\d/.test(text)) {
-        console.log("LOOKING FOR PERSONA/ROOM!");
-        inputValue = text;
-        console.log(inputValue);
-        if (searchtimer === undefined) {
-            searchtimer = setTimeout(searchPeople, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
-        } else {
-            clearTimeout(searchtimer);
-            searchtimer = setTimeout(searchPeople, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
-        } // END inside if
-    } else if (/\d/.test(text)){ // This is going to happen if the input has a digit among what has been written
-        console.log("LOOKING FOR NUMERO!");
-        inputValue = text;
-        console.log(inputValue);
-        if (searchtimer === undefined) {
-            searchtimer = setTimeout(searchRoom, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
-        } else {
-            clearTimeout(searchtimer);
-            searchtimer = setTimeout(searchRoom, 500); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
-        } // END inside if
+    if (inputvalue.length != 0 && inputvalue != "" && !/\d/.test(inputvalue)) {
+        console.log(inputvalue);
+        clearTimeout(_searchTimer);
+        _searchTimer = setTimeout(function() {searchPeople(inputvalue)}, 50); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
+    } else if (/\d/.test(inputvalue)){ // This is going to happen if the input has a digit among what has been written
+        console.log(inputvalue);
+        clearTimeout(_searchTimer);
+        _searchTimer = setTimeout(function() {searchRoom(inputvalue)}, 50); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
     } else {
         // More info about Toast plugin at: https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin
-        showToolTip('Please, type anything in the search bar :)');
-        clearTimeout(searchtimer);
+        clearTimeout(_searchTimer);
         hideLiveSearchResults();
+        showToolTip('Please, type anything in the search bar :)');
     }// END outside if
 }
 
 // It hides the live-search-result DOM element and its content
-// We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+// We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
 function hideLiveSearchResults() {
-    // var div = document.getElementById("div_liveSearchResults");
-    // div.innerHTML = "";
-    // div.style.visibility = "hidden";
     var div = $("[data-id='liveSearchResults']");
-    div.html("");
-    div.css("visibility", "hidden");
+    for (i = 0; i< div.length; i++) {
+        $(div[i]).css("visibility", "hidden");
+        $(div[i]).html("");
+    }
+    console.log("All 'LiveResults' cleaned!");
 }
 
-// This function cleans the GUI of the index page.
+// This function cleans the GUI of the index page. This involves cleaning the text within ALL inputs of all SPA pages.
+// As an aside note, it also removes the jQuery white crosses that are used to actually remove the content of the inputs too.
 function cleanGUI() {
-    var div = document.getElementById("searchbar");
-    div.value = "";
+    var input = $("[class=input_search_bar]");
+    // We are also interested in removing the jQuery white cross that is used to erase the content of the input.
+    // This white cross is drawn (implemented) as an anchor tag (<a>) by jQuery, so we need to access it and add a "hidden" class.
+    var searchbarstyle = $(".div_searchbarStyle a");
+    var searchbarstyle_v2 = $(".div_searchbarStyle_v2 a");
+    for (i = 0; i< input.length; i++) {
+        input[i].value = ""; // I was using: '$(input[i]).attr("value", "");', but it didn't work properly!
+        $(searchbarstyle[i]).addClass("ui-input-clear-hidden");
+    }
+    $(searchbarstyle).addClass("ui-input-clear-hidden");
     hideLiveSearchResults();
+    console.log("All 'InputSearch' cleaned!");
 }
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
-function searchPeople() {
-    retrievePerson(inputValue);
-    retrieveRoom(inputValue, false); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
+function searchPeople(inputvalue) {
+    retrievePerson(inputvalue, function() {showBothStaffNRooms();});
+    retrieveRoom(inputvalue, false, function() {showRoomsList();}); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
 }
 
 // Searches for the room in the database
-function searchRoom() {
-    retrieveRoom(inputValue, true); // true means that it DOES show its results because the search item contains a number
+function searchRoom(inputvalue) {
+    retrieveRoom(inputvalue, true, function() {showRoomsList();}); // true means that it DOES show its results because the search item contains a number
 }
 
 // Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showRoomsList() {
-    if (document.getElementById("searchbar").value == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
-    setTimeout(function() {
-        if (_searched_rooms.length != 0) {
-            var list = "";
-            for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
-            }
-            // var div = document.getElementById("div_liveSearchResults");
-            var div = $("[data-id='liveSearchResults']");
-            if (_searched_rooms.length > 6) {
-                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
-                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
-            } else {
-                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
-                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
-            }
-            // div.innerHTML = "<ul data-role='listview'>" + list + "</ul>";
-            // div.style.visibility = "visible";
-            div.html("<ul data-role='listview'>" + list + "</ul>")
-            div.css("visibility", "visible");
-        } else {
-            showToolTip('Not found! Please, try again :)');
-            console.log("WARNING: no results found in the database");
-            hideLiveSearchResults();
+    if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
+    console.log("Items found (rooms): " +_searched_rooms.length);
+    if (_searched_rooms.length != 0) {
+        var list = "";
+        for (j = 0; j < _searched_rooms.length; j++) {
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
         }
-    }, 100);
+        var div = $("[data-id='liveSearchResults']");
+        if (_searched_rooms.length > 6) {
+            div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
+        } else {
+            div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
+        }
+        div.html("<ul data-role='listview'>" + list + "</ul>")
+        div.css("visibility", "visible");
+    } else {
+        showToolTip('Not found! Please, try again :)');
+        console.log("WARNING: no results found in the database");
+        hideLiveSearchResults();
+    }
 }
 
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showBothStaffNRooms() {
-    if (document.getElementById("searchbar").value == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
-    setTimeout(function() {
-        console.log("length PEOPLE: " +_searched_people.length); // eliminar esta traza
-        console.log("length ROOMS: " +_searched_rooms.length); // eliminar esta traza
-        var list = "";
-        if (_searched_people.length != 0) {
-            for (j = 0; j < _searched_people.length; j++) {
-                // window.location.replace() -> evita que vayas atras en el history
-                list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
-                // ontouchstart='return true; attribute needed??'
-            }
+    if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
+    console.log("Items found (people): " +_searched_people.length);
+    console.log("Items found (rooms): " +_searched_rooms.length);
+    var list = "";
+    if (_searched_people.length != 0) {
+        for (j = 0; j < _searched_people.length; j++) {
+            // window.location.replace() -> evita que vayas atras en el history
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
+            // ontouchstart='return true; attribute needed??'
         }
-        if (_searched_rooms.length != 0) {
-            for (j = 0; j < _searched_rooms.length; j++) {
-                list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
-                // ontouchstart='return true; attribute needed??'
-            }
+    }
+    if (_searched_rooms.length != 0) {
+        for (j = 0; j < _searched_rooms.length; j++) {
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+            // ontouchstart='return true; attribute needed??'
         }
-        if (list != "") {
-            // var div = document.getElementById("div_liveSearchResults");
-            var div = $("[data-id='liveSearchResults']");
-            if (_searched_people.length + _searched_rooms.length > 6) {
-                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset";
-                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
-            } else {
-                // div.style.boxShadow="0px 1px 10px rgba(0, 0, 0, 0.8)";
-                div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
-            }
-            // div.innerHTML = "<ul data-role='listview'>" + list + "</ul>";
-            // div.style.visibility = "visible";
-            div.html("<ul data-role='listview'>" + list + "</ul>")
-            div.css("visibility", "visible");
+    }
+    if (list != "") {
+        var div = $("[data-id='liveSearchResults']");
+        if (_searched_people.length + _searched_rooms.length > 6) {
+            div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
         } else {
-            showToolTip('Not found! Please, try again :)');
-            console.log("WARNING: no results found in the database");
-            hideLiveSearchResults();
+            div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8)");
         }
-    }, 100);
+        div.html("<ul data-role='listview'>" + list + "</ul>")
+        div.css("visibility", "visible");
+    } else {
+        hideLiveSearchResults();
+        showToolTip('Not found! Please, try again :)');
+        console.log("WARNING: no results found in the database");
+    }
 }
 
 // This methods is called in the 'onLoad' event handler of the contact.html page
@@ -148,6 +129,7 @@ function loadContactDetails() {
     var rows = "";
     var officehours = " - ";
     var office = "";
+    $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
         if (person.officehours[k] != null) {
@@ -206,6 +188,7 @@ function loadEditContactDetails() {
     _editingInProgress = false; // we reset the variable just in case
     _carrete_horas = ""; // we reset the variable just in case
     _carrete_minutos = ""; // we reset the variable just in case
+    $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // We will generate the "carretes" (in spanish) representing 'hours' and 'minutes':
     // hours:
     for (var h = 0; h < 24; h++) {
@@ -306,163 +289,160 @@ function linkSearch(x) {
     livesearch(x);
 }
 
-// This methods is called in the 'onLoad' event handler of the map.html page
+// This method is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
-    // var room = JSON.parse(localStorage.getItem('_room')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    // localStorage.removeItem('_room');
-    console.log("LOADING ROOM -"+ _searched_rooms[_index][0].label + "-"); // eliminar esta traza
-    setTimeout(function() {
-        retrieveMap(_searched_rooms[_index][1]); // Here we are retrieving the map corresponding to the floor given by the room[] array.
-                             // If I take this call out of setTimeout function, JavaScripts yields errors.
-        _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
-                            // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
-    },0)
+    console.log("LOADING ROOM... "+ _searched_rooms[_index][0].label); // eliminar esta traza
     _floor = _searched_rooms[_index][1]; // we assign the floor number to this global variable in order to decide what map to show later on.
-    locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
+    _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
+                        // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
+    $(window.location.hash + " input.input_search_bar")[0].value = _searched_rooms[_index][0].label; // Write the number of the room in the searchbar
+    retrieveMap(_floor, function () { // Here we are retrieving the map corresponding to the floor given by the room[] array.
+        locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
-    // We draw the orange SVG point on the map and the corresponding label too:
-    var svg_circle = document.getElementById("svg_circle_destinationpoint");
-    var label_dest = document.getElementById("p_dest_label");
-    svg_circle.style.visibility="visible";
-    svg_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 + _paddingMap+"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-    svg_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 + _paddingMap+"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-    // svg_circle.setAttribute("cx", _searched_rooms[_index][0].x); // esto habia antes de quitar el SVG circle
-    // svg_circle.setAttribute("cy", _searched_rooms[_index][0].y); // esto habia antes de quitar el SVG circle
-    label_dest.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +_paddingMap +"px";
-    label_dest.style.top= parseInt(_searched_rooms[_index][0].y) + 40 + _paddingMap+"px";
-    label_dest.innerHTML=_searched_rooms[_index][0].label;
-    label_dest.style.visibility="visible";
-    _destX = _searched_rooms[_index][0].x; // Coordinate X of destination office/room
-    _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
+        // We draw the orange SVG point on the map and the corresponding label too:
+        var svg_circle = document.getElementById("svg_circle_destinationpoint");
+        var label_dest = document.getElementById("p_dest_label");
+        svg_circle.style.visibility="visible";
+        svg_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+        svg_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+        label_dest.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +_paddingMap +"px";
+        label_dest.style.top= parseInt(_searched_rooms[_index][0].y) + 40 +_paddingMap +"px";
+        label_dest.innerHTML=_searched_rooms[_index][0].label;
+        label_dest.style.visibility="visible";
+        _destX = _searched_rooms[_index][0].x; // Coordinate X of destination office/room
+        _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
-    /* jQuery panzoom by timmywil */
-    $("#map_wrapper").panzoom({
-        // Should always be non-empty
-        // Used to bind jQuery events without collisions
-        // A guid is not added here as different instantiations/versions of Panzoom
-        // on the same element is not supported.
-        eventNamespace: ".panzoom",
-        // Whether or not to transition the scale
-        transition: true,
-        // Default cursor style for the element
-        cursor: "move",
-        // There may be some use cases for zooming without panning or vice versa
-        // NOTE: disablePan also disables focal point zooming
-        disablePan: false,
-        disableZoom: false,
-        // Pan only on the X or Y axes
-        disableXAxis: false,
-        disableYAxis: false,
-        // Set whether you'd like to pan on left (1), middle (2), or right click (3)
-        which: 1,
-        // The increment at which to zoom
-        // adds/subtracts to the scale each time zoomIn/Out is called
-        increment: 0.33,
-        // When no scale is passed, this option tells
-         // the `zoom` method to increment
-         // the scale *linearly* based on the increment option.
-         // This often ends up looking like very little happened at larger zoom levels.
-         // The default is to multiply/divide the scale based on the increment.
-        linearZoom: true,
-        // Pan only when the scale is greater than minScale
-        panOnlyWhenZoomed: false,
-        // min and max zoom scales
-        minScale: 0.2,
-        maxScale: 0.8,
-        // The default step for the range input
-        // Precendence: default < HTML attribute < option setting
-        rangeStep: 0.05,
-        // Animation duration (ms)
-        duration: 400,
-        // CSS easing used for scale transition
-        easing: "ease-in-out",
-        // Indicate how the element should be contained within its parent when panning
-        // Note: this does not affect zooming outside of the parent
-        // Set this value to 'invert' to only allow panning when the bounds of the element are bigger than the parent. You'd be able to pan from outside the parent.
-        // Set this value to 'automatic' to let the script decide when to apply "true" or "invert". It all depends on the size of the element and whether it exceeds the bounds of the parent.
-        // Set this value to true to only allow panning when the element is contained within the parent. It will bounce against the borders when it approaches the borders.
-        // You can set padding values to the inner element so that you can make a little more space between the element and the parent.
-        contain: false
-        // Transform value to which to always reset (string)
-        // Defaults to the original transform on the element when Panzoom is initialized
-        // startTransform: undefined,
+        /* jQuery panzoom by timmywil */
+        $("#map_wrapper").panzoom({
+            // Should always be non-empty
+            // Used to bind jQuery events without collisions
+            // A guid is not added here as different instantiations/versions of Panzoom
+            // on the same element is not supported.
+            eventNamespace: ".panzoom",
+            // Whether or not to transition the scale
+            transition: true,
+            // Default cursor style for the element
+            cursor: "move",
+            // There may be some use cases for zooming without panning or vice versa
+            // NOTE: disablePan also disables focal point zooming
+            disablePan: false,
+            disableZoom: false,
+            // Pan only on the X or Y axes
+            disableXAxis: false,
+            disableYAxis: false,
+            // Set whether you'd like to pan on left (1), middle (2), or right click (3)
+            which: 1,
+            // The increment at which to zoom
+            // adds/subtracts to the scale each time zoomIn/Out is called
+            increment: 0.33,
+            // When no scale is passed, this option tells
+            // the `zoom` method to increment
+            // the scale *linearly* based on the increment option.
+            // This often ends up looking like very little happened at larger zoom levels.
+            // The default is to multiply/divide the scale based on the increment.
+            linearZoom: true,
+            // Pan only when the scale is greater than minScale
+            panOnlyWhenZoomed: false,
+            // min and max zoom scales
+            minScale: 0.2,
+            maxScale: 0.7,
+            // The default step for the range input
+            // Precendence: default < HTML attribute < option setting
+            rangeStep: 0.05,
+            // Animation duration (ms)
+            duration: 400,
+            // CSS easing used for scale transition
+            easing: "ease-in-out",
+            // Indicate how the element should be contained within its parent when panning
+            // Note: this does not affect zooming outside of the parent
+            // Set this value to 'invert' to only allow panning when the bounds of the element are bigger than the parent. You'd be able to pan from outside the parent.
+            // Set this value to 'automatic' to let the script decide when to apply "true" or "invert". It all depends on the size of the element and whether it exceeds the bounds of the parent.
+            // Set this value to true to only allow panning when the element is contained within the parent. It will bounce against the borders when it approaches the borders.
+            // You can set padding values to the inner element so that you can make a little more space between the element and the parent.
+            contain: false
+            // Transform value to which to always reset (string)
+            // Defaults to the original transform on the element when Panzoom is initialized
+            // startTransform: undefined,
 
-        // This optional jQuery collection can be set to specify all of the elements
-        // on which the transform should always be set.
-        // It should have at least one element.
-        // This is mainly used for delegating the pan and zoom transform settings
-        // to another element or multiple elements.
-        // The default is the Panzoom element wrapped in jQuery
-        // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
-        // Note: only one Panzoom element will still handle events for a Panzoom instance.
-        // Use multiple Panzoom instances for that use case.
-        // $set: $elem,
-        // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
-        // $zoomIn: $(),
-        // $zoomOut: $(),
-        // Range input on which to bind zooming functionality
-        // $zoomRange: $(),
-        // Reset buttons/links collection on which to bind the reset method
-        // $reset: $(),
-        // For convenience, these options will be bound to Panzoom events
-        // These can all be bound normally on the Panzoom element
-        // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
-        // onStart: undefined,
-        // onChange: undefined,
-        // onZoom: undefined,
-        // onPan: undefined,
-        // onEnd: undefined,
-        // onReset: undefined
-    });
+            // This optional jQuery collection can be set to specify all of the elements
+            // on which the transform should always be set.
+            // It should have at least one element.
+            // This is mainly used for delegating the pan and zoom transform settings
+            // to another element or multiple elements.
+            // The default is the Panzoom element wrapped in jQuery
+            // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
+            // Note: only one Panzoom element will still handle events for a Panzoom instance.
+            // Use multiple Panzoom instances for that use case.
+            // $set: $elem,
+            // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
+            // $zoomIn: $(),
+            // $zoomOut: $(),
+            // Range input on which to bind zooming functionality
+            // $zoomRange: $(),
+            // Reset buttons/links collection on which to bind the reset method
+            // $reset: $(),
+            // For convenience, these options will be bound to Panzoom events
+            // These can all be bound normally on the Panzoom element
+            // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
+            // onStart: undefined,
+            // onChange: undefined,
+            // onZoom: undefined,
+            // onPan: undefined,
+            // onEnd: undefined,
+            // onReset: undefined
+        });
 
-    // We pan over the floor image to show the corresponding spot to the user:
-    var map = document.getElementById("map");
-    map.onload = function () {
-        // $("#map_wrapper").panzoom("resetPan", false); // maybe not useful anymore
-        // $("#map_wrapper").panzoom("resetZoom", false); // maybe not useful anymore
-        $("#map_wrapper").panzoom("pan", -_destX +(document.getElementById("map_wrapper").parentNode.clientWidth/2) - _paddingMap, -_destY +(document.getElementById("map_wrapper").parentNode.clientHeight/2) - _paddingMap);
-        $("#map_wrapper").panzoom("zoom", 0.5, { animate: true });
-        $("#map_wrapper").panzoom("pan", -600, 50, { relative: true }); // OJO! Cuando se hace zoom out, la imagen se desplaza no se por que. Tengo que corregirlo con estas instrucciones.
-    }
-
-    // This code snippet initializes the swiping effect panel in the MAP page
-    $(document).on("swipeleft", "#spa_map", function(e) {
-        // We check if there is no open panel on the page because otherwise
-        // a swipe to close the left panel would also open the right panel (and v.v.).
-        // We do this by checking the data that the framework stores on the page element (panel: open).
-        if ($(".ui-page-active").jqmData("panel") !== "open") {
-            if (e.type === "swipeleft") {
-                $("#sidepanel_map").panel("open");
-            }
+        // We pan over the floor image to show the corresponding spot to the user:
+        var map = document.getElementById("map");
+        map.onload = function () {
+            $("#map_wrapper").panzoom("resetPan", false); // This resets the image's position to the origin of coordinates
+            $("#map_wrapper").panzoom("resetZoom", false); // This resets the image's zoom to the original zoom value
+            $("#map_wrapper").panzoom("setMatrix", [1,0,0,1,0,0]); // This resets the image's matrix to default and initial values.
+            // Now we will get the focus of the source point so that the user can see where she/he has to go. We also want to specify a certain zoom level.
+            // To do so, we have to pan over the map image and apply a certain level of zoom. The zoom is performed based on a certain focal point.
+            // To avoid troubles with the position, we will make that focal point the center point of the window.
+            // More info about offset (just in case): https://api.jquery.com/offset/
+            $("#map_wrapper").panzoom("pan", -_destX -_paddingMap +(window.innerWidth/2), -_destY -_paddingMap +(window.innerHeight/2), {relative: true}); // Since we have performed several changes in the position and zoom properties, it's safer to pan with 'relative' option set to true.
+            $('#map_wrapper').panzoom('zoom', 0.5, {focal: {clientX:window.innerWidth/2,clientY:(window.innerHeight/2)}, animate:true});
         }
-    });
 
-    // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
-     silentLoginOAuth();
+        // This code snippet initializes the swiping effect panel in the MAP page
+        $(document).on("swipeleft", "#spa_map", function(e) {
+            // We check if there is no open panel on the page because otherwise
+            // a swipe to close the left panel would also open the right panel (and v.v.).
+            // We do this by checking the data that the framework stores on the page element (panel: open).
+            if ($(".ui-page-active").jqmData("panel") !== "open") {
+                if (e.type === "swipeleft") {
+                    $("#sidepanel_map").panel("open");
+                }
+            }
+        });
+
+        // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
+        silentLoginOAuth();
+    });
 
     // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
     // and here too: http://api.jquery.com/animate/#animate-properties-options
-   //  function grow() {
-   //     $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
-   //      .animate(
-   //      {r: 35},
-   //      {duration:1000,step:function(now){
-   //        $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
-   //     }, complete:function(){shrink();}});
-   // }
-   //
-   // function shrink() {
-   //    $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
-   //    .animate(
-   //    {r: 18},
-   //    {duration:1000,step:function(now){
-   //      $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
-   //   }, complete:function(){grow();}});
-   // }
-   // grow();
-
+    //  function grow() {
+    //     $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+    //      .animate(
+    //      {r: 35},
+    //      {duration:1000,step:function(now){
+    //        $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+    //     }, complete:function(){shrink();}});
+    // }
+    //
+    // function shrink() {
+    //    $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+    //    .animate(
+    //    {r: 18},
+    //    {duration:1000,step:function(now){
+    //      $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+    //   }, complete:function(){grow();}});
+    // }
+    // grow();
 }
 
 // Shows/loads the image within the DOM element.
@@ -547,7 +527,7 @@ function removeDuplicatedMaps() {
 // This function shows a tooltip with the message given in the parameter when the user presses and maitains the finger over the object.
 // When the user maintains the pressure over that object this tooltip will appear explaining the meaning of that button, object or whatever.
 function showOnPressedToolTip(string){
-    tooltipTimer = setTimeout(function () {
+    _tooltipTimer = setTimeout(function () {
         window.plugins.toast.show(string, 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
     }, 800);
 }
@@ -560,7 +540,7 @@ function showToolTip(string) {
 
 // Aborts the timer, and therefore, the toast message in this case
 function abortTimer(){
-    clearTimeout(tooltipTimer);
+    clearTimeout(_tooltipTimer);
 }
 
 // This function performs several things before loading the map html page within the SPA (Single Page Application) context.
@@ -568,7 +548,7 @@ function goMap(index) {
     // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
-    hideLiveSearchResults();
+    cleanGUI();
     loadMap();
 }
 
@@ -577,16 +557,15 @@ function goContact(index) {
     // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
-    hideLiveSearchResults();
-    clearInterval(_trilaterationTimerID);
+    cleanGUI();
     loadContactDetails();
-    evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
+    parenLasRotativas();
 }
 
 // This function performs several things before loading the "edit contact" page within the SPA (Single Page Application) context.
 function goEditContact() {
     if (_signedInUser != null) {
-        hideLiveSearchResults();
+        cleanGUI();
         window.location = "#spa_edit_contact";
         loadEditContactDetails();
     } else {
@@ -605,7 +584,7 @@ function goEditMap() {
 // _viewportHeight is the Height of the Viewport of the application at some point in time.
 // _softKeyboard is a boolean representing whether the soft keyboard is shown or not.
 function softKeyboard(height) {
-    var piezazo = document.getElementById("footer"); // 'piezazo' is the footer
+    var piezazo = document.getElementById("footer");
     if (!_input || (_input && height > _viewportHeight && _softKeyboard)) {piezazo.style.display = "initial"; _softKeyboard = false} else if (_input && !_softKeyboard ) {piezazo.style.display = "none"; _softKeyboard = true;}
     _viewportHeight = height;
 }
