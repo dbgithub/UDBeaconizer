@@ -20,7 +20,7 @@
 				// Update beacon data.
 				beacon.timeStamp = Date.now();
 				beacons[beacon.address] = beacon;
-				console.log("----------------------------------------------------------------------------- Beacond ADDED: " + beacon.address );
+				console.log("----------------------------------------------------------------------------- Beacon SCANNED and ADDED: " + beacon.address );
 			},
 			function(error)
 			{
@@ -39,9 +39,9 @@
 		var beaconList = [];
 		for (var key in beacons)
 		{
-			console.log("beacons.address: " + key);
 			// We check that the beacon we insert in the array is one of our beacons and not other company's one as well as it's not corrupted:
 			if (beacons[key] != null && beacons[key] !== undefined && uint8ArrayToString(beacons[key].nid) == "a7ae2eb7a749bac1ca64") { // Apparently, namespace ID has to be compared in lowercase values
+				console.log("Pool of beacons. Address: " + key);
 				beaconList.push(beacons[key]);
 			}
 		}
@@ -51,7 +51,7 @@
 			if (undefinedCounter != -1) {
 				undefinedCounter++;
 				if (undefinedCounter == 16) {showToolTip('You might be experimenting some interferences! Beacons might not be reachable! :('); return null;}  // If 16 consecutive frames are not received, we warn the user.
-				if (undefinedCounter == 20) {_allowYOUlabel = false; showYOUlabel(); return null;} // If 20 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
+				if (undefinedCounter == 20) {_allowYOUlabel = false; updateYOUlabel(); return null;} // If 20 consecutive frames are not received, we make dissapear the 'YOU' label and source point.
 				if (undefinedCounter < 20) {_real_X=undefined; _real_Y=undefined; updateGUI();} // We want to show the user's last known position in gray scale.
 				if (undefinedCounter == 28) { // If 28 consecutive frames are not received, we warn the user and force him/her to accept the message dialog.
 					undefinedCounter = -1;
@@ -291,21 +291,18 @@
 	// If the user is at the SAME floor, then, we will update the GUI accordingly.
 	// If the user IS NOT at the same floor, then, we will let him/her know about it.
 	// We check also the '_stopLoop' variable to prevent unnecesary processing time (e.g.loading the map each 500ms).
-	// "!isNan(_currentfloor)" checks if there are beacons readings.
 	function checkIfUserAtTheSameFloor(callback) {
-		console.log("dentro de 'checkIfUserAtTheSameFloor'" + _floor + " | " + _currentfloor + " | " +_stopLoop);
-		if (_floor != _currentfloor && !_stopLoop) { // This will occur if the user and the room are in different floors.
+		console.log("user floor = " + _floor + " | beacons floor = " + _currentfloor + " | stopLoop = " +_stop);
+		if (_floor != _currentfloor && !_stop) { // This will occur if the user and the room are in different floors.
 			$("#spa_map #footer > img:first-child").fadeToggle(2500);
+			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			duplicateMaps(_currentfloor);
-			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for.
-			// This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
-			showYOUlabel();
-		} else if (_floor == _currentfloor && _stopLoop) { // This will occur when the user and the room are eventually in the same floor.
-			_stopLoop = false;
+		} else if (_floor == _currentfloor && _stop) { // This will occur when the user and the room are eventually in the same floor.
+			_stop = false;
+			_sameFloor = true; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			removeDuplicatedMaps();
-			_sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
-			// This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
-			showYOUlabel();
+		} else if (_floor != _currentfloor && _stop) {
+			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 		}
 		callback();
 	}
@@ -364,33 +361,27 @@
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
 	// The GUI is updated.
 	function updateGUI() {
-		// Now we draw the SVG point and the corresponding label too:
-		var svg_circle_source = document.getElementById("svg_circle_sourcepoint");
-		var label_you = document.getElementById("p_you");
+		// Now we draw the user's location point and the corresponding label too:
+		var circle_source = document.getElementById("circle_sourcepoint");
+		var you_label = document.getElementById("p_you_label");
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
 		// we will make it grayscale to make the user realize that is an old reading:
 		if (_real_X === Infinity || _real_X === -Infinity || isNaN(_real_X) || _real_X === undefined ||
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
-			// svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
-			// svg_circle_source.style.visibility = "hidden"; // This hides the point out from user's sight
-			// label_you.style.visibility = "hidden"; // This hides the point out from user's sight
-			// label_you.style.visibility = "hidden"; // This hides the point out from user's sight
-			svg_circle_source.style.WebkitFilter="grayscale(100%)";
-			label_you.style.backgroundColor = "gray";
-			svg_circle_source.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			svg_circle_source.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			label_you.style.left=_lastKnownXcoordinate - 80 + _paddingMap +"px";
-			label_you.style.top=_lastKnownYcoordinate + 40 +_paddingMap +"px";
+			circle_source.style.WebkitFilter="grayscale(100%)";
+			you_label.style.backgroundColor = "gray";
+			circle_source.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			circle_source.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			you_label.style.left=_lastKnownXcoordinate - 80 + _paddingMap +"px";
+			you_label.style.top=_lastKnownYcoordinate + 40 +_paddingMap +"px";
 		} else {
-			showYOUlabel();
-			// svg_circle_source.setAttribute("cx", parseInt(_real_X)); esto habia antes de quitar el SVG circle
-			// svg_circle_source.setAttribute("cy", parseInt(_real_Y)); esto habia antes de quitar el SVG circle
-			svg_circle_source.style.WebkitFilter="none";
-			label_you.style.backgroundColor = "red";
-			svg_circle_source.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			svg_circle_source.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			label_you.style.left=_real_X - 80 + _paddingMap +"px";
-			label_you.style.top=_real_Y + 40 + _paddingMap +"px";
+			updateYOUlabel();
+			circle_source.style.WebkitFilter="none";
+			you_label.style.backgroundColor = "red";
+			circle_source.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			circle_source.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			you_label.style.left=_real_X - 80 + _paddingMap +"px";
+			you_label.style.top=_real_Y + 40 + _paddingMap +"px";
 			_lastKnownXcoordinate = _real_X;
 			_lastKnownYcoordinate = _real_Y;
 		}
@@ -408,11 +399,11 @@
 	// When the user is in another floor different to the room's floor, then we have to load two maps to let the user switch between them.
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
-			_stopLoop = true;
+			_stop = true;
 			// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
 			// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
 			// if (_currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
-			retrieveMap(_currentfloor.toString()); // If I take this call out of setTimeout function, JavaScripts yields errors.
+			retrieveMap(_currentfloor.toString(), function() {}); // If I take this call out of setTimeout function, JavaScripts yields errors.
 		},0)
 	}
 
@@ -421,7 +412,6 @@
 	// JavaScript executes everything synchronously.
 	function applyTrilateration() {
 		_currentfloor = estimateFloor();
-		console.log("Current FLOOR = " + _currentfloor);
 		if (_currentfloor == null) {return null;} // There has to be a way to stop the process of trilateration calculation when there are NOT readings from beacons. When the later happens, '_currentfloor' will be null, hece, we prevent the process from cointinuing.
 		// We check whether the floor the user is at is equal to the floor of the room we are searching.
 		// If both floors are different, then, we will let the user switch between both floors so as to be able
@@ -446,6 +436,7 @@
 		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
 	}
 
+	// Checks if the BLE is enabled, if YES, then we try to locate again the user on the map.
 	function checkBLEStatus() {
 		// Checking whether Bluetooth feature is enabled or not:
 		bluetoothSerial.isEnabled(

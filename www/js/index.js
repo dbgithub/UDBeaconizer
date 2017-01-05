@@ -35,6 +35,9 @@ var _reva; // returned value for any function
 var _index; // the index value for "searched rooms" and "searched people"
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
+var _linkSearch = false // A boolean referencing whether the search was performed due to a link pressed action (within the contact page)
+var _personRoomTouched = false; // A boolean representing whether the user has just clicked/touched a certain row among all the results (people or rooms). The purpose of this boolean is to avoid displaying the liveSearchResults div when is not necessary (because of the time delay that exist in searching)
+var _personRoomTouchedTimerID; // This is the ID of the timer that is launched by a setTimeout while in searching process to prevent dispaying the liveSearchResults div when it is not necessary.
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
 var _mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"]; // This array contains the names of the images representing the maps. Whenever we declare a new map or we change its name, we should ONLY do it here, not anywhere else in the code.
 var _searchTimer; // A timer that executes a certain function when the user stops writing something in the search bar.
@@ -51,8 +54,8 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _lastKnownYcoordinate; // This value saves the last available, correct, accurate and known Y coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
     var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
     var _floor // the floor number corresponding to the room or place the user is searching for
-    var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because is the initial one.
-    var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
+    var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because we haven't set it yet.
+    var _stop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
     var _currentfloor; // This int indicates the floor where the user is at.
     var _destX, _destY; // X and Y coordinates of the destination point over the map
     var _b1X, _b1Y; // X and Y coordinates of beacon 1
@@ -73,6 +76,8 @@ var _showingToolTip = false; // A boolean used to check whether there is already
 var _preventClick = false; // A boolean that is used to prevent buttons from running their ontouchend event when the finger leaves the hoover space. It's like a trick.
 var _wentOffline = false; // A boolean to avoid the message of 'online' event when the app starts up.
 var _paddingMap = 1500; // The padding around the map image used to allow the user pan over something more than just the image
+var _front = true; // A boolean representing which face of the card is been shown with jQuery flip plugin in the SPA Map
+
 var app = {
     // Application Constructor
     initialize: function() {
@@ -147,5 +152,107 @@ var app = {
         // deleteDB("roomsdb");
         // deleteDB("beaconsdb");
         _viewportHeight = window.innerHeight; // Here we set the Height of the Viewport to the corresponding variable.
+
+        $("#card").flip({
+            trigger: 'manual',
+            axis: 'y',
+            reverse:true,
+            front: $(".jqueryFlip-front"),
+            back: $(".jqueryFlip-back")
+        });
+
+        // This code snippet initializes the swiping effect panel in the MAP page
+        $(document).on("swipeleft", "#spa_map", function(e) {
+            // We check if there is no open panel on the page because otherwise
+            // a swipe to close the left panel would also open the right panel (and v.v.).
+            // We do this by checking the data that the framework stores on the page element (panel: open).
+            if ($(".ui-page-active").jqmData("panel") !== "open") {
+                if (e.type === "swipeleft") {
+                    $("#sidepanel_map").panel("open");
+                }
+            }
+        });
+
+        /* jQuery panzoom by timmywil */
+        $("#map_wrapper").panzoom({
+            // Should always be non-empty
+            // Used to bind jQuery events without collisions
+            // A guid is not added here as different instantiations/versions of Panzoom
+            // on the same element is not supported.
+            eventNamespace: ".panzoom",
+            // Whether or not to transition the scale
+            transition: true,
+            // Default cursor style for the element
+            cursor: "move",
+            // There may be some use cases for zooming without panning or vice versa
+            // NOTE: disablePan also disables focal point zooming
+            disablePan: false,
+            disableZoom: false,
+            // Pan only on the X or Y axes
+            disableXAxis: false,
+            disableYAxis: false,
+            // Set whether you'd like to pan on left (1), middle (2), or right click (3)
+            which: 1,
+            // The increment at which to zoom
+            // adds/subtracts to the scale each time zoomIn/Out is called
+            increment: 0.33,
+            // When no scale is passed, this option tells
+            // the `zoom` method to increment
+            // the scale *linearly* based on the increment option.
+            // This often ends up looking like very little happened at larger zoom levels.
+            // The default is to multiply/divide the scale based on the increment.
+            linearZoom: true,
+            // Pan only when the scale is greater than minScale
+            panOnlyWhenZoomed: false,
+            // min and max zoom scales
+            minScale: 0.2,
+            maxScale: 0.7,
+            // The default step for the range input
+            // Precendence: default < HTML attribute < option setting
+            rangeStep: 0.05,
+            // Animation duration (ms)
+            duration: 400,
+            // CSS easing used for scale transition
+            easing: "ease-in-out",
+            // Indicate how the element should be contained within its parent when panning
+            // Note: this does not affect zooming outside of the parent
+            // Set this value to 'invert' to only allow panning when the bounds of the element are bigger than the parent. You'd be able to pan from outside the parent.
+            // Set this value to 'automatic' to let the script decide when to apply "true" or "invert". It all depends on the size of the element and whether it exceeds the bounds of the parent.
+            // Set this value to true to only allow panning when the element is contained within the parent. It will bounce against the borders when it approaches the borders.
+            // You can set padding values to the inner element so that you can make a little more space between the element and the parent.
+            contain: false
+            // Transform value to which to always reset (string)
+            // Defaults to the original transform on the element when Panzoom is initialized
+            // startTransform: undefined,
+
+            // This optional jQuery collection can be set to specify all of the elements
+            // on which the transform should always be set.
+            // It should have at least one element.
+            // This is mainly used for delegating the pan and zoom transform settings
+            // to another element or multiple elements.
+            // The default is the Panzoom element wrapped in jQuery
+            // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
+            // Note: only one Panzoom element will still handle events for a Panzoom instance.
+            // Use multiple Panzoom instances for that use case.
+            // $set: $elem,
+            // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
+            // $zoomIn: $(),
+            // $zoomOut: $(),
+            // Range input on which to bind zooming functionality
+            // $zoomRange: $(),
+            // Reset buttons/links collection on which to bind the reset method
+            // $reset: $(),
+            // For convenience, these options will be bound to Panzoom events
+            // These can all be bound normally on the Panzoom element
+            // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
+            // onStart: undefined,
+            // onChange: undefined,
+            // onZoom: undefined,
+            // onPan: undefined,
+            // onEnd: undefined,
+            // onReset: undefined
+        });
+
+        // ----------------------
     }
 };

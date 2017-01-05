@@ -9,11 +9,11 @@ function livesearch(inputvalue) {
     if (inputvalue.length != 0 && inputvalue != "" && !/\d/.test(inputvalue)) {
         console.log(inputvalue);
         clearTimeout(_searchTimer);
-        _searchTimer = setTimeout(function() {searchPeople(inputvalue)}, 50); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
+        _searchTimer = setTimeout(function() {searchPeople(inputvalue)}, 50); // YOU CAN MODIFY the '50' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
     } else if (/\d/.test(inputvalue)){ // This is going to happen if the input has a digit among what has been written
         console.log(inputvalue);
         clearTimeout(_searchTimer);
-        _searchTimer = setTimeout(function() {searchRoom(inputvalue)}, 50); // YOU CAN MODIFY the '500' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
+        _searchTimer = setTimeout(function() {searchRoom(inputvalue)}, 50); // YOU CAN MODIFY the '50' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
     } else {
         // More info about Toast plugin at: https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin
         clearTimeout(_searchTimer);
@@ -25,7 +25,7 @@ function livesearch(inputvalue) {
 // It hides the live-search-result DOM element and its content
 // We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
 function hideLiveSearchResults() {
-    var div = $("[data-id='liveSearchResults']");
+    var div = $("[id='div_liveSearchResults']"); // It obtains all elements with 'id' to whatever. It doesn't just capture the element in the current page, instead, it captures all divs from all pages.
     for (i = 0; i< div.length; i++) {
         $(div[i]).css("visibility", "hidden");
         $(div[i]).html("");
@@ -63,14 +63,16 @@ function searchRoom(inputvalue) {
 
 // Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showRoomsList() {
+    if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (rooms): " +_searched_rooms.length);
     if (_searched_rooms.length != 0) {
+        if (_searched_rooms.length == 1 && _linkSearch) {window.location='#spa_map';goMap(0); return;} // If this statement returns true, it means that the search was originally performed by a link-pressed action (within the contact page for instance).
         var list = "";
         for (j = 0; j < _searched_rooms.length; j++) {
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
         }
-        var div = $("[data-id='liveSearchResults']");
+        var div = $(window.location.hash + " #div_liveSearchResults");
         if (_searched_rooms.length > 6) {
             div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
         } else {
@@ -87,6 +89,7 @@ function showRoomsList() {
 
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
 function showBothStaffNRooms() {
+    if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (people): " +_searched_people.length);
     console.log("Items found (rooms): " +_searched_rooms.length);
@@ -94,18 +97,18 @@ function showBothStaffNRooms() {
     if (_searched_people.length != 0) {
         for (j = 0; j < _searched_people.length; j++) {
             // window.location.replace() -> evita que vayas atras en el history
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; _personRoomTouched = true; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
             // ontouchstart='return true; attribute needed??'
         }
     }
     if (_searched_rooms.length != 0) {
         for (j = 0; j < _searched_rooms.length; j++) {
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; goMap("+j+")\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
             // ontouchstart='return true; attribute needed??'
         }
     }
     if (list != "") {
-        var div = $("[data-id='liveSearchResults']");
+        var div = $(window.location.hash + " #div_liveSearchResults");
         if (_searched_people.length + _searched_rooms.length > 6) {
             div.css("box-shadow", "0px 1px 10px rgba(0, 0, 0, 0.8), 0px -20px 20px -10px rgba(0, 0, 0, 0.8) inset");
         } else {
@@ -129,6 +132,8 @@ function loadContactDetails() {
     var rows = "";
     var officehours = " - ";
     var office = "";
+    console.log("_personRoomTouched?? ->" + _personRoomTouched);
+    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
@@ -188,6 +193,7 @@ function loadEditContactDetails() {
     _editingInProgress = false; // we reset the variable just in case
     _carrete_horas = ""; // we reset the variable just in case
     _carrete_minutos = ""; // we reset the variable just in case
+    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // We will generate the "carretes" (in spanish) representing 'hours' and 'minutes':
     // hours:
@@ -282,142 +288,45 @@ function add_row() {
     "</td></tr>";
     $($("#spa_edit_contact table").children()[0], this).append(standard_row).enhanceWithin(); // Here, as it happens in "loadEditContactDetails" function, it is necessary to refresh the elements for jQuery styles to work.
 }
+
 // This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
 // and searches for it.
 function linkSearch(x) {
-    document.getElementById("searchbar").value = x;
+    _searched_rooms = [];
+    $(window.location.hash + " input.input_search_bar")[0].value = x; // Write the name of the room in the searchbar
+    _linkSearch = true;
     livesearch(x);
 }
 
 // This method is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
-    console.log("LOADING ROOM... "+ _searched_rooms[_index][0].label); // eliminar esta traza
+    console.log("LOADING ROOM... "+ _searched_rooms[_index][0].label);
     _floor = _searched_rooms[_index][1]; // we assign the floor number to this global variable in order to decide what map to show later on.
-    _sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
-                        // This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) visible.
+    _sameFloor = true; // we want to load the desstination image first and in the front side of the jQuery flip plugin.
+    _allowYOUlabel = false; // we reset the boolean
+    if (!_front) {switchMaps();} // we reset the variable to its original value
+    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_rooms[_index][0].label; // Write the number of the room in the searchbar
+
     retrieveMap(_floor, function () { // Here we are retrieving the map corresponding to the floor given by the room[] array.
         locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
-        // We draw the orange SVG point on the map and the corresponding label too:
-        var svg_circle = document.getElementById("svg_circle_destinationpoint");
-        var label_dest = document.getElementById("p_dest_label");
-        svg_circle.style.visibility="visible";
-        svg_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-        svg_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-        label_dest.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +_paddingMap +"px";
-        label_dest.style.top= parseInt(_searched_rooms[_index][0].y) + 40 +_paddingMap +"px";
-        label_dest.innerHTML=_searched_rooms[_index][0].label;
-        label_dest.style.visibility="visible";
+        // We draw the orange destination image point on the map and the corresponding label too:
+        var dest_circle = document.getElementById("circle_destinationpoint");
+        var dest_label = document.getElementById("p_dest_label");
+        dest_circle.style.visibility="visible";
+        dest_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+        dest_circle.style.top = parseInt(_searched_rooms[_index][0].y) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+        dest_label.style.left= parseInt(_searched_rooms[_index][0].x) + 40 +_paddingMap +"px";
+        dest_label.style.top= parseInt(_searched_rooms[_index][0].y) + 40 +_paddingMap +"px";
+        dest_label.innerHTML=_searched_rooms[_index][0].label;
+        dest_label.style.visibility="visible";
         _destX = _searched_rooms[_index][0].x; // Coordinate X of destination office/room
         _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
-        /* jQuery panzoom by timmywil */
-        $("#map_wrapper").panzoom({
-            // Should always be non-empty
-            // Used to bind jQuery events without collisions
-            // A guid is not added here as different instantiations/versions of Panzoom
-            // on the same element is not supported.
-            eventNamespace: ".panzoom",
-            // Whether or not to transition the scale
-            transition: true,
-            // Default cursor style for the element
-            cursor: "move",
-            // There may be some use cases for zooming without panning or vice versa
-            // NOTE: disablePan also disables focal point zooming
-            disablePan: false,
-            disableZoom: false,
-            // Pan only on the X or Y axes
-            disableXAxis: false,
-            disableYAxis: false,
-            // Set whether you'd like to pan on left (1), middle (2), or right click (3)
-            which: 1,
-            // The increment at which to zoom
-            // adds/subtracts to the scale each time zoomIn/Out is called
-            increment: 0.33,
-            // When no scale is passed, this option tells
-            // the `zoom` method to increment
-            // the scale *linearly* based on the increment option.
-            // This often ends up looking like very little happened at larger zoom levels.
-            // The default is to multiply/divide the scale based on the increment.
-            linearZoom: true,
-            // Pan only when the scale is greater than minScale
-            panOnlyWhenZoomed: false,
-            // min and max zoom scales
-            minScale: 0.2,
-            maxScale: 0.7,
-            // The default step for the range input
-            // Precendence: default < HTML attribute < option setting
-            rangeStep: 0.05,
-            // Animation duration (ms)
-            duration: 400,
-            // CSS easing used for scale transition
-            easing: "ease-in-out",
-            // Indicate how the element should be contained within its parent when panning
-            // Note: this does not affect zooming outside of the parent
-            // Set this value to 'invert' to only allow panning when the bounds of the element are bigger than the parent. You'd be able to pan from outside the parent.
-            // Set this value to 'automatic' to let the script decide when to apply "true" or "invert". It all depends on the size of the element and whether it exceeds the bounds of the parent.
-            // Set this value to true to only allow panning when the element is contained within the parent. It will bounce against the borders when it approaches the borders.
-            // You can set padding values to the inner element so that you can make a little more space between the element and the parent.
-            contain: false
-            // Transform value to which to always reset (string)
-            // Defaults to the original transform on the element when Panzoom is initialized
-            // startTransform: undefined,
-
-            // This optional jQuery collection can be set to specify all of the elements
-            // on which the transform should always be set.
-            // It should have at least one element.
-            // This is mainly used for delegating the pan and zoom transform settings
-            // to another element or multiple elements.
-            // The default is the Panzoom element wrapped in jQuery
-            // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
-            // Note: only one Panzoom element will still handle events for a Panzoom instance.
-            // Use multiple Panzoom instances for that use case.
-            // $set: $elem,
-            // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
-            // $zoomIn: $(),
-            // $zoomOut: $(),
-            // Range input on which to bind zooming functionality
-            // $zoomRange: $(),
-            // Reset buttons/links collection on which to bind the reset method
-            // $reset: $(),
-            // For convenience, these options will be bound to Panzoom events
-            // These can all be bound normally on the Panzoom element
-            // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
-            // onStart: undefined,
-            // onChange: undefined,
-            // onZoom: undefined,
-            // onPan: undefined,
-            // onEnd: undefined,
-            // onReset: undefined
-        });
-
         // We pan over the floor image to show the corresponding spot to the user:
         var map = document.getElementById("map");
-        map.onload = function () {
-            $("#map_wrapper").panzoom("resetPan", false); // This resets the image's position to the origin of coordinates
-            $("#map_wrapper").panzoom("resetZoom", false); // This resets the image's zoom to the original zoom value
-            $("#map_wrapper").panzoom("setMatrix", [1,0,0,1,0,0]); // This resets the image's matrix to default and initial values.
-            // Now we will get the focus of the source point so that the user can see where she/he has to go. We also want to specify a certain zoom level.
-            // To do so, we have to pan over the map image and apply a certain level of zoom. The zoom is performed based on a certain focal point.
-            // To avoid troubles with the position, we will make that focal point the center point of the window.
-            // More info about offset (just in case): https://api.jquery.com/offset/
-            $("#map_wrapper").panzoom("pan", -_destX -_paddingMap +(window.innerWidth/2), -_destY -_paddingMap +(window.innerHeight/2), {relative: true}); // Since we have performed several changes in the position and zoom properties, it's safer to pan with 'relative' option set to true.
-            $('#map_wrapper').panzoom('zoom', 0.5, {focal: {clientX:window.innerWidth/2,clientY:(window.innerHeight/2)}, animate:true});
-        }
-
-        // This code snippet initializes the swiping effect panel in the MAP page
-        $(document).on("swipeleft", "#spa_map", function(e) {
-            // We check if there is no open panel on the page because otherwise
-            // a swipe to close the left panel would also open the right panel (and v.v.).
-            // We do this by checking the data that the framework stores on the page element (panel: open).
-            if ($(".ui-page-active").jqmData("panel") !== "open") {
-                if (e.type === "swipeleft") {
-                    $("#sidepanel_map").panel("open");
-                }
-            }
-        });
-
+        map.onload = function () {panANDzoom();}
         // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
         silentLoginOAuth();
     });
@@ -426,23 +335,37 @@ function loadMap() {
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
     // and here too: http://api.jquery.com/animate/#animate-properties-options
     //  function grow() {
-    //     $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+    //     $({r:$('#circle_destinationpoint, #circle_sourcepoint').attr('r')})
     //      .animate(
     //      {r: 35},
     //      {duration:1000,step:function(now){
-    //        $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+    //        $('#circle_destinationpoint, #circle_sourcepoint').attr('r', now);
     //     }, complete:function(){shrink();}});
     // }
     //
     // function shrink() {
-    //    $({r:$('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r')})
+    //    $({r:$('#circle_destinationpoint, #circle_sourcepoint').attr('r')})
     //    .animate(
     //    {r: 18},
     //    {duration:1000,step:function(now){
-    //      $('#svg_circle_destinationpoint, #svg_circle_sourcepoint').attr('r', now);
+    //      $('#circle_destinationpoint, #circle_sourcepoint').attr('r', now);
     //   }, complete:function(){grow();}});
     // }
     // grow();
+}
+
+// This method pans and zooms over the image/map.
+// It waits for the second map to load to avoid misbihavors
+function panANDzoom() {
+    $("#map_wrapper").panzoom("resetPan", false); // This resets the image's position to the origin of coordinates
+    $("#map_wrapper").panzoom("resetZoom", false); // This resets the image's zoom to the original zoom value
+    $("#map_wrapper").panzoom("setMatrix", [1,0,0,1,0,0]); // This resets the image's matrix to default and initial values.
+    // Now we will get the focus of the source point so that the user can see where she/he has to go. We also want to specify a certain zoom level.
+    // To do so, we have to pan over the map image and apply a certain level of zoom. The zoom is performed based on a certain focal point.
+    // To avoid troubles with the position, we will make that focal point the center point of the window.
+    // More info about offset (just in case): https://api.jquery.com/offset/
+    $("#map_wrapper").panzoom("pan", -_destX -_paddingMap +(window.innerWidth/2), -_destY -_paddingMap +(window.innerHeight/2), {relative: true}); // Since we have performed several changes in the position and zoom properties, it's safer to pan with 'relative' option set to true.
+    $('#map_wrapper').panzoom('zoom', 0.5, {focal: {clientX:window.innerWidth/2,clientY:(window.innerHeight/2)}, animate:true});
 }
 
 // Shows/loads the image within the DOM element.
@@ -454,71 +377,63 @@ function showMap() {
         map.src = _reva;
     } else {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
-        var map_sourcePoint = document.getElementById("map_sourcePoint");
-        map_sourcePoint.src = _reva;
+        var map_sourcepoint = document.getElementById("map_sourcepoint");
+        map_sourcepoint.src = _reva;
     }
 }
 
 // A function to swap between two maps
 function switchMaps() {
-    var map1 = document.getElementById("map");
-    var map2 = document.getElementById("map_sourcePoint");
-    var source_point = document.getElementById("svg_circle_sourcepoint");
-    var dest_point = document.getElementById("svg_circle_destinationpoint");
-    var you = document.getElementById("p_you");
+    $('#card').flip('toggle');
+    if (_front) {_front = false;} else {_front = true;}
+    var source_point = document.getElementById("circle_sourcepoint");
+    var dest_point = document.getElementById("circle_destinationpoint");
+    var you_label = document.getElementById("p_you_label");
     var dest_label = document.getElementById("p_dest_label");
     // var upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
-    if (map2.style.display != "inline") {
-        map1.style.display = "none";
-        map2.style.display = "inline";
-        _allowYOUlabel ? you.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
-        dest_label.style.visibility = "hidden";
-        // upstairs_downstairs.style.visibility = "visible";
-        _allowYOUlabel ? source_point.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
-        dest_point.style.visibility = "hidden";
-    } else {
-        map2.style.display = "none";
-        map1.style.display = "inline";
-        you.style.visibility = "hidden";
-        dest_label.style.visibility = "visible";
+    if (_front) {
+        you_label.style.visibility = "hidden";
         source_point.style.visibility = "hidden";
+        dest_label.style.visibility = "visible";
         dest_point.style.visibility = "visible";
+    } else {
+        _allowYOUlabel ? you_label.style.visibility = "visible" : null ; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
+        _allowYOUlabel ? source_point.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
+        dest_label.style.visibility = "hidden";
+        dest_point.style.visibility = "hidden";
     }
+    // upstairs_downstairs.style.visibility = "visible";
 }
 
 // This functions checks two booleans. Both booleans are set during application runtime.
 // All depends on whether there exists a communication with the beacons and if the user is at the same floor as the one he/she is searching for.
-function showYOUlabel() {
-    var map2 = document.getElementById("map_sourcePoint");
-    var svg_circle_source = document.getElementById("svg_circle_sourcepoint"); // This is the SVG red point corresponding to YOU
-    var label_you = document.getElementById("p_you"); // This is the red label corresponding to YOU
-    console.log("sameFloor = " + _sameFloor + " | allowYOUlabel = " + _allowYOUlabel);
-    if ((_sameFloor == true && _allowYOUlabel == true) || (map2.style.display == "inline" && _allowYOUlabel)) {
+function updateYOUlabel() {
+    console.log("sameFloor = " + _sameFloor + " | YOU label visible = " + _allowYOUlabel);
+    var circle_source = document.getElementById("circle_sourcepoint"); // This is the red point corresponding to YOU
+    var you_label = document.getElementById("p_you_label"); // This is the red label corresponding to YOU
+    if ((_sameFloor && _allowYOUlabel ) || (!_front && _allowYOUlabel)) {
         // We show the corresponding label and the svg point:
-        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
-        // Note that when two maps are loaded and shown, the label and SVG point is handled in "evothings.eddystone.js" script.
-        svg_circle_source.style.visibility="visible";
-        label_you.style.visibility="visible";
+        // Note that the label and the source image point corresponding to the room number is managed in "loadMap()" function.
+        // Note that when two maps are loaded and shown, the label and source image point is handled in "evothings.eddystone.js" script.
+        circle_source.style.visibility="visible";
+        you_label.style.visibility="visible";
     } else {
-        // We hide the label and the SVG point because in this scenario, the user and the floor he/she is searching are not the same:
-        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function
-        svg_circle_source.style.visibility="hidden";
-        label_you.style.visibility="hidden";
+        // We hide the label and the source image point because in this scenario, the user and the floor he/she is searching are not the same:
+        // Note that the label and the source image point corresponding to the room number is managed in "loadMap()" function
+        circle_source.style.visibility="hidden";
+        you_label.style.visibility="hidden";
     }
 }
 // This functions removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
 // So, now, we go back to the normal scenario.
 function removeDuplicatedMaps() {
-    var map1 = document.getElementById("map");
-    var map2 = document.getElementById("map_sourcePoint");
-    var source_point = document.getElementById("svg_circle_sourcepoint");
-    var dest_point = document.getElementById("svg_circle_destinationpoint");
-    var you = document.getElementById("p_you");
+    if (!_front) {switchMaps();}
+    var you_label = document.getElementById("p_you_label");
     var dest_label = document.getElementById("p_dest_label");
+    var source_point = document.getElementById("circle_sourcepoint");
+    var dest_point = document.getElementById("circle_destinationpoint");
     $("#spa_map #footer > img:first-child").fadeOut(2500);
-    map1.style.display = "inline";
-    map2.style.display = "none";
-    you.style.visibility = "visible";
+    you_label.style.visibility = "visible";
     dest_label.style.visibility = "visible";
     source_point.style.visibility = "visible";
     dest_point.style.visibility = "visible";
@@ -550,6 +465,7 @@ function goMap(index) {
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
     cleanGUI();
     loadMap();
+    parenLasRotativas();
 }
 
 // This function performs several things before loading the contact html page within the SPA (Single Page Application) context.

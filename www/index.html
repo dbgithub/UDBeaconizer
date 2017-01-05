@@ -15,17 +15,17 @@
     <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
     <title>UD Finder</title>
 </head>
-<body ondblclick="$('#map_wrapper').panzoom('zoom', 0.5, { animate: true });" onresize="softKeyboard(window.innerHeight);">
+<body ondblclick="switchMaps()" onresize="softKeyboard(window.innerHeight);">
 
     <!-- INDEX page -->
     <div id="spa_index" data-role="page">
         <header><h1>What are you looking for?</h1></header>
         <div data-role="main" class="ui-content">
             <div class="div_searchbarStyle">  <!-- This div is just merely for styling purposes -->
-                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" onchange="if (this.value == '') {hideLiveSearchResults();}" value="">
             </div>
-            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
-            <button class="button ui-btn" data-corners="false" type="button" onclick="alert('holi')" ontouchend="if(_preventClick){_preventClick=false;return true;}; livesearch(document.getElementById('searchbar').value)" ontouchmove="_preventClick=true;" ontouchstart="return true;">GO!</button>
+            <div id="div_liveSearchResults"></div>
+            <button class="GObutton ui-btn" data-corners="false" type="button" ontouchend="if(_preventClick){_preventClick=false;return true;}; livesearch(document.getElementById('searchbar').value)" ontouchmove="_preventClick=true;" ontouchstart="return true;">GO!</button>
         </div>
         <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
             <img id="imgprueba" src="./img/logo_UD-standard.svg" alt="logo">
@@ -47,26 +47,31 @@
 
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
             <a id="backarrow" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchmove="_preventClick=true;"></a>
-            <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
-                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+            <div class="div_searchbarStyle_v2 ui-shadow">  <!-- This div is just merely for styling purposes -->
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" onchange="if (this.value == '') {hideLiveSearchResults();}" value="">
             </div>
-            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+            <div id="div_liveSearchResults"></div>
             <span class="ui-title"></span> <!-- This is used supposidly to make the height of the header look good. -->
         </div>
 
         <div data-role="main" class="ui-content">
             <a id="gear_tab" href="#sidepanel_map" class="ui-btn ui-btn-icon-left ui-btn-inline ui-icon-gear ui-alt-icon"></a>
-            <div id="map_wrapper"> <!-- This div ('map_wrapper') is the one you indicate when initializating IScroll variable. It's like a wrapper. The real scrollable content is the element inside this -->
-                <img id="svg_circle_sourcepoint" src="./img/red_circle.png" width="70" height="70" alt="youicon">
-                <img id="svg_circle_destinationpoint" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
-                <p id="p_you">YOU</p>
+            <div id="map_wrapper"> <!-- This div is the one used to move around. It's like a wrapper. -->
+                <div id="card">
+                    <div class="jqueryFlip-front">
+                        <img id="map" src="" alt="map">
+                    </div>
+                    <div class="jqueryFlip-back">
+                        <img id="map_sourcepoint" src="" alt="map">
+                    </div>
+                </div>
+                <img id="circle_sourcepoint" src="./img/red_circle.png" width="70" height="70" alt="youicon" class="anima_jump">
+                <img id="circle_destinationpoint" src="./img/orange_circle.png" width="70" height="70" alt="desticon" class="anima_jump">
+                <p id="p_you_label">YOU</p>
                 <p id="p_dest_label">destination</p>
                 <!-- <p id="p_upstairs_downstairs"></p> -->
-                <img id="map" src="" alt="map">
-                <img id="map_sourcePoint" src="" alt="map">
             </div>
         </div>
-        <!-- <div id="test_beacons" style="font-size: 50px; z-index: -2;"><p>beacons</p></div> -->
         <div id="footer" data-role="footer" data-position="fixed" data-tap-toggle="false" class="footer">
             <img src="./img/floors.png" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; switchMaps()" ontouchstart="showOnPressedToolTip('Switch between maps')" ontouchmove='_preventClick=true;' alt="switch maps" />
             <div id="div_distanceTillDestination">
@@ -92,10 +97,10 @@
 
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
             <a id="backarrow" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchmove="_preventClick=true;"></a>
-            <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
-                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+            <div class="div_searchbarStyle_v2 ui-shadow">  <!-- This div is just merely for styling purposes -->
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" onchange="if (this.value == '') {hideLiveSearchResults();}" value="">
             </div>
-            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+            <div id="div_liveSearchResults"></div>
             <span class="ui-title"></span> <!-- This is used supposidly to make the height of the header look good. -->
         </div>
 
@@ -118,18 +123,15 @@
     <div id="spa_edit_contact" data-role="page">
         <div data-role="header" data-position="fixed" data-tap-toggle="false" class="header">
             <a id="backarrow" class="ui-btn ui-btn-left ui-btn-inline ui-icon-carat-l ui-btn-icon-notext ui-alt-icon" ontouchend="abortTimer(); if(_preventClick){_preventClick=false;return true;}; app.onBackButton()" ontouchstart="showOnPressedToolTip('Go back')" ontouchmove="_preventClick=true;"></a>
-            <div class="div_searchbarStyle2 ui-shadow">  <!-- This div is just merely for styling purposes -->
-                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" value="">
+            <div class="div_searchbarStyle_v2 ui-shadow">  <!-- This div is just merely for styling purposes -->
+                <input id="searchbar" class="input_search_bar" data-corners="false" data-clear-btn="true" type="text" name="search_bar" oninput="livesearch(this.value)" onfocus="_input = true;" onblur="_input = false;" onchange="if (this.value == '') {hideLiveSearchResults();}" value="">
             </div>
-            <div id="div_liveSearchResults" data-id="liveSearchResults"></div> <!-- data-id is used becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM -->
+            <div id="div_liveSearchResults"></div>
             <span class="ui-title"></span> <!-- This is used supposidly to make the height of the header look good. -->
         </div>
 
         <div data-role="main" class="ui-content ui-shadow">
-            <div id="div_profile_editContact_header">
-                <!-- <img src="img/profilepic.png" alt="profile pic" /> -->
-                <!-- <textarea name="editContact_input_name" id="editContact_input_name" placeholder="Name and surname" data-corners="false" onchange="_editingInProgress = true; $(this).attr('data-changes', 'true');"></textarea> -->
-            </div><hr>
+            <div id="div_profile_editContact_header"></div><hr>
             <div id="div_profile_editContact_body"></div>
         </div>
 
@@ -152,22 +154,6 @@
     <script src="js/database.js"></script>
     <script type="text/javascript">
     app.initialize();
-    </script>
-
-    <script type="text/javascript">
-    // function goMap(index) {
-    //     // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
-    //     localStorage.setItem('_room', JSON.stringify(_searched_rooms[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    //                                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    //     window.location = "#spa_map";
-    // }
-    // function goContact(index) {
-    //     // Estas lineas ('localStorage') son temporales porque la idea es hacer una SPA (SinglePageApplication)
-    //     localStorage.setItem('_person', JSON.stringify(_searched_people[index])); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    //                                                                             // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    //     window.location = "#spa_contact";
-    //     alert(window.location.pathname);
-    // }
     </script>
 </body>
 </html>
