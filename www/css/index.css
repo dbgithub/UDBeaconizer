@@ -445,7 +445,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
 #spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults, #spa_edit_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     margin-left: -45%;
 }
-#circle_destinationpoint, #circle_sourcepoint {
+#destinationPoint_circle, #youPoint_circle {
     position: absolute;
     visibility: hidden;
 }
@@ -473,7 +473,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     position: absolute;
     visibility: hidden;
 }
-#p_dest_label, #p_you_label, #circle_destinationpoint, #circle_sourcepoint {
+#p_dest_label, #p_you_label, #destinationPoint_circle, #youPoint_circle {
     z-index: 2;
 }
 /* Media rules (@media) are used to change some CSS properties only if a certain condition is true. */

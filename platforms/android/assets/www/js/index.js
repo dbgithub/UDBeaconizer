@@ -20,8 +20,6 @@
 var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
 var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
 var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google's Developer page as a credential. This one is for WEB applications.
-// var _server_domain = "http://192.168.1.51:8888";
-// var _database_domain = "http://192.168.1.51:5984";
 var _staffdb_name='staffdb'; // Real database name in server-side.
 var _roomsdb_name='roomsdb'; // Real database name in server-side.
 var _beacons_name='beaconsdb'; // Real database name in server-side.
@@ -55,8 +53,7 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
     var _floor // the floor number corresponding to the room or place the user is searching for
     var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because we haven't set it yet.
-    var _loadDestFloor = -1; // A boolean representing whether it is needed to load the image/map corresponding to the destination point or the one corresponding to the source point (user's point). The initial value is -1 because we haven't set it yet.
-    var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
+    var _stop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
     var _currentfloor; // This int indicates the floor where the user is at.
     var _destX, _destY; // X and Y coordinates of the destination point over the map
     var _b1X, _b1Y; // X and Y coordinates of beacon 1

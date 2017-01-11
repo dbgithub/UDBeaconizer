@@ -133,7 +133,7 @@ function loadContactDetails() {
     var officehours = " - ";
     var office = "";
     console.log("_personRoomTouched?? ->" + _personRoomTouched);
-    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false; console.log("FALSE set");}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
+    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // Based on the office hours retrieved from the database, we will format it as a table:
     if (person.officehours != " ") {for (k = 0; k < person.officehours.length; k++) {
@@ -193,7 +193,7 @@ function loadEditContactDetails() {
     _editingInProgress = false; // we reset the variable just in case
     _carrete_horas = ""; // we reset the variable just in case
     _carrete_minutos = ""; // we reset the variable just in case
-    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false; console.log("FALSE set");}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
+    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // We will generate the "carretes" (in spanish) representing 'hours' and 'minutes':
     // hours:
@@ -300,17 +300,18 @@ function linkSearch(x) {
 
 // This method is called in the 'onLoad' event handler of the map.html page
 function loadMap() {
-    console.log("LOADING ROOM... "+ _searched_rooms[_index][0].label); // eliminar esta traza
+    console.log("LOADING ROOM... "+ _searched_rooms[_index][0].label);
     _floor = _searched_rooms[_index][1]; // we assign the floor number to this global variable in order to decide what map to show later on.
+    _sameFloor = true; // we want to load the desstination image first and in the front side of the jQuery flip plugin.
+    _allowYOUlabel = false; // we reset the boolean
     if (!_front) {switchMaps();} // we reset the variable to its original value
-    _loadDestFloor = true; // we indicate here that we want to load the image/map corresponding to the destination point, NOT the one where the user is at.
-    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false; console.log("FALSE set");}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
+    if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_rooms[_index][0].label; // Write the number of the room in the searchbar
 
     retrieveMap(_floor, function () { // Here we are retrieving the map corresponding to the floor given by the room[] array.
         locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
-        // We draw the orange SVG point on the map and the corresponding label too:
+        // We draw the orange destination image point on the map and the corresponding label too:
         var dest_circle = document.getElementById("circle_destinationpoint");
         var dest_label = document.getElementById("p_dest_label");
         dest_circle.style.visibility="visible";
@@ -325,12 +326,7 @@ function loadMap() {
 
         // We pan over the floor image to show the corresponding spot to the user:
         var map = document.getElementById("map");
-        var map_source = document.getElementById("map_sourcepoint");
-        map.onload = function () {
-            if (!_sameFloor) {
-                map_source.onload = function() {panANDzoom();}
-            } else {panANDzoom();}
-        }
+        map.onload = function () {panANDzoom();}
         // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
         silentLoginOAuth();
     });
@@ -375,11 +371,10 @@ function panANDzoom() {
 // Shows/loads the image within the DOM element.
 // "_sameFloor" boolean indicates whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
 function showMap() {
-    if (_sameFloor || _loadDestFloor) {
+    if (_sameFloor) {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
         map.src = _reva;
-        _loadDestFloor = false;
     } else {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
         var map_sourcepoint = document.getElementById("map_sourcepoint");
@@ -391,7 +386,6 @@ function showMap() {
 function switchMaps() {
     $('#card').flip('toggle');
     if (_front) {_front = false;} else {_front = true;}
-
     var source_point = document.getElementById("circle_sourcepoint");
     var dest_point = document.getElementById("circle_destinationpoint");
     var you_label = document.getElementById("p_you_label");
@@ -417,15 +411,15 @@ function updateYOUlabel() {
     console.log("sameFloor = " + _sameFloor + " | YOU label visible = " + _allowYOUlabel);
     var circle_source = document.getElementById("circle_sourcepoint"); // This is the red point corresponding to YOU
     var you_label = document.getElementById("p_you_label"); // This is the red label corresponding to YOU
-    if ((_sameFloor == true && _allowYOUlabel == true) || (!_front && _allowYOUlabel)) {
+    if ((_sameFloor && _allowYOUlabel ) || (!_front && _allowYOUlabel)) {
         // We show the corresponding label and the svg point:
-        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function.
-        // Note that when two maps are loaded and shown, the label and SVG point is handled in "evothings.eddystone.js" script.
+        // Note that the label and the source image point corresponding to the room number is managed in "loadMap()" function.
+        // Note that when two maps are loaded and shown, the label and source image point is handled in "evothings.eddystone.js" script.
         circle_source.style.visibility="visible";
         you_label.style.visibility="visible";
     } else {
-        // We hide the label and the SVG point because in this scenario, the user and the floor he/she is searching are not the same:
-        // Note that the label and the SVG point corresponding to the room number is managed in "loadMap()" function
+        // We hide the label and the source image point because in this scenario, the user and the floor he/she is searching are not the same:
+        // Note that the label and the source image point corresponding to the room number is managed in "loadMap()" function
         circle_source.style.visibility="hidden";
         you_label.style.visibility="hidden";
     }
@@ -433,12 +427,12 @@ function updateYOUlabel() {
 // This functions removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
 // So, now, we go back to the normal scenario.
 function removeDuplicatedMaps() {
-    var source_point = document.getElementById("circle_sourcepoint");
-    var dest_point = document.getElementById("circle_destinationpoint");
+    if (!_front) {switchMaps();}
     var you_label = document.getElementById("p_you_label");
     var dest_label = document.getElementById("p_dest_label");
+    var source_point = document.getElementById("circle_sourcepoint");
+    var dest_point = document.getElementById("circle_destinationpoint");
     $("#spa_map #footer > img:first-child").fadeOut(2500);
-    if (!_front) {switchMaps();}
     you_label.style.visibility = "visible";
     dest_label.style.visibility = "visible";
     source_point.style.visibility = "visible";

@@ -291,21 +291,18 @@
 	// If the user is at the SAME floor, then, we will update the GUI accordingly.
 	// If the user IS NOT at the same floor, then, we will let him/her know about it.
 	// We check also the '_stopLoop' variable to prevent unnecesary processing time (e.g.loading the map each 500ms).
-	// "!isNan(_currentfloor)" checks if there are beacons readings.
 	function checkIfUserAtTheSameFloor(callback) {
-		console.log("user floor = " + _floor + " | beacons' floor = " + _currentfloor + " | stopLoop = " +_stopLoop);
-		if (_floor != _currentfloor && !_stopLoop) { // This will occur if the user and the room are in different floors.
+		console.log("user floor = " + _floor + " | beacons floor = " + _currentfloor + " | stopLoop = " +_stop);
+		if (_floor != _currentfloor && !_stop) { // This will occur if the user and the room are in different floors.
 			$("#spa_map #footer > img:first-child").fadeToggle(2500);
+			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			duplicateMaps(_currentfloor);
-			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for.
-			// This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
-			updateYOUlabel();
-		} else if (_floor == _currentfloor && _stopLoop) { // This will occur when the user and the room are eventually in the same floor.
-			_stopLoop = false;
+		} else if (_floor == _currentfloor && _stop) { // This will occur when the user and the room are eventually in the same floor.
+			_stop = false;
+			_sameFloor = true; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			removeDuplicatedMaps();
-			_sameFloor = true; // A boolean indicating wether the user is at the same floor as the one he/she is searching for.
-			// This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
-			updateYOUlabel();
+		} else if (_floor != _currentfloor && _stop) {
+			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 		}
 		callback();
 	}
@@ -364,7 +361,7 @@
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
 	// The GUI is updated.
 	function updateGUI() {
-		// Now we draw the SVG point and the corresponding label too:
+		// Now we draw the user's location point and the corresponding label too:
 		var circle_source = document.getElementById("circle_sourcepoint");
 		var you_label = document.getElementById("p_you_label");
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
@@ -402,11 +399,11 @@
 	// When the user is in another floor different to the room's floor, then we have to load two maps to let the user switch between them.
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
-			_stopLoop = true;
+			_stop = true;
 			// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
 			// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
 			// if (_currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
-			retrieveMap(_currentfloor.toString()); // If I take this call out of setTimeout function, JavaScripts yields errors.
+			retrieveMap(_currentfloor.toString(), function() {}); // If I take this call out of setTimeout function, JavaScripts yields errors.
 		},0)
 	}
 
@@ -439,6 +436,7 @@
 		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
 	}
 
+	// Checks if the BLE is enabled, if YES, then we try to locate again the user on the map.
 	function checkBLEStatus() {
 		// Checking whether Bluetooth feature is enabled or not:
 		bluetoothSerial.isEnabled(

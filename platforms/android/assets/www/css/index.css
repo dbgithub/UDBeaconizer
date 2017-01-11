@@ -3,7 +3,6 @@
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% GENERIC RULES %%%%%%%%%%%%%%%%% */
-
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
     -webkit-touch-callout: none;                /* prevent the context menu when you tap and hold over a link */
@@ -386,6 +385,10 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     width: auto;
     display: inline-block;
     padding: 1500px; /* If you CHANGE this value, you should change also "_paddingMap" global variable*/
+}
+#map_sourcepoint {
+    width: 2649px;
+    height: 1493px;
 }
 #spa_map .footer, #spa_contact .footer{ /* ALSO USED IN 'CONTACT' PAGE */
     border-top: 5px solid rgba(51,53,55,1) !important;
