@@ -11,8 +11,8 @@
 	function startScan() {
 		console.log('Scan in progress.');
 		beacons = {}; // Reset the dictionary containing all detected/scanned beacons
-		_beaconsDistances = {}; // The object containing a set of 5 measured distances of every beacon is reset.
-		_lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+		_beaconsDistances = {}; // Reset. The object containing a set of 5 measured distances of every beacon is reset.
+		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
 		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from one of the beacons.
 		evothings.eddystone.startScan(
 			function(beacon)
@@ -362,24 +362,24 @@
 	// The GUI is updated.
 	function updateGUI() {
 		// Now we draw the user's location point and the corresponding label too:
-		var circle_source = document.getElementById("circle_sourcepoint");
+		var youPoint_circle = document.getElementById("youPoint_circle");
 		var you_label = document.getElementById("p_you_label");
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
 		// we will make it grayscale to make the user realize that is an old reading:
 		if (_real_X === Infinity || _real_X === -Infinity || isNaN(_real_X) || _real_X === undefined ||
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
-			circle_source.style.WebkitFilter="grayscale(100%)";
+			youPoint_circle.style.WebkitFilter="grayscale(100%)";
 			you_label.style.backgroundColor = "gray";
-			circle_source.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			circle_source.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			you_label.style.left=_lastKnownXcoordinate - 80 + _paddingMap +"px";
 			you_label.style.top=_lastKnownYcoordinate + 40 +_paddingMap +"px";
 		} else {
 			updateYOUlabel();
-			circle_source.style.WebkitFilter="none";
+			youPoint_circle.style.WebkitFilter="none";
 			you_label.style.backgroundColor = "red";
-			circle_source.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			circle_source.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			you_label.style.left=_real_X - 80 + _paddingMap +"px";
 			you_label.style.top=_real_Y + 40 + _paddingMap +"px";
 			_lastKnownXcoordinate = _real_X;

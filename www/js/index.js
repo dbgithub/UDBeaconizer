@@ -20,8 +20,6 @@
 var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
 var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
 var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google's Developer page as a credential. This one is for WEB applications.
-// var _server_domain = "http://192.168.1.51:8888";
-// var _database_domain = "http://192.168.1.51:5984";
 var _staffdb_name='staffdb'; // Real database name in server-side.
 var _roomsdb_name='roomsdb'; // Real database name in server-side.
 var _beacons_name='beaconsdb'; // Real database name in server-side.
