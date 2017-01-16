@@ -13,6 +13,7 @@
 		beacons = {}; // Reset the dictionary containing all detected/scanned beacons
 		_beaconsDistances = {}; // Reset. The object containing a set of 5 measured distances of every beacon is reset.
 		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+		_lastKnown5locations = [] // Reset. An object that contains a set of 5 last-known locations (of the user) in the form of {X,Y} coordinates.
 		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from one of the beacons.
 		evothings.eddystone.startScan(
 			function(beacon)
@@ -348,16 +349,203 @@
 		var Y = ((Math.pow(htmlBeaconDistance(_nearestbeacons[0]),2) - Math.pow(htmlBeaconDistance(_nearestbeacons[2]),2) + Math.pow(new_b3X,2) + Math.pow(new_b3Y,2)) / (2*new_b3Y)) - (X*new_b3X/new_b3Y);
 		// So far, X and Y coordinates shows the solution point for the three beacons placed around the origin of coordinates (0,0).
 		// Now we have to translate the beacons matching them with the reality. The only thing to do here is to add the values of the coordinates of the original beacon we placed on (0,0)
-		_real_X = parseFloat(_b1X) + parseFloat(X); // This represents the X coordinate of the locatin of the person (device)
-		_real_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
+		_final_X = parseFloat(_b1X) + parseFloat(X); // This represents the X coordinate of the locatin of the person (device)
+		_final_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
 		_nearestbeacons = []; // We empty the array for next iteration
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
-		console.log("(realX = "+_real_X+",realY = "+_real_Y+")"); // ESto estaba antes sin comentar
+		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
 
 		callback();
 	}
 
+	// This is an accuracy function to estimate a better position based on already last-known 5 locations of the user.
+	// Instead of drawing directly the position of the user, we will take the last known 5 hypothetical locations of the user and we will narrow down (estimate)
+	// a better and more accurate position. The idea behind this algorithm is to calculate the middle-point within the straight line that goes from one location
+	// to the other. Now, we enumerate the new calculated points as if they were the original ones, and we repeat the process as much as we want.
+	// As a final step, we calculate an average point based on the minimum X and maximum X coordinates of the extreme positions on the map. The same happens with Y.
+	// The result will be a X and Y coordinates of a better accurate location.
+	function funcion_de_precision(callback) {
+		var temp = _lastKnown5locations.slice();
+		if (_lastKnown5locations.length == 5) {
+			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, TWO times will be executed.
+			// As you increase the frecuency, you get much close coordinates.
+			for (k = 0; k < 7; k++) {
+				for (i=0; i<_lastKnown5locations.length; i++) {
+					// console.log("i = " + i);
+					// We calculate now the middle-point that relies on the straight line between one point to the consecutive one:
+					var x1 = _lastKnown5locations[i].X;
+					var y1 = _lastKnown5locations[i].Y;
+					if (i == 4) { // This if statement makes sure that the link between the first point and the last one is also taken into account
+						var x2 = _lastKnown5locations[0].X;
+						var y2 = _lastKnown5locations[0].Y;
+					} else {
+						var x2 = _lastKnown5locations[i+1].X;
+						var y2 = _lastKnown5locations[i+1].Y;
+					}
+					var middleX = (x1+x2)/2
+					var middleY = (y1+y2)/2
+					// console.log("middleX = " + middleX + "; middleY = " + middleY);
+					_lastKnown5locations[i] = {X:middleX, Y:middleY}
+				}
+			}
+
+			// Now, we have to come up with a single coordinate (x,y) which turns out to be the user's location that we have estimated (improved):
+			// In fact, we want again to compute the middle-point that relies between the coordinates of the extreme locations. That is, the ones that are on the extremes.
+			// We will do that for variable X and Y. To do so, we have to iterate over the locations that we have narrowed down to retrieve the extremes.
+			var Xcollection = [];
+			var Ycollection = [];
+			for (l in _lastKnown5locations) {
+				Xcollection.push(_lastKnown5locations[l].X)
+				Ycollection.push(_lastKnown5locations[l].Y)
+			}
+			// console.log("Size of Xcollection: "+ Xcollection.length + " | Size of Ycollection: " + Ycollection.length);
+			Xcollection.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
+			Ycollection.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
+			var maxX = Xcollection.shift(); // The first (biggest) value is removed from the array
+			var minX = Xcollection.pop(); // The last (smallest) value is removed from the array
+			var maxY = Ycollection.shift(); // The first (biggest) value is removed from the array
+			var minY = Ycollection.pop(); // The last (smallest) value is removed from the array
+			// console.log("MaxX -> " + maxX);
+			// console.log("MinX -> " + minX);
+			// console.log("MaxY -> " + maxY);
+			// console.log("MinY -> " + minY);
+			_real_X = (maxX + minX)/2;
+			_real_Y = (maxY + minY)/2;
+
+			_lastKnown5locations = temp.slice();
+			_lastKnown5locations.shift();
+			_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+		} else {
+			if (_final_X !== Infinity && _final_X !== -Infinity && !isNaN(_final_X) && _final_X !== undefined &&
+			_final_Y !== Infinity && _final_Y !== -Infinity && !isNaN(_final_Y) && _final_Y !== undefined) {
+				// console.log("Pushed values: " + _final_X + " | " + _final_Y);
+				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+			}
+		}
+		console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+		callback();
+	}
+
+	// This is the correction function that prevents the user's position estimated points from being drawn in a ilogical location on the map.
+	// For instance, the user cannot be positioned outside the building's walls, in fact, that's a use case that we can be sure about.
+	// In this switch, depending on which floor the user is at, I restrict/delimit the X and Y axises so that the point is not drawn outside any
+	// specific limit that we want to avoid.
+	// The algorithm/switch is based upon severales rules taking into account the X and Y axises. First, the most restrictive rules are set,
+	// and then, the less restrictive.
+	function funcion_de_coreccion(callback) {
+		if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
+		_real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
+			console.log("FUNCION DE CORRECCION!!!!!!!!!!!!!!!!!");
+			var offset = 200; // Offset of 200px
+			switch(_currentfloor) {
+				case 0:
+				var limit = 780 + offset;
+				if (780 <= _real_Y && _real_Y <= limit && 441 <= _real_X && _real_X <= 2204) {_real_Y = 780;break;}
+				var limit = 441 + offset;
+				if (441 <= _real_X && _real_X <= limit && 780 <= _real_Y) {_real_X = 441; break;}
+				if (_real_Y <= 153) {_real_Y = 153; break;}
+				if (_real_X <= 51) {_real_X = 51; break;}
+				break;
+				case 1:
+				var limit = 480 + offset;
+				if (480 <= _real_Y && _real_Y <= limit && 1089 <= _real_X && _real_X <= 1563) {_real_Y = 480;break;}
+				var limit = 1089 + offset;
+				if (1089 <= _real_X && _real_X <= limit && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1089; break;}
+				var limit = 1563 - offset;
+				if (limit <= _real_X && _real_X<= 1563 && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1563; break;}
+				var limit = 774 + offset;
+				if (774 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1089) {_real_Y = 774; break;}
+				var limit = 450 + offset;
+				if (450 <= _real_X && _real_X <= limit && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 450; break;}
+				var limit = 774 + offset;
+				if (774 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2214) {_real_Y = 774; break;}
+				var limit = 2214 - offset;
+				if (limit <= _real_Y && _real_Y<= 2214 && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 2214; break;}
+				if (_real_Y <= 162) {_real_Y = 162; break;}
+				if (_real_Y >= 1488) {_real_Y = 1488; break;}
+				break;
+				case 2:
+				var limit = 465 + offset;
+				if (465 <= _real_Y && _real_Y <= limit && 1083 <= _real_X && _real_X <= 1563) {_real_Y = 465;break;}
+				var limit = 1083 + offset;
+				if (1083 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1083; break;}
+				var limit = 1563 - offset;
+				if (limit <= _real_X && _real_X<= 1563 && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1563; break;}
+				var limit = 756 + offset;
+				if (756 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1083) {_real_Y = 756; break;}
+				var limit = 450 + offset;
+				if (450 <= _real_X && _real_X <= limit && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 450; break;}
+				var limit = 756 + offset;
+				if (756 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2205) {_real_Y = 756; break;}
+				var limit = 2205 - offset;
+				if (limit <= _real_Y && _real_Y<= 2205 && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 2205; break;}
+				if (_real_Y <= 150) {_real_Y = 150; break;}
+				if (_real_Y >= 1458) {_real_Y = 1458; break;}
+				break;
+				case 3:
+				var limit = 468 + offset;
+				if (468 <= _real_Y && _real_Y <= limit && 1068 <= _real_X && _real_X <= 1545) {_real_Y = 468;break;}
+				var limit = 1068 + offset;
+				if (1068 <= _real_X && _real_X <= limit && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1068; break;}
+				var limit = 1545 - offset;
+				if (limit <= _real_X && _real_X<= 1545 && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1545; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 435 <= _real_X && _real_X <= 1068) {_real_Y = 762; break;}
+				var limit = 435 + offset;
+				if (435 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 435; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 1545 <= _real_X && _real_X<= 2190) {_real_Y = 762; break;}
+				var limit = 2190 - offset;
+				if (limit <= _real_Y && _real_Y<= 2190 && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 2190; break;}
+				if (_real_Y <= 141) {_real_Y = 141; break;}
+				if (_real_Y >= 1473) {_real_Y = 1473; break;}
+				break;
+				case 4:
+				var limit = 477 + offset;
+				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477;break;}
+				var limit = 1092 + offset;
+				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; break;}
+				var limit = 1557 - offset;
+				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; break;}
+				var limit = 465 + offset;
+				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; break;}
+				var limit = 2202 - offset;
+				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; break;}
+				if (_real_Y <= 162) {_real_Y = 162; break;}
+				if (_real_Y >= 1485) {_real_Y = 1485; break;}
+				break;
+				case 5:
+				var limit = 465 + offset;
+				if (465 <= _real_Y && _real_Y <= limit && 1086 <= _real_X && _real_X <= 1554) {_real_Y = 465;break;}
+				var limit = 1086 + offset;
+				if (1086 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1086; break;}
+				var limit = 1554 - offset;
+				if (limit <= _real_X && _real_X<= 1554 && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1554; break;}
+				var limit = 693 + offset;
+				if (693 <= _real_Y && _real_Y <= limit && 399 <= _real_X && _real_X <= 1086) {_real_Y = 693; break;}
+				var limit = 399 + offset;
+				if (399 <= _real_X && _real_X <= limit && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 399; break;}
+				var limit = 693 + offset;
+				if (693 <= _real_Y && _real_Y <= limit && 1554 <= _real_X && _real_X<= 2247) {_real_Y = 693; break;}
+				var limit = 2247 - offset;
+				if (limit <= _real_Y && _real_Y<= 2247 && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 2247; break;}
+				if (_real_Y <= 210) {_real_Y = 210; break;}
+				if (_real_Y >= 1434) {_real_Y = 1434; break;}
+				if (_real_X <= 135) {_real_X = 135; break;}
+				if (_real_X >= 2520) {_real_X = 2520; break;}
+				break;
+				default:
+				break;
+			}
+		}
+		callback();
+	}
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
 	// The GUI is updated.
 	function updateGUI() {
@@ -386,7 +574,7 @@
 			_lastKnownYcoordinate = _real_Y;
 		}
 
-		// We calculate the distance from device's position to destination point. The calculated distance is shown in meters.
+		// We calculate the distance from device's position to destination point. The calculated distance (Euclidean distance) is shown in meters.
 		var p_dist = document.getElementById("p_distanceTillDest");
 		var distance = (Math.sqrt(Math.pow((_real_X-_destX),2)+Math.pow((_real_Y-_destY),2))/26).toFixed();
 		if (isNaN(distance)) {
@@ -421,9 +609,15 @@
 			retrieveNearestThreeBeacons(function() {
 				// The following step is to compute/calculate the trilateration mathematical formula for real:
 				computeTrilateration(function() {
-					// Now we update the elements over the GUI:
-					updateGUI();
-				});
+					// We apply an accuracy function to estimate a better position based on already last-known 5 locations of the user:
+					funcion_de_precision(function() {
+						// We apply a corrective function that delimits the position of the final point indicating user's position:
+						funcion_de_coreccion(function() {
+							// Now, yes, as the final step, we update the elements over the GUI:
+							updateGUI();
+						})
+					})
+				})
 			})
 		})
 	}

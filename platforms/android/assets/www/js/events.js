@@ -312,7 +312,7 @@ function loadMap() {
         locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
 
         // We draw the orange destination image point on the map and the corresponding label too:
-        var dest_circle = document.getElementById("circle_destinationpoint");
+        var dest_circle = document.getElementById("destinationPoint_circle");
         var dest_label = document.getElementById("p_dest_label");
         dest_circle.style.visibility="visible";
         dest_circle.style.left = parseInt(_searched_rooms[_index][0].x) - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
@@ -335,20 +335,20 @@ function loadMap() {
     // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
     // and here too: http://api.jquery.com/animate/#animate-properties-options
     //  function grow() {
-    //     $({r:$('#circle_destinationpoint, #circle_sourcepoint').attr('r')})
+    //     $({r:$('#destinationPoint_circle, #youPoint_circle').attr('r')})
     //      .animate(
     //      {r: 35},
     //      {duration:1000,step:function(now){
-    //        $('#circle_destinationpoint, #circle_sourcepoint').attr('r', now);
+    //        $('#destinationPoint_circle, #youPoint_circle').attr('r', now);
     //     }, complete:function(){shrink();}});
     // }
     //
     // function shrink() {
-    //    $({r:$('#circle_destinationpoint, #circle_sourcepoint').attr('r')})
+    //    $({r:$('#destinationPoint_circle, #youPoint_circle').attr('r')})
     //    .animate(
     //    {r: 18},
     //    {duration:1000,step:function(now){
-    //      $('#circle_destinationpoint, #circle_sourcepoint').attr('r', now);
+    //      $('#destinationPoint_circle, #youPoint_circle').attr('r', now);
     //   }, complete:function(){grow();}});
     // }
     // grow();
@@ -386,19 +386,19 @@ function showMap() {
 function switchMaps() {
     $('#card').flip('toggle');
     if (_front) {_front = false;} else {_front = true;}
-    var source_point = document.getElementById("circle_sourcepoint");
-    var dest_point = document.getElementById("circle_destinationpoint");
+    var youPoint_circle = document.getElementById("youPoint_circle");
+    var dest_point = document.getElementById("destinationPoint_circle");
     var you_label = document.getElementById("p_you_label");
     var dest_label = document.getElementById("p_dest_label");
     // var upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
     if (_front) {
         you_label.style.visibility = "hidden";
-        source_point.style.visibility = "hidden";
+        youPoint_circle.style.visibility = "hidden";
         dest_label.style.visibility = "visible";
         dest_point.style.visibility = "visible";
     } else {
         _allowYOUlabel ? you_label.style.visibility = "visible" : null ; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
-        _allowYOUlabel ? source_point.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
+        _allowYOUlabel ? youPoint_circle.style.visibility = "visible" : null; // This if is necessary to hide the YOU label in the corresponding scenario. Otherwise, it would appear without any meaning.
         dest_label.style.visibility = "hidden";
         dest_point.style.visibility = "hidden";
     }
@@ -409,18 +409,18 @@ function switchMaps() {
 // All depends on whether there exists a communication with the beacons and if the user is at the same floor as the one he/she is searching for.
 function updateYOUlabel() {
     console.log("sameFloor = " + _sameFloor + " | YOU label visible = " + _allowYOUlabel);
-    var circle_source = document.getElementById("circle_sourcepoint"); // This is the red point corresponding to YOU
+    var youPoint_circle = document.getElementById("youPoint_circle"); // This is the red point corresponding to YOU
     var you_label = document.getElementById("p_you_label"); // This is the red label corresponding to YOU
     if ((_sameFloor && _allowYOUlabel ) || (!_front && _allowYOUlabel)) {
         // We show the corresponding label and the svg point:
         // Note that the label and the source image point corresponding to the room number is managed in "loadMap()" function.
         // Note that when two maps are loaded and shown, the label and source image point is handled in "evothings.eddystone.js" script.
-        circle_source.style.visibility="visible";
+        youPoint_circle.style.visibility="visible";
         you_label.style.visibility="visible";
     } else {
         // We hide the label and the source image point because in this scenario, the user and the floor he/she is searching are not the same:
         // Note that the label and the source image point corresponding to the room number is managed in "loadMap()" function
-        circle_source.style.visibility="hidden";
+        youPoint_circle.style.visibility="hidden";
         you_label.style.visibility="hidden";
     }
 }
@@ -430,12 +430,12 @@ function removeDuplicatedMaps() {
     if (!_front) {switchMaps();}
     var you_label = document.getElementById("p_you_label");
     var dest_label = document.getElementById("p_dest_label");
-    var source_point = document.getElementById("circle_sourcepoint");
-    var dest_point = document.getElementById("circle_destinationpoint");
+    var youPoint_circle = document.getElementById("youPoint_circle");
+    var dest_point = document.getElementById("destinationPoint_circle");
     $("#spa_map #footer > img:first-child").fadeOut(2500);
     you_label.style.visibility = "visible";
     dest_label.style.visibility = "visible";
-    source_point.style.visibility = "visible";
+    youPoint_circle.style.visibility = "visible";
     dest_point.style.visibility = "visible";
 }
 

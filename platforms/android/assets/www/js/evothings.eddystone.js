@@ -11,8 +11,9 @@
 	function startScan() {
 		console.log('Scan in progress.');
 		beacons = {}; // Reset the dictionary containing all detected/scanned beacons
-		_beaconsDistances = {}; // The object containing a set of 5 measured distances of every beacon is reset.
-		_lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+		_beaconsDistances = {}; // Reset. The object containing a set of 5 measured distances of every beacon is reset.
+		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+		_lastKnown5locations = [] // Reset. An object that contains a set of 5 last-known locations (of the user) in the form of {X,Y} coordinates.
 		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from one of the beacons.
 		evothings.eddystone.startScan(
 			function(beacon)
@@ -348,45 +349,118 @@
 		var Y = ((Math.pow(htmlBeaconDistance(_nearestbeacons[0]),2) - Math.pow(htmlBeaconDistance(_nearestbeacons[2]),2) + Math.pow(new_b3X,2) + Math.pow(new_b3Y,2)) / (2*new_b3Y)) - (X*new_b3X/new_b3Y);
 		// So far, X and Y coordinates shows the solution point for the three beacons placed around the origin of coordinates (0,0).
 		// Now we have to translate the beacons matching them with the reality. The only thing to do here is to add the values of the coordinates of the original beacon we placed on (0,0)
-		_real_X = parseFloat(_b1X) + parseFloat(X); // This represents the X coordinate of the locatin of the person (device)
-		_real_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
+		_final_X = parseFloat(_b1X) + parseFloat(X); // This represents the X coordinate of the locatin of the person (device)
+		_final_Y = parseFloat(_b1Y) + parseFloat(Y); // This represents the Y coordinate of the locatin of the person (device)
 		_nearestbeacons = []; // We empty the array for next iteration
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
-		console.log("(realX = "+_real_X+",realY = "+_real_Y+")"); // ESto estaba antes sin comentar
+		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
 
 		callback();
 	}
 
+	// This is an accuracy function to estimate a better position based on already last-known 5 locations of the user.
+	// Instead of drawing directly the position of the user, we will take the last known 5 hypothetical locations of the user and we will narrow down (estimate)
+	// a better and more accurate position. The idea behind this algorithm is to calculate the middle-point within the straight line that goes from one location
+	// to the other. Now, we enumerate the new calculated points as if they were the original ones, and we repeat the process as much as we want.
+	// As a final step, we calculate an average point based on the minimum X and maximum X coordinates of the extreme positions on the map. The same happens with Y.
+	// The result will be a X and Y coordinates of a better accurate location.
+	function funcion_de_precision(callback) {
+		var temp = _lastKnown5locations.slice();
+		if (_lastKnown5locations.length == 5) {
+			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, TWO times will be executed.
+			// As you increase the frecuency, you get much close coordinates.
+			for (k = 0; k < 7; k++) {
+				for (i=0; i<_lastKnown5locations.length; i++) {
+					console.log("i = " + i);
+					// We calculate now the middle-point that relies on the straight line between one point to the consecutive one:
+					var x1 = _lastKnown5locations[i].X;
+					var y1 = _lastKnown5locations[i].Y;
+					if (i == 4) { // This if statement makes sure that the link between the first point and the last one is also taken into account
+						var x2 = _lastKnown5locations[0].X;
+						var y2 = _lastKnown5locations[0].Y;
+					} else {
+						var x2 = _lastKnown5locations[i+1].X;
+						var y2 = _lastKnown5locations[i+1].Y;
+					}
+					var middleX = (x1+x2)/2
+					var middleY = (y1+y2)/2
+					console.log("middleX = " + middleX + "; middleY = " + middleY);
+					_lastKnown5locations[i] = {X:middleX, Y:middleY}
+				}
+			}
+
+			// Now, we have to come up with a single coordinate (x,y) which turns out to be the user's location that we have estimated (improved):
+			// In fact, we want again to compute the middle-point that relies between the coordinates of the extreme locations. That is, the ones that are on the extremes.
+			// We will do that for variable X and Y. To do so, we have to iterate over the locations that we have narrowed down to retrieve the extremes.
+			var Xcollection = [];
+			var Ycollection = [];
+			for (l in _lastKnown5locations) {
+				Xcollection.push(_lastKnown5locations[l].X)
+				Ycollection.push(_lastKnown5locations[l].Y)
+			}
+			console.log("Size of Xcollection: "+ Xcollection.length + " | Size of Ycollection: " + Ycollection.length);
+			Xcollection.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
+			Ycollection.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
+			var maxX = Xcollection.shift(); // The first (biggest) value is removed from the array
+			var minX = Xcollection.pop(); // The last (smallest) value is removed from the array
+			var maxY = Ycollection.shift(); // The first (biggest) value is removed from the array
+			var minY = Ycollection.pop(); // The last (smallest) value is removed from the array
+			// console.log("MaxX -> " + maxX);
+			// console.log("MinX -> " + minX);
+			// console.log("MaxY -> " + maxY);
+			// console.log("MinY -> " + minY);
+			_real_X = (maxX + minX)/2;
+			_real_Y = (maxY + minY)/2;
+
+			_lastKnown5locations = temp.slice();
+			_lastKnown5locations.shift();
+			_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+		} else {
+			if (_final_X !== Infinity && _final_X !== -Infinity && !isNaN(_final_X) && _final_X !== undefined &&
+			_final_Y !== Infinity && _final_Y !== -Infinity && !isNaN(_final_Y) && _final_Y !== undefined) {
+				console.log("Pushed values: " + _final_X + " | " + _final_Y);
+				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+			}
+		}
+
+		console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+		callback();
+	}
+
+	function funcion_de_coreccion(callback) {
+		callback();
+	}
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
 	// The GUI is updated.
 	function updateGUI() {
 		// Now we draw the user's location point and the corresponding label too:
-		var circle_source = document.getElementById("circle_sourcepoint");
+		var youPoint_circle = document.getElementById("youPoint_circle");
 		var you_label = document.getElementById("p_you_label");
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
 		// we will make it grayscale to make the user realize that is an old reading:
 		if (_real_X === Infinity || _real_X === -Infinity || isNaN(_real_X) || _real_X === undefined ||
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
-			circle_source.style.WebkitFilter="grayscale(100%)";
+			youPoint_circle.style.WebkitFilter="grayscale(100%)";
 			you_label.style.backgroundColor = "gray";
-			circle_source.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			circle_source.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			you_label.style.left=_lastKnownXcoordinate - 80 + _paddingMap +"px";
 			you_label.style.top=_lastKnownYcoordinate + 40 +_paddingMap +"px";
 		} else {
 			updateYOUlabel();
-			circle_source.style.WebkitFilter="none";
+			youPoint_circle.style.WebkitFilter="none";
 			you_label.style.backgroundColor = "red";
-			circle_source.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			circle_source.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
 			you_label.style.left=_real_X - 80 + _paddingMap +"px";
 			you_label.style.top=_real_Y + 40 + _paddingMap +"px";
 			_lastKnownXcoordinate = _real_X;
 			_lastKnownYcoordinate = _real_Y;
 		}
 
-		// We calculate the distance from device's position to destination point. The calculated distance is shown in meters.
+		// We calculate the distance from device's position to destination point. The calculated distance (Euclidean distance) is shown in meters.
 		var p_dist = document.getElementById("p_distanceTillDest");
 		var distance = (Math.sqrt(Math.pow((_real_X-_destX),2)+Math.pow((_real_Y-_destY),2))/26).toFixed();
 		if (isNaN(distance)) {
@@ -421,9 +495,15 @@
 			retrieveNearestThreeBeacons(function() {
 				// The following step is to compute/calculate the trilateration mathematical formula for real:
 				computeTrilateration(function() {
-					// Now we update the elements over the GUI:
-					updateGUI();
-				});
+					// We apply an accuracy function to estimate a better position based on already last-known 5 locations of the user:
+					funcion_de_precision(function() {
+						// We apply a corrective function that delimits the position of the final point indicating user's position:
+						funcion_de_coreccion(function() {
+							// Now, yes, as the final step, we update the elements over the GUI:
+							updateGUI();
+						})
+					})
+				})
 			})
 		})
 	}
