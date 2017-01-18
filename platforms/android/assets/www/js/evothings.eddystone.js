@@ -210,7 +210,7 @@
 		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m. Should we consider the information provided by easiBeacon, the one with -59dBm and -69 dBm depending on the beacon??
 		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position). We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
-		// The distance estimate is calculated as follow:
+		// The distance estimate is calculated as follows:
 		if (ratio < 1.0) {
 			return Math.pow(ratio, 10).toFixed(2);
 
@@ -222,10 +222,12 @@
 			// console.log("_lastKnownBeaconsDistances["+instancenum+"]= " +_lastKnownBeaconsDistances[beacon.address]); // Esto estaba antes sin comentar
 			if (_beaconsDistances[beacon.address].length < 7) {
 				_beaconsDistances[beacon.address].push(accuracy);
+				_radii[beacon.address] = _lastKnownBeaconsDistances[beacon.address];
 				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
 				var val = calculateAverageDistance(beacon.address);
 				_lastKnownBeaconsDistances[beacon.address] = val;
+				_radii[beacon.address] = val;
 				return val;
 			}
 		}
@@ -295,7 +297,7 @@
 	function checkIfUserAtTheSameFloor(callback) {
 		console.log("user floor = " + _floor + " | beacons floor = " + _currentfloor + " | stopLoop = " +_stop);
 		if (_floor != _currentfloor && !_stop) { // This will occur if the user and the room are in different floors.
-			$("#spa_map #footer > img:first-child").fadeToggle(2500);
+			$("#spa_map #footer > img:first-child").addClass("anima_magician");
 			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			duplicateMaps(_currentfloor);
 		} else if (_floor == _currentfloor && _stop) { // This will occur when the user and the room are eventually in the same floor.
@@ -310,6 +312,7 @@
 
 	// Inserts the three nearest beacons from the list of all beacons in an array.
 	function retrieveNearestThreeBeacons(callback) {
+		_radii = {} // reset the object
 		// Among all beacons scanned and saved, now we will take the nearest 3 ones to apply trilateration afterwards:
 		for (var i in _sortedList) // We are iterating over _sortedList's properties, that is, in this case, the indexes, e.g. 0,1,2,...
 		{
@@ -371,9 +374,9 @@
 		if (_lastKnown5locations.length == 5) {
 			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, TWO times will be executed.
 			// As you increase the frecuency, you get much close coordinates.
-			for (k = 0; k < 7; k++) {
+			for (k = 0; k < 5; k++) {
 				for (i=0; i<_lastKnown5locations.length; i++) {
-					console.log("i = " + i);
+					// console.log("i = " + i);
 					// We calculate now the middle-point that relies on the straight line between one point to the consecutive one:
 					var x1 = _lastKnown5locations[i].X;
 					var y1 = _lastKnown5locations[i].Y;
@@ -386,7 +389,7 @@
 					}
 					var middleX = (x1+x2)/2
 					var middleY = (y1+y2)/2
-					console.log("middleX = " + middleX + "; middleY = " + middleY);
+					// console.log("middleX = " + middleX + "; middleY = " + middleY);
 					_lastKnown5locations[i] = {X:middleX, Y:middleY}
 				}
 			}
@@ -400,17 +403,13 @@
 				Xcollection.push(_lastKnown5locations[l].X)
 				Ycollection.push(_lastKnown5locations[l].Y)
 			}
-			console.log("Size of Xcollection: "+ Xcollection.length + " | Size of Ycollection: " + Ycollection.length);
+			// console.log("Size of Xcollection: "+ Xcollection.length + " | Size of Ycollection: " + Ycollection.length);
 			Xcollection.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
 			Ycollection.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
 			var maxX = Xcollection.shift(); // The first (biggest) value is removed from the array
 			var minX = Xcollection.pop(); // The last (smallest) value is removed from the array
 			var maxY = Ycollection.shift(); // The first (biggest) value is removed from the array
 			var minY = Ycollection.pop(); // The last (smallest) value is removed from the array
-			// console.log("MaxX -> " + maxX);
-			// console.log("MinX -> " + minX);
-			// console.log("MaxY -> " + maxY);
-			// console.log("MinY -> " + minY);
 			_real_X = (maxX + minX)/2;
 			_real_Y = (maxY + minY)/2;
 
@@ -420,16 +419,129 @@
 		} else {
 			if (_final_X !== Infinity && _final_X !== -Infinity && !isNaN(_final_X) && _final_X !== undefined &&
 			_final_Y !== Infinity && _final_Y !== -Infinity && !isNaN(_final_Y) && _final_Y !== undefined) {
-				console.log("Pushed values: " + _final_X + " | " + _final_Y);
+				// console.log("Pushed values: " + _final_X + " | " + _final_Y);
 				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
 			}
 		}
-
 		console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		callback();
 	}
 
+	// This is the correction function that prevents the user's position estimated points from being drawn in a ilogical location on the map.
+	// For instance, the user cannot be positioned outside the building's walls, in fact, that's a use case that we can be sure about.
+	// In this switch, depending on which floor the user is at, I restrict/delimit the X and Y axises so that the point is not drawn outside any
+	// specific limit that we want to avoid.
+	// The algorithm/switch is based upon severales rules taking into account the X and Y axises. First, the most restrictive rules are set,
+	// and then, the less restrictive.
 	function funcion_de_coreccion(callback) {
+		if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
+		_real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
+			var offset = 200; // Offset of 200px
+			switch(_currentfloor) {
+				case 0:
+				var limit = 780 + offset;
+				if (780 <= _real_Y && _real_Y <= limit && 441 <= _real_X && _real_X <= 2204) {_real_Y = 780;break;}
+				var limit = 441 + offset;
+				if (441 <= _real_X && _real_X <= limit && 780 <= _real_Y) {_real_X = 441; break;}
+				if (_real_Y <= 153) {_real_Y = 153; break;}
+				if (_real_X <= 51) {_real_X = 51; break;}
+				break;
+				case 1:
+				var limit = 480 + offset;
+				if (480 <= _real_Y && _real_Y <= limit && 1089 <= _real_X && _real_X <= 1563) {_real_Y = 480;break;}
+				var limit = 1089 + offset;
+				if (1089 <= _real_X && _real_X <= limit && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1089; break;}
+				var limit = 1563 - offset;
+				if (limit <= _real_X && _real_X<= 1563 && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1563; break;}
+				var limit = 774 + offset;
+				if (774 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1089) {_real_Y = 774; break;}
+				var limit = 450 + offset;
+				if (450 <= _real_X && _real_X <= limit && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 450; break;}
+				var limit = 774 + offset;
+				if (774 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2214) {_real_Y = 774; break;}
+				var limit = 2214 - offset;
+				if (limit <= _real_Y && _real_Y<= 2214 && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 2214; break;}
+				if (_real_Y <= 162) {_real_Y = 162; break;}
+				if (_real_Y >= 1488) {_real_Y = 1488; break;}
+				break;
+				case 2:
+				var limit = 465 + offset;
+				if (465 <= _real_Y && _real_Y <= limit && 1083 <= _real_X && _real_X <= 1563) {_real_Y = 465;break;}
+				var limit = 1083 + offset;
+				if (1083 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1083; break;}
+				var limit = 1563 - offset;
+				if (limit <= _real_X && _real_X<= 1563 && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1563; break;}
+				var limit = 756 + offset;
+				if (756 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1083) {_real_Y = 756; break;}
+				var limit = 450 + offset;
+				if (450 <= _real_X && _real_X <= limit && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 450; break;}
+				var limit = 756 + offset;
+				if (756 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2205) {_real_Y = 756; break;}
+				var limit = 2205 - offset;
+				if (limit <= _real_Y && _real_Y<= 2205 && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 2205; break;}
+				if (_real_Y <= 150) {_real_Y = 150; break;}
+				if (_real_Y >= 1458) {_real_Y = 1458; break;}
+				break;
+				case 3:
+				var limit = 468 + offset;
+				if (468 <= _real_Y && _real_Y <= limit && 1068 <= _real_X && _real_X <= 1545) {_real_Y = 468;break;}
+				var limit = 1068 + offset;
+				if (1068 <= _real_X && _real_X <= limit && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1068; break;}
+				var limit = 1545 - offset;
+				if (limit <= _real_X && _real_X<= 1545 && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1545; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 435 <= _real_X && _real_X <= 1068) {_real_Y = 762; break;}
+				var limit = 435 + offset;
+				if (435 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 435; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 1545 <= _real_X && _real_X<= 2190) {_real_Y = 762; break;}
+				var limit = 2190 - offset;
+				if (limit <= _real_Y && _real_Y<= 2190 && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 2190; break;}
+				if (_real_Y <= 141) {_real_Y = 141; break;}
+				if (_real_Y >= 1473) {_real_Y = 1473; break;}
+				break;
+				case 4:
+				var limit = 477 + offset;
+				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477;break;}
+				var limit = 1092 + offset;
+				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; break;}
+				var limit = 1557 - offset;
+				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; break;}
+				var limit = 465 + offset;
+				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; break;}
+				var limit = 762 + offset;
+				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; break;}
+				var limit = 2202 - offset;
+				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; break;}
+				if (_real_Y <= 162) {_real_Y = 162; break;}
+				if (_real_Y >= 1485) {_real_Y = 1485; break;}
+				break;
+				case 5:
+				var limit = 465 + offset;
+				if (465 <= _real_Y && _real_Y <= limit && 1086 <= _real_X && _real_X <= 1554) {_real_Y = 465;break;}
+				var limit = 1086 + offset;
+				if (1086 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1086; break;}
+				var limit = 1554 - offset;
+				if (limit <= _real_X && _real_X<= 1554 && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1554; break;}
+				var limit = 693 + offset;
+				if (693 <= _real_Y && _real_Y <= limit && 399 <= _real_X && _real_X <= 1086) {_real_Y = 693; break;}
+				var limit = 399 + offset;
+				if (399 <= _real_X && _real_X <= limit && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 399; break;}
+				var limit = 693 + offset;
+				if (693 <= _real_Y && _real_Y <= limit && 1554 <= _real_X && _real_X<= 2247) {_real_Y = 693; break;}
+				var limit = 2247 - offset;
+				if (limit <= _real_Y && _real_Y<= 2247 && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 2247; break;}
+				if (_real_Y <= 210) {_real_Y = 210; break;}
+				if (_real_Y >= 1434) {_real_Y = 1434; break;}
+				if (_real_X <= 135) {_real_X = 135; break;}
+				if (_real_X >= 2520) {_real_X = 2520; break;}
+				break;
+				default:
+				break;
+			}
+		}
 		callback();
 	}
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
@@ -438,27 +550,45 @@
 		// Now we draw the user's location point and the corresponding label too:
 		var youPoint_circle = document.getElementById("youPoint_circle");
 		var you_label = document.getElementById("p_you_label");
+		var circulito = document.getElementById("youPoint_SVG_circle"); // This is the SVG circle inside SVG tag
+		var circulito2 = document.getElementById("youPoint_SVG_circle2"); // This is the SVG little circle inside SVG tag
+		// Setting (calculating) the radius of YOU circle:
+		var radius = 30; // '30' is a number that I set it on my own judge, it's considered sort of a minimum value. It does not relate to any variable somewhere else.
+		for (l in _radii) {
+			radius = Math.max(radius, _radii[l]);
+		}
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
 		// we will make it grayscale to make the user realize that is an old reading:
 		if (_real_X === Infinity || _real_X === -Infinity || isNaN(_real_X) || _real_X === undefined ||
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
-			youPoint_circle.style.WebkitFilter="grayscale(100%)";
+			youPoint_circle.style.WebkitFilter="grayscale(100%) blur(30px)";
 			you_label.style.backgroundColor = "gray";
-			youPoint_circle.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			youPoint_circle.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			you_label.style.left=_lastKnownXcoordinate - 80 + _paddingMap +"px";
-			you_label.style.top=_lastKnownYcoordinate + 40 +_paddingMap +"px";
+			youPoint_circle.style.width = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+			youPoint_circle.style.height = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+			youPoint_circle.style.left = _lastKnownXcoordinate - (radius*5)/2 + _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _lastKnownYcoordinate - (radius*5)/2+ _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			you_label.style.left=_lastKnownXcoordinate + (radius*4.8)/2 + _paddingMap +"px";
+			you_label.style.top=_lastKnownYcoordinate + (radius*4.8)/2 +_paddingMap +"px";
+
 		} else {
 			updateYOUlabel();
-			youPoint_circle.style.WebkitFilter="none";
+			youPoint_circle.style.WebkitFilter="grayscale(0%) blur(15px)";
 			you_label.style.backgroundColor = "red";
-			youPoint_circle.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			youPoint_circle.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			you_label.style.left=_real_X - 80 + _paddingMap +"px";
-			you_label.style.top=_real_Y + 40 + _paddingMap +"px";
+			youPoint_circle.style.left = _real_X - (radius*5)/2 +_paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _real_Y - (radius*5)/2 + _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			you_label.style.left=_real_X + (radius*4.8)/2 + _paddingMap +"px"; // '4.8' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+			you_label.style.top=_real_Y + (radius*4.8)/2 + _paddingMap +"px"; // '4.8' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
 			_lastKnownXcoordinate = _real_X;
 			_lastKnownYcoordinate = _real_Y;
 		}
+		// Common changes:
+		youPoint_circle.style.width = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		youPoint_circle.style.height = (radius*6) + "px"; // '6' is a number that I set it on my own judge. It does not relate to any variable somewhere else.
+		circulito.setAttribute("cx", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito.setAttribute("cy", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito.setAttribute("r", (radius*5)/2 + "px"); // '5' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito2.setAttribute("cx", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito2.setAttribute("cy", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
 
 		// We calculate the distance from device's position to destination point. The calculated distance (Euclidean distance) is shown in meters.
 		var p_dist = document.getElementById("p_distanceTillDest");

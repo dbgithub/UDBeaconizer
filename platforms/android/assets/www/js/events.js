@@ -432,7 +432,7 @@ function removeDuplicatedMaps() {
     var dest_label = document.getElementById("p_dest_label");
     var youPoint_circle = document.getElementById("youPoint_circle");
     var dest_point = document.getElementById("destinationPoint_circle");
-    $("#spa_map #footer > img:first-child").fadeOut(2500);
+    $("#spa_map #footer > img:first-child").removeClass("anima_magician");
     you_label.style.visibility = "visible";
     dest_label.style.visibility = "visible";
     youPoint_circle.style.visibility = "visible";

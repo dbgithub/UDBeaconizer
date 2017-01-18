@@ -64,6 +64,7 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _final_Y; // This represents the Y coordinate of the computed value after trilateration
     var _real_X; // This represents the X coordinate of the locatin of the person (device)
     var _real_Y; // This represents the Y coordinate of the locatin of the person (device)
+    var _radii = {} // An object that holds the values of the disstances to the nearest three beacons. Among those distances one will be choosen to be the radius of the YOU circle.
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.

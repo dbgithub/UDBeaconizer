@@ -20,8 +20,6 @@
 var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
 var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
 var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google's Developer page as a credential. This one is for WEB applications.
-// var _server_domain = "http://192.168.1.51:8888";
-// var _database_domain = "http://192.168.1.51:5984";
 var _staffdb_name='staffdb'; // Real database name in server-side.
 var _roomsdb_name='roomsdb'; // Real database name in server-side.
 var _beacons_name='beaconsdb'; // Real database name in server-side.
@@ -50,20 +48,23 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _nearestbeacons = []; // An array containing the three NEAREST beacons from the total list of beacons.
     var _sortedList; // a list of beacons sorted by signal strength
     var _lastKnownBeaconsDistances = {}; // This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+    var _lastKnown5locations = []; // This array contains a set of 5 last-known locations (of the user) in the form of {X,Y} coordinates.
     var _lastKnownXcoordinate; // This value saves the last available, correct, accurate and known X coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
     var _lastKnownYcoordinate; // This value saves the last available, correct, accurate and known Y coordinate of the origin point ('YOU' label). This is used to prevent the app from loosing connection with beacons.
     var _allowYOUlabel = false; // A boolean that indicates whether to allow the YOU label (source point; user's position) to be shown. This doesn't mean that it will be shown, this means that there exist a communication with the beacons and hence, we allow the label to be shown.
     var _floor // the floor number corresponding to the room or place the user is searching for
     var _sameFloor = -1; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. The initial value is -1 because we haven't set it yet.
-    var _loadDestFloor = -1; // A boolean representing whether it is needed to load the image/map corresponding to the destination point or the one corresponding to the source point (user's point). The initial value is -1 because we haven't set it yet.
-    var _stopLoop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
+    var _stop = false; // This bool prevents the application from retrieving and loading a flor map each 500ms (which is the beacons' list refresh rate)
     var _currentfloor; // This int indicates the floor where the user is at.
     var _destX, _destY; // X and Y coordinates of the destination point over the map
     var _b1X, _b1Y; // X and Y coordinates of beacon 1
     var _b2X; // X coordinate of beacon 2, Y coordinate it's not needed for calculations
     var _b3X, _b3Y; // X and Y coordinates of beacon 3
+    var _final_X; // This represents the X coordinate of the computed value after trilateration
+    var _final_Y; // This represents the Y coordinate of the computed value after trilateration
     var _real_X; // This represents the X coordinate of the locatin of the person (device)
     var _real_Y; // This represents the Y coordinate of the locatin of the person (device)
+    var _radii = {} // An object that holds the values of the disstances to the nearest three beacons. Among those distances one will be choosen to be the radius of the YOU circle.
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.

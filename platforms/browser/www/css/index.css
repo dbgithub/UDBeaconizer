@@ -3,7 +3,6 @@
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%% GENERIC RULES %%%%%%%%%%%%%%%%% */
-
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
     -webkit-touch-callout: none;                /* prevent the context menu when you tap and hold over a link */
@@ -218,21 +217,6 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     font-weight: normal;
     font-size: 20px;
 }
-/* The following classes are commented because it felt laggy*/
-/*@keyframes jump { /* It affects: SPA_MAP + SPA_CONTACT */
-    /*from { transform: scale(1,1); }
-    50% { transform: scale(2,2); }
-    to { transform: scale(1,1); }
-}*/
-/*@-webkit-keyframes jump { /* It affects: SPA_MAP + SPA_CONTACT */
-    /*from {transform: scale(1,1); }
-    50% { transform: scale(2,2); }
-    to { transform: scale(1,1); }
-}*/
-/*.anima_jump {  It affects: SPA_MAP + SPA_CONTACT */
-    /*animation:jump 3000ms infinite;
-    -webkit-animation:jump 3000ms infinite;
-}*/
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
@@ -387,6 +371,10 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     display: inline-block;
     padding: 1500px; /* If you CHANGE this value, you should change also "_paddingMap" global variable*/
 }
+#map_sourcepoint {
+    width: 2649px;
+    height: 1493px;
+}
 #spa_map .footer, #spa_contact .footer{ /* ALSO USED IN 'CONTACT' PAGE */
     border-top: 5px solid rgba(51,53,55,1) !important;
     height: 50px !important;
@@ -404,7 +392,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     height: auto !important;
     bottom: 70px;
     left: 0px;
-    display: none; /* we set display none because it will be shown just in necessary cases */
+    display:none; /* It is not shown because it will be shown just in necessary cases*/
 }
 #spa_map .footer > img:first-child:active { /* la flechita significa todas las 'img' con parent 'footer' */
     background-color: rgba(0, 0, 255, 0.9);
@@ -442,9 +430,18 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
 #spa_map #div_liveSearchResults, #spa_contact #div_liveSearchResults, #spa_edit_contact #div_liveSearchResults { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     margin-left: -45%;
 }
-#circle_destinationpoint, #circle_sourcepoint {
+#destinationPoint_circle, #youPoint_circle {
     position: absolute;
     visibility: hidden;
+}
+#youPoint_SVG_circle {
+    stroke: rgb(117,29,29);
+    stroke-width: 0px;
+    fill: red;
+    fill-opacity: 0.8;
+}
+#youPoint_SVG_circle2 {
+    fill: #C80000;
 }
 #p_you_label, #p_upstairs_downstairs {
     background-color: red;
@@ -470,8 +467,21 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     position: absolute;
     visibility: hidden;
 }
-#p_dest_label, #p_you_label, #circle_destinationpoint, #circle_sourcepoint {
+#p_dest_label, #p_you_label, #destinationPoint_circle, #youPoint_circle {
     z-index: 2;
+}
+@keyframes magician { /* It affects: SPA_MAP */
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@-webkit-keyframes magician { /* It affects: SPA_MAP */
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+.anima_magician {  /* It affects: SPA_MAP */
+    display:inline !important;
+    animation:magician 2000ms 1;
+    -webkit-animation:magician 2000ms 1;
 }
 /* Media rules (@media) are used to change some CSS properties only if a certain condition is true. */
 /* The CSS classes you might want to modify must be above the @media rules */

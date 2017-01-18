@@ -210,7 +210,7 @@
 		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m. Should we consider the information provided by easiBeacon, the one with -59dBm and -69 dBm depending on the beacon??
 		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position). We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
-		// The distance estimate is calculated as follow:
+		// The distance estimate is calculated as follows:
 		if (ratio < 1.0) {
 			return Math.pow(ratio, 10).toFixed(2);
 
@@ -222,10 +222,12 @@
 			// console.log("_lastKnownBeaconsDistances["+instancenum+"]= " +_lastKnownBeaconsDistances[beacon.address]); // Esto estaba antes sin comentar
 			if (_beaconsDistances[beacon.address].length < 7) {
 				_beaconsDistances[beacon.address].push(accuracy);
+				_radii[beacon.address] = _lastKnownBeaconsDistances[beacon.address];
 				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
 				var val = calculateAverageDistance(beacon.address);
 				_lastKnownBeaconsDistances[beacon.address] = val;
+				_radii[beacon.address] = val;
 				return val;
 			}
 		}
@@ -295,7 +297,7 @@
 	function checkIfUserAtTheSameFloor(callback) {
 		console.log("user floor = " + _floor + " | beacons floor = " + _currentfloor + " | stopLoop = " +_stop);
 		if (_floor != _currentfloor && !_stop) { // This will occur if the user and the room are in different floors.
-			$("#spa_map #footer > img:first-child").fadeToggle(2500);
+			$("#spa_map #footer > img:first-child").addClass("anima_magician");
 			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			duplicateMaps(_currentfloor);
 		} else if (_floor == _currentfloor && _stop) { // This will occur when the user and the room are eventually in the same floor.
@@ -310,6 +312,7 @@
 
 	// Inserts the three nearest beacons from the list of all beacons in an array.
 	function retrieveNearestThreeBeacons(callback) {
+		_radii = {} // reset the object
 		// Among all beacons scanned and saved, now we will take the nearest 3 ones to apply trilateration afterwards:
 		for (var i in _sortedList) // We are iterating over _sortedList's properties, that is, in this case, the indexes, e.g. 0,1,2,...
 		{
@@ -371,7 +374,7 @@
 		if (_lastKnown5locations.length == 5) {
 			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, TWO times will be executed.
 			// As you increase the frecuency, you get much close coordinates.
-			for (k = 0; k < 7; k++) {
+			for (k = 0; k < 5; k++) {
 				for (i=0; i<_lastKnown5locations.length; i++) {
 					// console.log("i = " + i);
 					// We calculate now the middle-point that relies on the straight line between one point to the consecutive one:
@@ -407,10 +410,6 @@
 			var minX = Xcollection.pop(); // The last (smallest) value is removed from the array
 			var maxY = Ycollection.shift(); // The first (biggest) value is removed from the array
 			var minY = Ycollection.pop(); // The last (smallest) value is removed from the array
-			// console.log("MaxX -> " + maxX);
-			// console.log("MinX -> " + minX);
-			// console.log("MaxY -> " + maxY);
-			// console.log("MinY -> " + minY);
 			_real_X = (maxX + minX)/2;
 			_real_Y = (maxY + minY)/2;
 
@@ -437,7 +436,6 @@
 	function funcion_de_coreccion(callback) {
 		if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
 		_real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
-			console.log("FUNCION DE CORRECCION!!!!!!!!!!!!!!!!!");
 			var offset = 200; // Offset of 200px
 			switch(_currentfloor) {
 				case 0:
@@ -552,27 +550,45 @@
 		// Now we draw the user's location point and the corresponding label too:
 		var youPoint_circle = document.getElementById("youPoint_circle");
 		var you_label = document.getElementById("p_you_label");
+		var circulito = document.getElementById("youPoint_SVG_circle"); // This is the SVG circle inside SVG tag
+		var circulito2 = document.getElementById("youPoint_SVG_circle2"); // This is the SVG little circle inside SVG tag
+		// Setting (calculating) the radius of YOU circle:
+		var radius = 30; // '30' is a number that I set it on my own judge, it's considered sort of a minimum value. It does not relate to any variable somewhere else.
+		for (l in _radii) {
+			radius = Math.max(radius, _radii[l]);
+		}
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
 		// we will make it grayscale to make the user realize that is an old reading:
 		if (_real_X === Infinity || _real_X === -Infinity || isNaN(_real_X) || _real_X === undefined ||
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
-			youPoint_circle.style.WebkitFilter="grayscale(100%)";
+			youPoint_circle.style.WebkitFilter="grayscale(100%) blur(30px)";
 			you_label.style.backgroundColor = "gray";
-			youPoint_circle.style.left = _lastKnownXcoordinate - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			youPoint_circle.style.top = _lastKnownYcoordinate - 35+ _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			you_label.style.left=_lastKnownXcoordinate - 80 + _paddingMap +"px";
-			you_label.style.top=_lastKnownYcoordinate + 40 +_paddingMap +"px";
+			youPoint_circle.style.width = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+			youPoint_circle.style.height = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+			youPoint_circle.style.left = _lastKnownXcoordinate - (radius*5)/2 + _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _lastKnownYcoordinate - (radius*5)/2+ _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			you_label.style.left=_lastKnownXcoordinate + (radius*4.8)/2 + _paddingMap +"px";
+			you_label.style.top=_lastKnownYcoordinate + (radius*4.8)/2 +_paddingMap +"px";
+
 		} else {
 			updateYOUlabel();
-			youPoint_circle.style.WebkitFilter="none";
+			youPoint_circle.style.WebkitFilter="grayscale(0%) blur(15px)";
 			you_label.style.backgroundColor = "red";
-			youPoint_circle.style.left = _real_X - 35 +_paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			youPoint_circle.style.top = _real_Y - 35 + _paddingMap +"px"; // '35' is the radius of the circle's image declared at map.html. It is necessary to make the circle centered.
-			you_label.style.left=_real_X - 80 + _paddingMap +"px";
-			you_label.style.top=_real_Y + 40 + _paddingMap +"px";
+			youPoint_circle.style.left = _real_X - (radius*5)/2 +_paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			youPoint_circle.style.top = _real_Y - (radius*5)/2 + _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
+			you_label.style.left=_real_X + (radius*4.8)/2 + _paddingMap +"px"; // '4.8' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+			you_label.style.top=_real_Y + (radius*4.8)/2 + _paddingMap +"px"; // '4.8' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
 			_lastKnownXcoordinate = _real_X;
 			_lastKnownYcoordinate = _real_Y;
 		}
+		// Common changes:
+		youPoint_circle.style.width = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		youPoint_circle.style.height = (radius*6) + "px"; // '6' is a number that I set it on my own judge. It does not relate to any variable somewhere else.
+		circulito.setAttribute("cx", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito.setAttribute("cy", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito.setAttribute("r", (radius*5)/2 + "px"); // '5' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito2.setAttribute("cx", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
+		circulito2.setAttribute("cy", (radius*6)/2 + "px"); // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
 
 		// We calculate the distance from device's position to destination point. The calculated distance (Euclidean distance) is shown in meters.
 		var p_dist = document.getElementById("p_distanceTillDest");

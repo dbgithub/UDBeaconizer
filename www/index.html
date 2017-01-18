@@ -65,8 +65,12 @@
                         <img id="map_sourcepoint" src="" alt="map">
                     </div>
                 </div>
-                <img id="youPoint_circle" src="./img/red_circle.png" width="70" height="70" alt="youicon" class="anima_jump">
-                <img id="destinationPoint_circle" src="./img/orange_circle.png" width="70" height="70" alt="desticon" class="anima_jump">
+                <!-- <img id="youPoint_circle" src="./img/red_circle.png" width="70" height="70" alt="youicon"> -->
+                <svg id="youPoint_circle"  height="0" width="0">
+                    <circle id="youPoint_SVG_circle" cx="0" cy="0" r="0" />
+                    <circle id="youPoint_SVG_circle2" cx="0" cy="0" r="15"/>
+                </svg>
+                <img id="destinationPoint_circle" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
                 <p id="p_you_label">YOU</p>
                 <p id="p_dest_label">destination</p>
                 <!-- <p id="p_upstairs_downstairs"></p> -->
