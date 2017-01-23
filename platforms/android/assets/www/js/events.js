@@ -468,7 +468,7 @@ function showMap() {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
         var map_sourcepoint = document.getElementById("map_sourcepoint");
         map_sourcepoint.src = _reva;
-        $(".jqueryFlip-back_floor p").html(ordinal_suffix_of(_currentfloor) + "  <br><span>floor</span>");
+        $(".jqueryFlip-back_floor p").html(ordinal_suffix_of(_currentfloor) + " <br><span>floor</span>");
     }
 
     // This inner function just writes "th", "nd" and "rd" whenever it is required based on the ordinality of the number given

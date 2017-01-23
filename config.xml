@@ -1,11 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="es.deusto.UDbeaconizer" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<!-- More info about configuring this .xml configuration file and more importantly, the versionCode: http://docs.phonegap.com/phonegap-build/configuring/ -->
+<!-- More info about '.pgbomit' file at: http://docs.phonegap.com/phonegap-build/start/#structure_application and https://www.joshmorony.com/using-phonegap-builds-pgbomit-to-drastically-reduce-file-size/ -->
+<widget id="es.deusto.UDbeaconizer" version="1.0.0" versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>UD Finder</name>
     <description>
         App for indoors geolocalization system to search professors, lecturers, rooms, offices and laboratories using beacons.
     </description>
     <author email="aitor.db@opendeusto.es" href="http://morelab.deusto.es/">
-        DeustoTech-Internet department
+        Aitor De Blas @ DeustoTech-Internet
     </author>
     <content src="index.html" />
     <!--
@@ -18,7 +20,7 @@
         <!-- all platform -->
         <preference name="orientation" value="default" /> <!-- all: default means both landscape and portrait are enabled -->
         <preference name="fullscreen" value="false" /> <!-- all: hides the status bar at the top of the screen -->
-        <preference name="phonegap-version" value="cli-6.1.0" /> <!-- Acabo de añadir esto para Phonegap Build (concretamente para BLE Central plugin) -->
+        <preference name="phonegap-version" value="cli-6.3.0" /> <!-- Acabo de añadir esto para Phonegap Build (concretamente para BLE Central plugin) -->
         <!-- More info about possible compiling errors in Phonegap BUILD at: https://github.com/floatinghotpot/cordova-admob-pro/issues/236 -->
         <!-- Supported Phonegap version for Phonegap BUILD (very interesting) at: https://build.phonegap.com/current-support -->
         <!-- iOS platform -->
@@ -80,7 +82,7 @@
         If not specified, then, no application build will be created for that platform.
     -->
     <!-- Define app icon + app splash screen for each platform. -->
-    <!-- <icon src="icon.png" /> --> <!-- me da error si lo descomento porque no existe icono -->
+    <icon src="icon.png" />  <!-- me da error si lo descomento porque no existe icono -->
     <platform name="android">
         <!-- icon -->
         <icon density="ldpi" src="www/res/icon/android/drawable-ldpi-icon.png" />
