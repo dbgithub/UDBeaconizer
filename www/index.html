@@ -65,12 +65,13 @@
                         <img id="map_sourcepoint" src="" alt="map">
                     </div>
                 </div>
-                <!-- <img id="youPoint_circle" src="./img/red_circle.png" width="70" height="70" alt="youicon"> -->
                 <svg id="youPoint_circle"  height="0" width="0">
                     <circle id="youPoint_SVG_circle" cx="0" cy="0" r="0" />
                     <circle id="youPoint_SVG_circle2" cx="0" cy="0" r="15"/>
                 </svg>
-                <img id="destinationPoint_circle" src="./img/orange_circle.png" width="70" height="70" alt="desticon">
+                <svg id="destinationPoint_circle"  height="80" width="80">
+                    <circle id="destinationPoint_SVG_circle" cx="40" cy="40" r="35" />
+                </svg>
                 <p id="p_you_label">YOU</p>
                 <p id="p_dest_label">destination</p>
                 <!-- <p id="p_upstairs_downstairs"></p> -->
@@ -81,6 +82,10 @@
             <div id="div_distanceTillDestination">
                 <img src="./img/destination_ico.png" alt="distace to target" />
                 <p id="p_distanceTillDest"></p>
+            </div>
+            <div id="floor_label">
+                <div class="jqueryFlip-front_floor"><p>?th <br><span>floor</span></p></div>
+                <div class="jqueryFlip-back_floor"><p>?th <br><span>floor</span></p></div>
             </div>
             <img src="./img/logo_UD-badge.png" alt="UD badge">
         </div>

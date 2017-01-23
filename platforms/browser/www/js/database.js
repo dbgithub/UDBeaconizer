@@ -408,6 +408,10 @@ function retrieveMap(floor, callback) {
             }).catch(function (err) {
                 // error
                 console.log("error converting from base64 to blob");
+                if (!_showingToolTip) {
+                    _showingToolTip = true;
+                    navigator.notification.confirm('An error occured retrieving the map... \nWould you like to try it again? 😣', function(responseIndex) {_showingToolTip = false; (responseIndex == 1)? goMap(_index): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
+                }
             });
         });
     // More info about storing and reading Blob type images, XMLHttpRequest, storing any kind of file and blob-util plugin github page:

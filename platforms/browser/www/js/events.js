@@ -1,3 +1,128 @@
+// This method initializes the functionalities of some plugins and third-party scripts all in one function.
+// It is not strictly required to initialize it at the beginning, but it saves time whenever the functionalities are needed during the life-cycle of the application.
+function pluginsInitialization() {
+    // jQuery-flip
+    $("#card").flip({
+        trigger: 'manual',
+        axis: 'y',
+        reverse:true,
+        front: $(".jqueryFlip-front"),
+        back: $(".jqueryFlip-back")
+    });
+
+    // jQuery-flip
+    $("#floor_label").flip({
+        trigger: 'manual',
+        axis: 'x',
+        reverse:true,
+        front: $(".jqueryFlip-front_floor"),
+        back: $(".jqueryFlip-back_floor")
+    });
+
+    // Swiping effect panel in the MAP page
+    $(document).on("swipeleft", "#spa_map", function(e) {
+        // We check if there is no open panel on the page because otherwise
+        // a swipe to close the left panel would also open the right panel (and v.v.).
+        // We do this by checking the data that the framework stores on the page element (panel: open).
+        if ($(".ui-page-active").jqmData("panel") !== "open") {
+            if (e.type === "swipeleft") {
+                $("#sidepanel_map").panel("open");
+            }
+        }
+    });
+
+    // Swiping effect panel in the CONTACT page
+    $(document).on("swipeleft", "#spa_contact", function(e) {
+        // We check if there is no open panel on the page because otherwise
+        // a swipe to close the left panel would also open the right panel (and v.v.).
+        // We do this by checking the data that the framework stores on the page element (panel: open).
+        if ($(".ui-page-active").jqmData("panel") !== "open") {
+            if (e.type === "swipeleft") {
+                $("#sidepanel_contact").panel("open");
+            }
+        }
+    });
+
+    /* jQuery panzoom by timmywil */
+    $("#map_wrapper").panzoom({
+        // Should always be non-empty
+        // Used to bind jQuery events without collisions
+        // A guid is not added here as different instantiations/versions of Panzoom
+        // on the same element is not supported.
+        eventNamespace: ".panzoom",
+        // Whether or not to transition the scale
+        transition: true,
+        // Default cursor style for the element
+        cursor: "move",
+        // There may be some use cases for zooming without panning or vice versa
+        // NOTE: disablePan also disables focal point zooming
+        disablePan: false,
+        disableZoom: false,
+        // Pan only on the X or Y axes
+        disableXAxis: false,
+        disableYAxis: false,
+        // Set whether you'd like to pan on left (1), middle (2), or right click (3)
+        which: 1,
+        // The increment at which to zoom
+        // adds/subtracts to the scale each time zoomIn/Out is called
+        increment: 0.33,
+        // When no scale is passed, this option tells
+        // the `zoom` method to increment
+        // the scale *linearly* based on the increment option.
+        // This often ends up looking like very little happened at larger zoom levels.
+        // The default is to multiply/divide the scale based on the increment.
+        linearZoom: true,
+        // Pan only when the scale is greater than minScale
+        panOnlyWhenZoomed: false,
+        // min and max zoom scales
+        minScale: 0.2,
+        maxScale: 0.7,
+        // The default step for the range input
+        // Precendence: default < HTML attribute < option setting
+        rangeStep: 0.05,
+        // Animation duration (ms)
+        duration: 400,
+        // CSS easing used for scale transition
+        easing: "ease-in-out",
+        // Indicate how the element should be contained within its parent when panning
+        // Note: this does not affect zooming outside of the parent
+        // Set this value to 'invert' to only allow panning when the bounds of the element are bigger than the parent. You'd be able to pan from outside the parent.
+        // Set this value to 'automatic' to let the script decide when to apply "true" or "invert". It all depends on the size of the element and whether it exceeds the bounds of the parent.
+        // Set this value to true to only allow panning when the element is contained within the parent. It will bounce against the borders when it approaches the borders.
+        // You can set padding values to the inner element so that you can make a little more space between the element and the parent.
+        contain: false
+        // Transform value to which to always reset (string)
+        // Defaults to the original transform on the element when Panzoom is initialized
+        // startTransform: undefined,
+
+        // This optional jQuery collection can be set to specify all of the elements
+        // on which the transform should always be set.
+        // It should have at least one element.
+        // This is mainly used for delegating the pan and zoom transform settings
+        // to another element or multiple elements.
+        // The default is the Panzoom element wrapped in jQuery
+        // See the [demo](http://timmywil.github.io/jquery.panzoom/demo/#set) for an example.
+        // Note: only one Panzoom element will still handle events for a Panzoom instance.
+        // Use multiple Panzoom instances for that use case.
+        // $set: $elem,
+        // Zoom buttons/links collection (you can also bind these yourself - e.g. `$button.on("click", function( e ) { e.preventDefault(); $elem.panzoom("zoom"); });` )
+        // $zoomIn: $(),
+        // $zoomOut: $(),
+        // Range input on which to bind zooming functionality
+        // $zoomRange: $(),
+        // Reset buttons/links collection on which to bind the reset method
+        // $reset: $(),
+        // For convenience, these options will be bound to Panzoom events
+        // These can all be bound normally on the Panzoom element
+        // e.g. `$elem.on("panzoomend", function( e, panzoom ) { console.log( panzoom.getMatrix() ); });`
+        // onStart: undefined,
+        // onChange: undefined,
+        // onZoom: undefined,
+        // onPan: undefined,
+        // onEnd: undefined,
+        // onReset: undefined
+    });
+}
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
 function livesearch(inputvalue) {
@@ -98,13 +223,11 @@ function showBothStaffNRooms() {
         for (j = 0; j < _searched_people.length; j++) {
             // window.location.replace() -> evita que vayas atras en el history
             list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; _personRoomTouched = true; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
-            // ontouchstart='return true; attribute needed??'
         }
     }
     if (_searched_rooms.length != 0) {
         for (j = 0; j < _searched_rooms.length; j++) {
             list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
-            // ontouchstart='return true; attribute needed??'
         }
     }
     if (list != "") {
@@ -132,7 +255,6 @@ function loadContactDetails() {
     var rows = "";
     var officehours = " - ";
     var office = "";
-    console.log("_personRoomTouched?? ->" + _personRoomTouched);
     if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_people[_index].name; // Write the name of the person in the searchbar
     // Based on the office hours retrieved from the database, we will format it as a table:
@@ -164,18 +286,6 @@ function loadContactDetails() {
     "<p>LINKEDIN: </p><p>" + ((person.linkedin != null) ? person.linkedin : "-") + "</p>"+
     "<p>WORKING AT DeustoTech?: </p><p>" + ((person.dtech) ? "Yes" : "No") + "</p>"+
     "<p>NOTES: </p><p>" + ((person.notes != null) ? person.notes : "-") + "</p>";
-
-    // This code snippet initializes the swiping effect panel in the CONTACT page
-    $(document).on("swipeleft", "#spa_contact", function(e) {
-        // We check if there is no open panel on the page because otherwise
-        // a swipe to close the left panel would also open the right panel (and v.v.).
-        // We do this by checking the data that the framework stores on the page element (panel: open).
-        if ($(".ui-page-active").jqmData("panel") !== "open") {
-            if (e.type === "swipeleft") {
-                $("#sidepanel_contact").panel("open");
-            }
-        }
-    });
 
     // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
      silentLoginOAuth();
@@ -330,28 +440,6 @@ function loadMap() {
         // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
         silentLoginOAuth();
     });
-
-    // The following two functions, grow and shrink, are used to animate both red points locating the destination room and source point.
-    // jQuery is used. More info about modifying DOM elements' attributes with jQuery at: http://stackoverflow.com/questions/6670718/jquery-animation-of-specific-attributes
-    // and here too: http://api.jquery.com/animate/#animate-properties-options
-    //  function grow() {
-    //     $({r:$('#destinationPoint_circle, #youPoint_circle').attr('r')})
-    //      .animate(
-    //      {r: 35},
-    //      {duration:1000,step:function(now){
-    //        $('#destinationPoint_circle, #youPoint_circle').attr('r', now);
-    //     }, complete:function(){shrink();}});
-    // }
-    //
-    // function shrink() {
-    //    $({r:$('#destinationPoint_circle, #youPoint_circle').attr('r')})
-    //    .animate(
-    //    {r: 18},
-    //    {duration:1000,step:function(now){
-    //      $('#destinationPoint_circle, #youPoint_circle').attr('r', now);
-    //   }, complete:function(){grow();}});
-    // }
-    // grow();
 }
 
 // This method pans and zooms over the image/map.
@@ -375,16 +463,35 @@ function showMap() {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
         map.src = _reva;
+        $(".jqueryFlip-front_floor p").html(ordinal_suffix_of(_floor) + " <br><span>floor</span>");
     } else {
         // We show the image as a second map/floor. This means clearly, that the user and the room are not at the same floor.
         var map_sourcepoint = document.getElementById("map_sourcepoint");
         map_sourcepoint.src = _reva;
+        $(".jqueryFlip-back_floor p").html(ordinal_suffix_of(_currentfloor) + "  <br><span>floor</span>");
+    }
+
+    // This inner function just writes "th", "nd" and "rd" whenever it is required based on the ordinality of the number given
+    function ordinal_suffix_of(i) {
+        var j = i % 10,
+        k = i % 100;
+        if (j == 1 && k != 11) {
+            return i + "st";
+        }
+        if (j == 2 && k != 12) {
+            return i + "nd";
+        }
+        if (j == 3 && k != 13) {
+            return i + "rd";
+        }
+        return i + "th";
     }
 }
 
 // A function to swap between two maps
 function switchMaps() {
     $('#card').flip('toggle');
+    $('#floor_label').flip('toggle');
     if (_front) {_front = false;} else {_front = true;}
     var youPoint_circle = document.getElementById("youPoint_circle");
     var dest_point = document.getElementById("destinationPoint_circle");
@@ -552,9 +659,9 @@ function disconnectOAuth() {
                 showToolTip("Signed out was successfully! Come back soon ;-)");
                 // We reset the variable concerning the user and hide the logging button and text.
                 _signedInUser = null;
-                $(".btn_signout").fadeOut("slow");
-                $(".p_oauth_name").fadeOut("slow");
-                $(".p_oauth_email").fadeOut("slow");
+                $(".btn_signout").addClass("anima_fade");
+                $(".p_oauth_name").addClass("anima_fade");
+                $(".p_oauth_email").addClass("anima_fade");
             }
         );
     } catch (e) {
@@ -589,9 +696,10 @@ function silentLoginOAuth() {
 
 // This function is executed after the user has signed in. It displays her/his name and email. The "sign out" button appears too.
 function afterSignedIn(user) {
-    $(".btn_signout").css("display", "inline");
-    $(".p_oauth_name").css("display", "inline");
-    $(".p_oauth_email").css("display", "inline");
+
+    $(".btn_signout").css("display", "inline"); $(".btn_signout").removeClass("anima_fade");
+    $(".p_oauth_name").css("display", "inline"); $(".p_oauth_name").removeClass("anima_fade");
+    $(".p_oauth_email").css("display", "inline"); $(".p_oauth_email").removeClass("anima_fade");
     $(".p_oauth_name").text(user.displayName +",");
     $(".p_oauth_email").text(user.email);
     _signedInUser = user; // The containing fields are: 'email', 'idToken', 'userId', 'displayName', 'imageUrl'. More info at: https://github.com/EddyVerbruggen/cordova-plugin-googleplus

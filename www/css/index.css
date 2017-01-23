@@ -217,6 +217,26 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     font-weight: normal;
     font-size: 20px;
 }
+@keyframes fade { /* It affects: SPA_MAP + SPA_CONTACT */
+    from { opacity: 1.0; }
+    to {
+        opacity: 0;
+        visibility:hidden;
+     }
+}
+@-webkit-keyframes fade { /* It affects: SPA_MAP + SPA_CONTACT */
+    from { opacity: 1.0; }
+    to {
+        opacity: 0;
+        visibility:hidden;
+     }
+}
+.anima_fade { /* It affects: SPA_MAP + SPA_CONTACT */
+    animation:fade 500ms 1;
+    -webkit-animation:fade 500ms 1;
+    animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+    -webkit-animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+}
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
@@ -363,6 +383,25 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
 #spa_map #backarrow.ui-btn::after, #spa_contact #backarrow.ui-btn::after, #spa_edit_contact #backarrow.ui-btn::after { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
     background-size: 100%; /* This changes the size of the icon*/
 }
+#floor_label {
+    position: fixed !important;
+    left: 75px;
+    bottom:70px;
+    z-index: 2;
+}
+#floor_label p {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.44);
+    font-size: 25px;
+    line-height: 20px;
+    padding-left: 6px;
+    padding-right: 6px;
+    height: 50px;
+    padding-top: 4px;
+}
+#floor_label p span {
+    font-size: 15px;
+}
 #map_wrapper {
     /*background-color: #d0b3b3;*/ /* The color is for debuggin purposes */
     background-color: white;
@@ -385,11 +424,10 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
 }
 #spa_map .footer > img:first-child { /* la flechita significa todas las 'img' con parent 'footer' */
     position: fixed;
-    background-color: rgba(0, 0, 0, 0.56);
+    background-color: rgba(0, 0, 0, 0.44);
     margin-left: 10px;
     padding: 6px;
-    width: 60px;
-    height: auto !important;
+    height: 50px !important;
     bottom: 70px;
     left: 0px;
     display:none; /* It is not shown because it will be shown just in necessary cases*/
@@ -403,7 +441,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     margin-right: 0px;
     right: 0px;
     bottom: 70px;
-    background-color: rgba(0, 0, 0, 0.56);
+    background-color: rgba(0, 0, 0, 0.44);
     padding: 3px;
     width: auto;
     min-width: 110px;
@@ -433,6 +471,9 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
 #destinationPoint_circle, #youPoint_circle {
     position: absolute;
     visibility: hidden;
+}
+#destinationPoint_SVG_circle {
+    fill: rgb(246,162,0);
 }
 #youPoint_SVG_circle {
     stroke: rgb(117,29,29);
@@ -470,18 +511,20 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
 #p_dest_label, #p_you_label, #destinationPoint_circle, #youPoint_circle {
     z-index: 2;
 }
-@keyframes magician { /* It affects: SPA_MAP */
+@keyframes magician {
     from { opacity: 0; }
-    to { opacity: 1; }
+    to {opacity: 1; }
 }
-@-webkit-keyframes magician { /* It affects: SPA_MAP */
+@-webkit-keyframes magician {
     from { opacity: 0; }
-    to { opacity: 1; }
+    to {opacity: 1; }
 }
 .anima_magician {  /* It affects: SPA_MAP */
     display:inline !important;
     animation:magician 2000ms 1;
     -webkit-animation:magician 2000ms 1;
+    animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+    -webkit-animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
 }
 /* Media rules (@media) are used to change some CSS properties only if a certain condition is true. */
 /* The CSS classes you might want to modify must be above the @media rules */
@@ -499,8 +542,22 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
         height: 30px !important;
     }
     #spa_map .footer > img:first-child { /* la flechita significa todas las 'img' con parent 'footer' */
-        width: 40px;
+        height: 35px !important;
         bottom: 50px;
+    }
+    #floor_label {
+        bottom: 50px;
+        left: 55px;
+        white-space: nowrap;
+    }
+    #floor_label p {
+        line-height: initial;
+        height: 35px;
+        font-size: 18px;
+        padding-top: 6px;
+    }
+    #floor_label p br {
+        display: none;
     }
     #spa_map .input_search_bar { /* ALSO USED IN 'CONTACT' PAGE AND 'EDIT_CONTACT' PAGE */
         font-size: 15px;
