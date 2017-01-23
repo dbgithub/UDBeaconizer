@@ -42,7 +42,7 @@
         <preference name="auto-hide-splash-screen" value="true" /> <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
         <preference name="disable-cursor" value="false" /> <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
 
-    <!-- Plugins -->
+    <!-- Plugins --> 
 
     <!-- Core plugins -->
     <!-- <plugin name="cordova-plugin-battery-status" source="npm" /> -->
