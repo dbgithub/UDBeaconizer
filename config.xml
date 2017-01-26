@@ -72,7 +72,7 @@
     <plugin name="cordova-plugin-bluetooth-serial" source="npm"/>
     <plugin name="cordova-plugin-x-toast" spec="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git"/>
     <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" source="git">
-        <param name="REVERSED_CLIENT_ID" value="es.deusto.UDbeaconizer" />
+        <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.473073684258-jss0qgver3lio3cmjka9g71ratesqckr" />
     </plugin>
 
     <!--
