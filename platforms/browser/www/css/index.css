@@ -388,6 +388,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     left: 75px;
     bottom:70px;
     z-index: 2;
+    display:none; /* It is not shown because it will be shown just in necessary cases*/
 }
 #floor_label p {
     color: white;

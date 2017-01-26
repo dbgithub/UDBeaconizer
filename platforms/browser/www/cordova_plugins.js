@@ -41,14 +41,6 @@ module.exports = [
         ]
     },
     {
-        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
-        "id": "cordova-plugin-googleplus.GooglePlus",
-        "pluginId": "cordova-plugin-googleplus",
-        "clobbers": [
-            "window.plugins.googleplus"
-        ]
-    },
-    {
         "file": "plugins/cordova-plugin-network-information/www/network.js",
         "id": "cordova-plugin-network-information.network",
         "pluginId": "cordova-plugin-network-information",
@@ -83,6 +75,14 @@ module.exports = [
         "file": "plugins/cordova-plugin-x-toast/test/tests.js",
         "id": "cordova-plugin-x-toast.tests",
         "pluginId": "cordova-plugin-x-toast"
+    },
+    {
+        "file": "plugins/cordova-plugin-googleplus/www/GooglePlus.js",
+        "id": "cordova-plugin-googleplus.GooglePlus",
+        "pluginId": "cordova-plugin-googleplus",
+        "clobbers": [
+            "window.plugins.googleplus"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -91,10 +91,10 @@ module.exports.metadata =
     "cordova-plugin-ble": "2.0.1",
     "cordova-plugin-bluetooth-serial": "0.4.6",
     "cordova-plugin-dialogs": "1.3.0",
-    "cordova-plugin-googleplus": "5.1.1",
     "cordova-plugin-network-information": "1.3.0",
     "cordova-plugin-whitelist": "1.3.0",
-    "cordova-plugin-x-toast": "2.5.2"
+    "cordova-plugin-x-toast": "2.5.2",
+    "cordova-plugin-googleplus": "5.1.1"
 }
 // BOTTOM OF METADATA
 });
