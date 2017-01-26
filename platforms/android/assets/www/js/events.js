@@ -122,6 +122,17 @@ function pluginsInitialization() {
         // onEnd: undefined,
         // onReset: undefined
     });
+
+    // We assign an Event Listener to pan and zoom whenever the image is loaded in SPA map:
+    var map = document.getElementById("map");
+    map.addEventListener("load", panANDzoom);
+    // We also want to assign an Event Listener in case an error occurs loading the image:
+    map.addEventListener("error", () => {
+        if (!_showingToolTip) {
+            _showingToolTip = true;
+            navigator.notification.confirm('An error occured loading the map... \nWould you like to try again? 😣', function(responseIndex) {_showingToolTip = false; (responseIndex == 1)? goMap(_index): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
+        }
+    });
 }
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
@@ -434,9 +445,10 @@ function loadMap() {
         _destX = _searched_rooms[_index][0].x; // Coordinate X of destination office/room
         _destY = _searched_rooms[_index][0].y; // Coordinate Y of destination office/room
 
-        // We pan over the floor image to show the corresponding spot to the user:
-        var map = document.getElementById("map");
-        map.onload = function () {panANDzoom();}
+        // Now, we pan over the floor image to show the corresponding spot to the user:
+        // This is done thanks to the Event Listener attached to the 'img' DOM element with Id: "map".
+        // So, at this moment in time, panANDzoom should be called!
+
         // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
         silentLoginOAuth();
     });
@@ -540,6 +552,7 @@ function removeDuplicatedMaps() {
     var youPoint_circle = document.getElementById("youPoint_circle");
     var dest_point = document.getElementById("destinationPoint_circle");
     $("#spa_map #footer > img:first-child").removeClass("anima_magician");
+    $("#floor_label").removeClass("anima_magician");
     you_label.style.visibility = "visible";
     dest_label.style.visibility = "visible";
     youPoint_circle.style.visibility = "visible";
@@ -639,6 +652,7 @@ function signInOAuth() {
                 },
                 function (msg) {
                     // On error:
+                    showToolTip("An unexpected error occurred while authenticating. Try it again later! :(");
                     console.log("WARNING! (signInOAuth). Probably the user has cancelled the operation: " + msg);
                 }
             );

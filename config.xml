@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!-- More info about configuring this .xml configuration file and more importantly, the versionCode: http://docs.phonegap.com/phonegap-build/configuring/ -->
 <!-- More info about '.pgbomit' file at: http://docs.phonegap.com/phonegap-build/start/#structure_application and https://www.joshmorony.com/using-phonegap-builds-pgbomit-to-drastically-reduce-file-size/ -->
-<widget id="es.deusto.UDbeaconizer" version="1.0.0" versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<widget id="es.deusto.UDbeaconizer" version="1.0.0" android-versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>UD Finder</name>
     <description>
         App for indoors geolocalization system to search professors, lecturers, rooms, offices and laboratories using beacons.
@@ -42,7 +42,7 @@
         <preference name="auto-hide-splash-screen" value="true" /> <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
         <preference name="disable-cursor" value="false" /> <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
 
-    <!-- Plugins --> 
+    <!-- Plugins -->
 
     <!-- Core plugins -->
     <!-- <plugin name="cordova-plugin-battery-status" source="npm" /> -->
