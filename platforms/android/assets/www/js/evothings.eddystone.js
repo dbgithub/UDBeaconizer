@@ -275,7 +275,7 @@
 	// It estimates and returns the floor number the user is at based on an average upon the information provided by all the beacons.
 	// For instance, if the user gets the following values representing the floor from the beacons: 2 + 2 + 1, it means that two of them are in the 2nd floor whereas there is another one in the 1st floor. The average estimates that the user is at 2nd floor.
 	function estimateFloor() {
-		// At this point, all the beacons from the list are our own beacons. Not any other BLE device.
+		// At this point, after the call to the following function, all the beacons from the list will be our own beacons. Not any other BLE device.
 		_sortedList = getSortedBeaconList();
 		if (_sortedList == null) {return null;} // There has to be a way to stop the process of trilateration calculation when there are NOT readings from beacons. When the later happens, '_sortedList' will be null, hece, we return null and we will stop the process in the calling method.
 		// We iterate over all the beacons in the list and we will estimate the floor the user is at based on the AVERAGE of the same amount of beacons which are in the same floor

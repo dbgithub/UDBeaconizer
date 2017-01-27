@@ -27,6 +27,9 @@
         },
         "cordova-plugin-googleplus": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },
     "dependent_plugins": {}

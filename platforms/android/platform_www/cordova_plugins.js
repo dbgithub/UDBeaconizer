@@ -58,6 +58,14 @@ module.exports = [
         ]
     },
     {
+        "id": "cordova-plugin-splashscreen.SplashScreen",
+        "file": "plugins/cordova-plugin-splashscreen/www/splashscreen.js",
+        "pluginId": "cordova-plugin-splashscreen",
+        "clobbers": [
+            "navigator.splashscreen"
+        ]
+    },
+    {
         "id": "cordova-plugin-x-toast.Toast",
         "file": "plugins/cordova-plugin-x-toast/www/Toast.js",
         "pluginId": "cordova-plugin-x-toast",
@@ -79,6 +87,7 @@ module.exports.metadata =
     "cordova-plugin-dialogs": "1.3.0",
     "cordova-plugin-googleplus": "5.1.1",
     "cordova-plugin-network-information": "1.3.0",
+    "cordova-plugin-splashscreen": "4.0.2-dev",
     "cordova-plugin-whitelist": "1.3.0",
     "cordova-plugin-x-toast": "2.5.2"
 };

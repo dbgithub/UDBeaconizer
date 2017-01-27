@@ -22,6 +22,9 @@
         "cordova-plugin-network-information": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },
+        "cordova-plugin-splashscreen": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
         "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         },

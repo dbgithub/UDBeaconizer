@@ -58,5 +58,14 @@
         "variables": {
             "REVERSED_CLIENT_ID": "com.googleusercontent.apps.473073684258-jss0qgver3lio3cmjka9g71ratesqckr"
         }
+    },
+    "cordova-plugin-splashscreen": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/apache/cordova-plugin-splashscreen.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

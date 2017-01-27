@@ -41,6 +41,14 @@
         <preference name="show-splash-screen-spinner" value="true" /> <!-- ios: if set to false, the spinner won't appear on the splash screen during app loading -->
         <preference name="auto-hide-splash-screen" value="true" /> <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
         <preference name="disable-cursor" value="false" /> <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
+        <!-- SplashScreen preferences: --> <!-- Mas info en: https://github.com/apache/cordova-plugin-splashscreen -->
+        <preference name="AutoHideSplashScreen" value="false" /> <!-- All platforms: Indicates whether to hide splash screen automatically or not -->
+        <preference name="SplashScreenDelay" value="3000" /> <!-- All platforms: Amount of time in milliseconds to wait before automatically hide splash screen. To disable it, write '0' -->
+        <preference name="FadeSplashScreen" value="true"/> <!-- All platforms: Set to false to prevent the splash screen from fading in and out -->
+        <preference name="FadeSplashScreenDuration" value="900"/> <!-- All platforms (see note about iOS): Specifies the number of milliseconds for the splash screen fade effect to execute NOTE-> on iOS: to disable the splashscreen on ios platform you should ALSO add this parameter -->
+        <preference name="ShowSplashScreenSpinner" value="true"/> <!-- All platform: Set to false to hide the splash-screen spinner -->
+        <preference name="SplashMaintainAspectRatio" value="true" /> <!-- Android: If set to true, splash screen drawable is not stretched to fit screen, but instead simply "covers" the screen -->
+        <preference name="SplashShowOnlyFirstTime" value="false" /> <!-- Android: When set to true splash screen will only appear on application launch -->
 
     <!-- Plugins -->
 
@@ -71,6 +79,7 @@
     <plugin name="cordova-plugin-ble" source="npm"/>
     <plugin name="cordova-plugin-bluetooth-serial" source="npm"/>
     <plugin name="cordova-plugin-x-toast" spec="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git"/>
+    <plugin name="cordova-plugin-splashscreen" spec="https://github.com/apache/cordova-plugin-splashscreen.git"/>
     <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" source="git">
         <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.473073684258-jss0qgver3lio3cmjka9g71ratesqckr" />
     </plugin>
@@ -125,20 +134,20 @@
         <icon height="29" platform="ios" src="www/res/icons/ios/icon-small.png" width="29" />
         <icon height="58" platform="ios" src="www/res/icons/ios/icon-small-2x.png" width="58" />
         <!-- splash screen -->
-        <splash height="1136" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="640" />
-        <splash height="1334" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="750" />
-        <splash height="2208" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="1242" />
-        <splash height="1242" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="2208" />
-        <splash height="1536" platform="ios" src="www/res/screens/ios/screen-ipad-landscape-2x.png" width="2048" />
         <splash height="768" platform="ios" src="www/res/screens/ios/screen-ipad-landscape.png" width="1024" />
-        <splash height="2048" platform="ios" src="www/res/screens/ios/screen-ipad-portrait-2x.png" width="1536" />
+        <splash height="1536" platform="ios" src="www/res/screens/ios/screen-ipad-landscape-2x.png" width="2048" />
         <splash height="1024" platform="ios" src="www/res/screens/ios/screen-ipad-portrait.png" width="768" />
+        <splash height="2048" platform="ios" src="www/res/screens/ios/screen-ipad-portrait-2x.png" width="1536" />
         <splash height="320" platform="ios" src="www/res/screens/ios/screen-iphone-landscape.png" width="480" />
         <splash height="640" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-2x.png" width="960" />
         <splash height="640" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-568h-2x.png" width="1136" />
         <splash height="750" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="1334" />
-        <splash height="960" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="640" />
-        <splash height="480" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-667h.png" width="320" />
+        <splash height="1242" platform="ios" src="www/res/screens/ios/screen-iphone-landscape-736h.png" width="2208" />
+        <splash height="480" platform="ios" src="www/res/screens/ios/screen-iphone-portrait.png" width="320" />
+        <splash height="960" platform="ios" src="www/res/screens/ios/screen-iphone-portrait-2x.png" width="640" />
+        <splash height="1136" platform="ios" src="www/res/screens/ios/screen-iphone-portrait-568h-2x.png" width="640" />
+        <splash height="1334" platform="ios" src="www/res/screens/ios/screen-iphone-portrait-667h.png" width="750" />
+        <splash height="2208" platform="ios" src="www/res/screens/ios/screen-iphone-portrait-736h.png" width="1242" />
     </platform>
     <platform name="wp8">
         <!-- icon -->
