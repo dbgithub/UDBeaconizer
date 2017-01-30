@@ -19,7 +19,7 @@
 // GLOBAL VARIABLES for all javascript files:
 var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
 var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
-var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google's Developer page as a credential. This one is for WEB applications.
+var _webClientID = '473073684258-hrvg3s30ispro6noubtqpah1co1na74r.apps.googleusercontent.com'; // This is a client ID created in Google Developer's Console page. This one is for Android applications.
 var _staffdb_name='staffdb'; // Real database name in server-side.
 var _roomsdb_name='roomsdb'; // Real database name in server-side.
 var _beacons_name='beaconsdb'; // Real database name in server-side.
