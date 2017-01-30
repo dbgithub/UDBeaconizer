@@ -79,9 +79,9 @@
     <plugin name="cordova-plugin-ble" source="npm"/>
     <plugin name="cordova-plugin-bluetooth-serial" source="npm"/>
     <plugin name="cordova-plugin-x-toast" spec="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git" source="git"/>
-    <plugin name="cordova-plugin-splashscreen" spec="https://github.com/apache/cordova-plugin-splashscreen.git"  source="git"/>
+    <plugin name="cordova-plugin-splashscreen" source="npm"/>
     <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" source="git">
-        <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.473073684258-jss0qgver3lio3cmjka9g71ratesqckr" />
+        <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.473073684258-hrvg3s30ispro6noubtqpah1co1na74r" />
     </plugin>
 
     <!--
