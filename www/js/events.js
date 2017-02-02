@@ -134,6 +134,7 @@ function pluginsInitialization() {
         }
     });
 }
+
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
 function livesearch(inputvalue) {
@@ -159,7 +160,7 @@ function livesearch(inputvalue) {
 }
 
 // It hides the live-search-result DOM element and its content
-// We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
+// We collect several elements with a certain ID becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
 function hideLiveSearchResults() {
     var div = $("[id='div_liveSearchResults']"); // It obtains all elements with 'id' to whatever. It doesn't just capture the element in the current page, instead, it captures all divs from all pages.
     for (i = 0; i< div.length; i++) {
@@ -185,6 +186,7 @@ function cleanGUI() {
     hideLiveSearchResults();
     console.log("All 'InputSearch' cleaned!");
 }
+
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
 function searchPeople(inputvalue) {
@@ -232,7 +234,6 @@ function showBothStaffNRooms() {
     var list = "";
     if (_searched_people.length != 0) {
         for (j = 0; j < _searched_people.length; j++) {
-            // window.location.replace() -> evita que vayas atras en el history
             list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; _personRoomTouched = true; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
         }
     }
@@ -257,11 +258,10 @@ function showBothStaffNRooms() {
     }
 }
 
-// This methods is called in the 'onLoad' event handler of the contact.html page
+// This is called when SPA Contact is loaded
 function loadContactDetails() {
-    // var person = JSON.parse(localStorage.getItem('_person')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    // localStorage.removeItem('_person');
+    // I used to use browser's localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    // more info also at: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     var person = _searched_people[_index];
     var rows = "";
     var officehours = " - ";
@@ -277,8 +277,19 @@ function loadContactDetails() {
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != null) {
-        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a data-transition='slide' ontouchend='if(_preventClick){_preventClick=false;return true;}; linkSearch(this.innerHTML)' ontouchmove='_preventClick=true;'>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
-        // console.log(office);
+        office = person.office.replace(/[0-9]+/g, function myFunction(x){
+            setTimeout(function() {
+                $("[data-id='popup-office']").addClass("anima_showPopUp"); // Shows the tooltip for the office label"
+            },1500)
+
+            $("#spa_contact").scroll(function(){
+                if($(this).scrollTop() > 150){
+                    $("[data-id='popup-office']").removeClass("anima_showPopUp");
+                    $("[data-id='popup-office']").addClass("anima_hidePopUp");
+                }
+            });
+            return "<a data-transition='slide' ontouchend='if(_preventClick){_preventClick=false;return true;}; linkSearch(this.innerHTML)' ontouchmove='_preventClick=true;'>"+x+"</a>"; // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
+        });
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
         office = "-";
@@ -286,7 +297,7 @@ function loadContactDetails() {
     document.getElementById("p_profile_header").innerHTML = ((person.name != null) ? person.name : "-"); // Name and surname
     document.getElementById("div_profile_body").innerHTML =
     "<p>POSITION: </p><p>" + ((person.position != null) ? person.position : "-") + "</p>" +
-    "<p>FACULTY: </p><p>" + ((person.faculty != null) ? person.faculty : "-") + "</p>"+
+    "<p>FACULTY: </p><p>" + ((person.faculty != null) ? person.faculty : "-") + " <span class='popUptooltip' data-id='popup-office' ontouchend=\"$(this).removeClass('anima_showPopUp'); $(this).addClass('anima_hidePopUp')\">You can check here his/her office!</span></p>"+
     "<p>OFFICE: </p><p>" + office + "</p>"+
     "<p>OFFICE HOURS: </p><p>" + ((rows != "") ? officehours : "-") +"</p>" +
     "<p>EMAIL: </p><p>" + ((person.email != null) ? person.email : "-") + "</p>"+
@@ -302,7 +313,7 @@ function loadContactDetails() {
      silentLoginOAuth();
 }
 
-// This is called when 'edit_contact' page loads
+// This is called when SPA EditContact is loaded
 function loadEditContactDetails() {
     var person = _searched_people[_index];
     var rows = "";
@@ -384,6 +395,7 @@ function loadEditContactDetails() {
     $("#div_profile_editContact_body").enhanceWithin();
 }
 
+// Adds/Appends an HTML row within the SPA EditContact
 function add_row() {
     // Now we are defining and declaring a standard row with the corresponding dropdown elements. This structure will be added every time the user taps on "Add Row":
     // First of all, let's see how many rows have already been added and we will follow up that number:

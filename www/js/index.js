@@ -95,12 +95,6 @@ var app = {
         document.addEventListener("offline", this.onOffline, false);
         document.addEventListener("online", this.onOnline, false);
     },
-    // 'deviceready' Event Handler
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
     // 'offline' network connection loss
     onOffline: function() {
         if (!_showingToolTip) {
@@ -126,6 +120,7 @@ var app = {
         // Common (interesting) actions:
         // navigator.app.exitApp();  // To Exit Application
         // navigator.app.backHistory(); // To go back
+        // window.location.replace() -> evita que vayas atras en el history
 
         // We need to distinguish between different pages. Normally, you'd want to go home. Some other times, you'd want just to go back one step in history.
         if (window.location.hash == "#spa_edit_contact") {
@@ -143,8 +138,7 @@ var app = {
             clearInterval(_blestatusTimerID);
         }
     },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
+    onDeviceReady: function() {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
         fetchDB(); // This makes sure the databases are fetched. It will create the local databases if it is needed, otherwise it will sync with remote database and update the data.
         // DBinfo(_db);
