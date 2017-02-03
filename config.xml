@@ -42,7 +42,7 @@
         <preference name="auto-hide-splash-screen" value="false" /> <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
         <preference name="disable-cursor" value="false" /> <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
         <!-- SplashScreen preferences: --> <!-- Mas info en: https://github.com/apache/cordova-plugin-splashscreen -->
-        <preference name="SplashScreen" value="splash" /> <!-- 'value' is the folder where your splashscreens resides. Other people suggest putting 'splash' -->
+        <preference name="SplashScreen" value="www/res/screen/android" /> <!-- 'value' is the folder where your splashscreens resides. Other people suggest putting 'splash' -->
         <preference name="AutoHideSplashScreen" value="false" /> <!-- All platforms: Indicates whether to hide splash screen automatically or not -->
         <preference name="SplashScreenDelay" value="3000" /> <!-- All platforms: Amount of time in milliseconds to wait before automatically hide splash screen. To disable it, write '0' -->
         <preference name="FadeSplashScreen" value="true"/> <!-- All platforms: Set to false to prevent the splash screen from fading in and out -->
@@ -93,7 +93,7 @@
     -->
     <!-- Define app icon + app splash screen for each platform. -->
     <icon src="icon.png" /> <!-- default icon for any non-matching icon -->
-    <splash src="www/splash.png" /> <!-- default splash for any non-matching splash image --> <!-- ATENCION: A la hora de añadir la plataforma Android, da error de resource no encontrado. -->
+    <!--<splash src="www/splash.png" />--> <!-- default splash for any non-matching splash image --> <!-- ATENCION: A la hora de añadir la plataforma Android, da error de resource no encontrado. -->
 
     <platform name="android">
         <!-- icon -->
