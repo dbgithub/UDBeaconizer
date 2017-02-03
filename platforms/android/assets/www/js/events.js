@@ -128,12 +128,13 @@ function pluginsInitialization() {
     map.addEventListener("load", panANDzoom);
     // We also want to assign an Event Listener in case an error occurs loading the image:
     map.addEventListener("error", () => {
-        if (!_showingToolTip) {
-            _showingToolTip = true;
-            navigator.notification.confirm('An error occured loading the map... \nWould you like to try again? 😣', function(responseIndex) {_showingToolTip = false; (responseIndex == 1)? goMap(_index): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
+        if (!_showingDialog) {
+            _showingDialog = true;
+            navigator.notification.confirm('An error occured loading the map... \nWould you like to try again? 😣', function(responseIndex) {_showingDialog = false; (responseIndex == 1)? goMap(_index): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
         }
     });
 }
+
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
 function livesearch(inputvalue) {
@@ -159,7 +160,7 @@ function livesearch(inputvalue) {
 }
 
 // It hides the live-search-result DOM element and its content
-// We use data-id becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
+// We collect several elements with a certain ID becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
 function hideLiveSearchResults() {
     var div = $("[id='div_liveSearchResults']"); // It obtains all elements with 'id' to whatever. It doesn't just capture the element in the current page, instead, it captures all divs from all pages.
     for (i = 0; i< div.length; i++) {
@@ -185,6 +186,7 @@ function cleanGUI() {
     hideLiveSearchResults();
     console.log("All 'InputSearch' cleaned!");
 }
+
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
 function searchPeople(inputvalue) {
@@ -203,10 +205,10 @@ function showRoomsList() {
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (rooms): " +_searched_rooms.length);
     if (_searched_rooms.length != 0) {
-        if (_searched_rooms.length == 1 && _linkSearch) {window.location='#spa_map';goMap(0); return;} // If this statement returns true, it means that the search was originally performed by a link-pressed action (within the contact page for instance).
+        if (_searched_rooms.length == 1 && _linkSearch) {window.location='#spa_map';goMap(0); _linkSearch = false; return;} // If this statement returns true, it means that the search was originally performed by a link-pressed action (within the contact page for instance).
         var list = "";
         for (j = 0; j < _searched_rooms.length; j++) {
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; if (window.location.hash == '#spa_edit_contact') {prompt_savecancel('DISCARD changes',0, function() {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");})} else {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");};\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
         }
         var div = $(window.location.hash + " #div_liveSearchResults");
         if (_searched_rooms.length > 6) {
@@ -232,13 +234,12 @@ function showBothStaffNRooms() {
     var list = "";
     if (_searched_people.length != 0) {
         for (j = 0; j < _searched_people.length; j++) {
-            // window.location.replace() -> evita que vayas atras en el history
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_contact'; _personRoomTouched = true; goContact("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; if (window.location.hash == '#spa_edit_contact') {prompt_savecancel('DISCARD changes',0, function() {window.location='#spa_contact'; _personRoomTouched = true; goContact("+j+");})} else {window.location='#spa_contact'; _personRoomTouched = true; goContact("+j+");};\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/profilepic_icon.png' alt='stafficon' class='ui-li-icon ui-corner-none'>" + _searched_people[j].name + "</a></li>"
         }
     }
     if (_searched_rooms.length != 0) {
         for (j = 0; j < _searched_rooms.length; j++) {
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; if (window.location.hash == '#spa_edit_contact') {prompt_savecancel('DISCARD changes',0, function() {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");})} else {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");};\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
         }
     }
     if (list != "") {
@@ -257,11 +258,10 @@ function showBothStaffNRooms() {
     }
 }
 
-// This methods is called in the 'onLoad' event handler of the contact.html page
+// This is called when SPA Contact is loaded
 function loadContactDetails() {
-    // var person = JSON.parse(localStorage.getItem('_person')); // for more information about localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
-    // // or here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
-    // localStorage.removeItem('_person');
+    // I used to use browser's localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
+    // more info also at: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     var person = _searched_people[_index];
     var rows = "";
     var officehours = " - ";
@@ -277,8 +277,19 @@ function loadContactDetails() {
     } officehours = "<table>"+rows+"</table>"}
     // Now we will parse the office text searching for any number. If a number is found, this will be highlighted as a link:
     if (person.office != null) {
-        office = person.office.replace(/[0-9]+/g, function myFunction(x){return "<a data-transition='slide' ontouchend='if(_preventClick){_preventClick=false;return true;}; linkSearch(this.innerHTML)' ontouchmove='_preventClick=true;'>"+x+"</a>";}); // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
-        // console.log(office);
+        office = person.office.replace(/[0-9]+/g, function myFunction(x){
+            setTimeout(function() {
+                $("[data-id='popup-office']").addClass("anima_showPopUp"); // Shows the tooltip for the office label"
+            },1500)
+
+            $("#spa_contact").scroll(function(){
+                if($(this).scrollTop() > 150){
+                    $("[data-id='popup-office']").removeClass("anima_showPopUp");
+                    $("[data-id='popup-office']").addClass("anima_hidePopUp");
+                }
+            });
+            return "<a data-transition='slide' ontouchend='if(_preventClick){_preventClick=false;return true;}; linkSearch(this.innerHTML)' ontouchmove='_preventClick=true;'>"+x+"</a>"; // In this case 'x' is the item/result obtained from the match of the regular expression. You coud have also used "person.office.match(/[0-9]+/g);"
+        });
         // More info at: http://www.w3schools.com/jsref/jsref_replace.asp
     } else {
         office = "-";
@@ -286,7 +297,7 @@ function loadContactDetails() {
     document.getElementById("p_profile_header").innerHTML = ((person.name != null) ? person.name : "-"); // Name and surname
     document.getElementById("div_profile_body").innerHTML =
     "<p>POSITION: </p><p>" + ((person.position != null) ? person.position : "-") + "</p>" +
-    "<p>FACULTY: </p><p>" + ((person.faculty != null) ? person.faculty : "-") + "</p>"+
+    "<p>FACULTY: </p><p>" + ((person.faculty != null) ? person.faculty : "-") + " <span class='popUptooltip' data-id='popup-office' ontouchend=\"$(this).removeClass('anima_showPopUp'); $(this).addClass('anima_hidePopUp')\">You can check here his/her office!</span></p>"+
     "<p>OFFICE: </p><p>" + office + "</p>"+
     "<p>OFFICE HOURS: </p><p>" + ((rows != "") ? officehours : "-") +"</p>" +
     "<p>EMAIL: </p><p>" + ((person.email != null) ? person.email : "-") + "</p>"+
@@ -302,7 +313,7 @@ function loadContactDetails() {
      silentLoginOAuth();
 }
 
-// This is called when 'edit_contact' page loads
+// This is called when SPA EditContact is loaded
 function loadEditContactDetails() {
     var person = _searched_people[_index];
     var rows = "";
@@ -384,6 +395,7 @@ function loadEditContactDetails() {
     $("#div_profile_editContact_body").enhanceWithin();
 }
 
+// Adds/Appends an HTML row within the SPA EditContact
 function add_row() {
     // Now we are defining and declaring a standard row with the corresponding dropdown elements. This structure will be added every time the user taps on "Add Row":
     // First of all, let's see how many rows have already been added and we will follow up that number:
@@ -410,7 +422,7 @@ function add_row() {
     $($("#spa_edit_contact table").children()[0], this).append(standard_row).enhanceWithin(); // Here, as it happens in "loadEditContactDetails" function, it is necessary to refresh the elements for jQuery styles to work.
 }
 
-// This function is triggered when any link of the office numbers has been pressed. It puts the pressed room/place within the search bar
+// This function is triggered when any office number with a link has been pressed. It puts the pressed room/place within the search bar
 // and searches for it.
 function linkSearch(x) {
     _searched_rooms = [];
@@ -447,7 +459,7 @@ function loadMap() {
 
         // Now, we pan over the floor image to show the corresponding spot to the user:
         // This is done thanks to the Event Listener attached to the 'img' DOM element with Id: "map".
-        // So, at this moment in time, panANDzoom should be called!
+        // So, at this moment in the code, panANDzoom should be called!
 
         // Now, at the end, we try to silently log in to user's Google account in case he/she logged in before:
         silentLoginOAuth();
@@ -559,7 +571,7 @@ function removeDuplicatedMaps() {
     dest_point.style.visibility = "visible";
 }
 
-// This function shows a tooltip with the message given in the parameter when the user presses and maitains the finger over the object.
+// This function shows a tooltip with the message given in the parameter when the user presses and maintains the finger over the object.
 // When the user maintains the pressure over that object this tooltip will appear explaining the meaning of that button, object or whatever.
 function showOnPressedToolTip(string){
     _tooltipTimer = setTimeout(function () {
@@ -573,8 +585,8 @@ function showToolTip(string) {
     window.plugins.toast.show(string, 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
 }
 
-// Aborts the timer, and therefore, the toast message in this case
-function abortTimer(){
+// Aborts the tooltip timer, and therefore, the toast message in this case
+function abortToolTipTimer(){
     clearTimeout(_tooltipTimer);
 }
 
@@ -710,7 +722,6 @@ function silentLoginOAuth() {
 
 // This function is executed after the user has signed in. It displays her/his name and email. The "sign out" button appears too.
 function afterSignedIn(user) {
-
     $(".btn_signout").css("display", "inline"); $(".btn_signout").removeClass("anima_fade");
     $(".p_oauth_name").css("display", "inline"); $(".p_oauth_name").removeClass("anima_fade");
     $(".p_oauth_email").css("display", "inline"); $(".p_oauth_email").removeClass("anima_fade");
@@ -723,34 +734,35 @@ function afterSignedIn(user) {
 // Meaning of the bolean (bol) variable:
 // 1 = SAVE
 // 0 = CANCEL
-function prompt_savecancel(action, bol) {
+function prompt_savecancel(action, bol, callback) {
     // bolean meaning:
     // 1 = SAVE
     // 0 = CANCEL
-    if (!_showingToolTip) {
-        _showingToolTip = true;
-        navigator.notification.confirm("Are you sure you want to " + action+"?", callback, action, ["Yes", "No"]);
+    if (bol == 1 && !_editingInProgress) {
+        if (!_showingDialog) {
+            _showingDialog = true;
+            navigator.notification.alert("There is nothing to SAVE! 😃", function() {_showingDialog = false;}, "Nothing to save", "Oki Doki!");
+            return;
+        }
+    }
+    if (!_showingDialog) {
+        _showingDialog = true;
+        navigator.notification.confirm("Are you sure you want to " + action+"?", aux, action, ["Yes", "No"]);
     }
 
-    function callback(pressedIndex) {
-        _showingToolTip = false;
+    function aux(pressedIndex) {
+        _showingDialog = false;
         if(bol==1) {
-            // It is not necessary to define a Swich statement because we are just going to do someting with response #1.
+            // It is not necessary to define a Swich statement because we are just going to take care of response #1.
             // This statement corresponds to saying 'YES' to SAVE.
-            if(pressedIndex == 1) {
-                // SAVE
-                if (_editingInProgress) {savechanges();} else {
-                    if (!_showingToolTip) {
-                        _showingToolTip = true;
-                        navigator.notification.alert("There is nothing to SAVE! 😃", function() {_showingToolTip = false;}, "Nothing to save", "Oki Doki!");
-                    }
-                }
-            }
-        } else if(bol==0) {
+            if(pressedIndex == 1) {savechanges();} // SAVE
+        } else if (bol==0) {
             // It is not necessary to define a Swich statement because we are just going to do someting with response #1.
             // This statement corresponds to saying 'YES' to DISCARD.
-            if(pressedIndex == 1) {
+            if(pressedIndex == 1 && callback == undefined) {
                 navigator.app.backHistory();
+            } else if (pressedIndex == 1) {
+                callback();
             }
         } // END if
     }

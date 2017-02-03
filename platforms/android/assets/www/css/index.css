@@ -185,6 +185,30 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     -moz-transform: scale3d(0.9, 0.9, 1);
     transform: scale3d(0.9, 0.9, 1);
 }
+.popUptooltip {
+    visibility: hidden;
+    width: 200px;
+    background-color:rgba(0, 83, 206, 0.85);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 8px 15px;
+    position: absolute !important;
+    z-index: 1;
+    left: 60px;
+    font-size: 15px;
+    font-family: mypurisa;
+}
+.popUptooltip::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -80px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: blue transparent transparent transparent;
+}
 /* This CSS snippet is to modify the 'placeholder' text within the inputs or textareas */
 ::-webkit-input-placeholder { /* It affects: SPA_EDITCONTACT */
     text-shadow: none;
@@ -217,6 +241,24 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     font-weight: normal;
     font-size: 20px;
 }
+.anima_fade { /* It affects: SPA_MAP + SPA_CONTACT */
+    animation:fade 500ms 1;
+    -webkit-animation:fade 500ms 1;
+    animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+    -webkit-animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+}
+.anima_showPopUp { /* It affects: SPA_MAP */
+    -webkit-animation: show 1s;
+    animation: show 1s;
+    animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+    -webkit-animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+}
+.anima_hidePopUp { /* It affects: SPA_MAP */
+    -webkit-animation: hide 1s;
+    animation: hide 1s;
+    animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+    -webkit-animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+}
 @keyframes fade { /* It affects: SPA_MAP + SPA_CONTACT */
     from { opacity: 1.0; }
     to {
@@ -231,11 +273,39 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
         visibility:hidden;
      }
 }
-.anima_fade { /* It affects: SPA_MAP + SPA_CONTACT */
-    animation:fade 500ms 1;
-    -webkit-animation:fade 500ms 1;
-    animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
-    -webkit-animation-fill-mode: forwards; /* Aplica las clases correspondientes al ultimo frame*/
+@-webkit-keyframes show {
+    from {opacity: 0;}
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+@keyframes show {
+    from {opacity: 0;}
+    to {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+@-webkit-keyframes hide {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
+}
+@keyframes hide {
+    from {
+        opacity: 1;
+        visibility: visible;
+    }
+    to {
+        opacity: 0;
+        visibility: hidden;
+    }
 }
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */

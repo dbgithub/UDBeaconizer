@@ -19,7 +19,7 @@
 // GLOBAL VARIABLES for all javascript files:
 var _server_domain = "https://dev.morelab.deusto.es/beaconizer";
 var _database_domain = "https://dev.morelab.deusto.es/pouchdb-beaconizer";
-var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google's Developer page as a credential. This one is for WEB applications.
+var _webClientID = '473073684258-jss0qgver3lio3cmjka9g71ratesqckr.apps.googleusercontent.com'; // This is a client ID created in Google Developer's Console page. This one is for Android applications.
 var _staffdb_name='staffdb'; // Real database name in server-side.
 var _roomsdb_name='roomsdb'; // Real database name in server-side.
 var _beacons_name='beaconsdb'; // Real database name in server-side.
@@ -95,12 +95,6 @@ var app = {
         document.addEventListener("offline", this.onOffline, false);
         document.addEventListener("online", this.onOnline, false);
     },
-    // 'deviceready' Event Handler
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
     // 'offline' network connection loss
     onOffline: function() {
         if (!_showingToolTip) {
@@ -126,6 +120,7 @@ var app = {
         // Common (interesting) actions:
         // navigator.app.exitApp();  // To Exit Application
         // navigator.app.backHistory(); // To go back
+        // window.location.replace() -> evita que vayas atras en el history
 
         // We need to distinguish between different pages. Normally, you'd want to go home. Some other times, you'd want just to go back one step in history.
         if (window.location.hash == "#spa_edit_contact") {
@@ -143,8 +138,7 @@ var app = {
             clearInterval(_blestatusTimerID);
         }
     },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
+    onDeviceReady: function() {
         if (window.hyper && window.hyper.log) { console.log = hyper.log }
         fetchDB(); // This makes sure the databases are fetched. It will create the local databases if it is needed, otherwise it will sync with remote database and update the data.
         // DBinfo(_db);

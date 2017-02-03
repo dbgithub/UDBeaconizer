@@ -59,12 +59,12 @@
 					_allowYOUlabel = false;
 					parenLasRotativas();
 					_blestatusTimerID = setInterval(checkBLEStatus, 1000);
-					if (!_showingToolTip) {
-						_showingToolTip = true;
+					if (!_showingDialog) {
+						_showingDialog = true;
 						navigator.notification.alert("It seems that you are experimenting strong interferences. No data readings " +
 						"are received, make sure you have the Bluetooth feature enabled in your device " +
 						" and ensure you are inside the building! :)", function() {
-							_showingToolTip = false;
+							_showingDialog = false;
 							bluetoothSerial.enable(function(){console.log("The user enabled Bluetooth in purpose");}, function(){console.log("The user declined enabling Bluetooth");})
 						}, "Serious interferences :(", "Oki Doki!");
 					}

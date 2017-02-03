@@ -128,9 +128,9 @@ function syncDB(db, dbname) {
         console.log("[replicating...] ("+dbname+") on error");
         showToolTip("error... :(");
         console.log(err);
-        if (!_showingToolTip) {
-            _showingToolTip = true;
-            navigator.notification.confirm("The synchronization with the database did not succeed 😣. Maybe Wi-Fi or data issues? It's highly recommended that you retry the connection\nWould you like to?", function(responseIndex) {_showingToolTip = false; (responseIndex == 1)? fetchDB(): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
+        if (!_showingDialog) {
+            _showingDialog = true;
+            navigator.notification.confirm("The synchronization with the database did not succeed 😣. Maybe Wi-Fi or data issues? It's highly recommended that you retry the connection\nWould you like to?", function(responseIndex) {_showingDialog = false; (responseIndex == 1)? fetchDB(): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
         }
     });
 }
@@ -377,9 +377,9 @@ function retrieveMap(floor, callback) {
             }).catch(function (err) {
                 // error
                 console.log("error converting from base64 to blob");
-                if (!_showingToolTip) {
-                    _showingToolTip = true;
-                    navigator.notification.confirm('An error occured retrieving the map... \nWould you like to try again? 😣', function(responseIndex) {_showingToolTip = false; (responseIndex == 1)? goMap(_index): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
+                if (!_showingDialog) {
+                    _showingDialog = true;
+                    navigator.notification.confirm('An error occured retrieving the map... \nWould you like to try again? 😣', function(responseIndex) {_showingDialog = false; (responseIndex == 1)? goMap(_index): null;},'Opss...!',["Yes, please!","Nah, it doesn't matter!"]);
                 }
             });
         });

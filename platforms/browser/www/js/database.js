@@ -68,44 +68,7 @@ function iniBeaconsDB() {
         console.log("error getting info about database:");
         console.log(err);
     });
-}
-
-// TO DELETE IN THE FUTURE! IT HAS BEEN IMPLEMENTED IN A DIFFERENT WAY TAKING INTO ACCOUNT CALLBACKS.
-// This function creates/fetches databases.
-// It syncs the local database with the remote database in case is needed.
-// The local database checks for changes in the remote database looking for updates.
-function createDB(whichDB) {
-    console.log("Preferred adapters: "+ PouchDB.preferredAdapters); // Displays the list of adapters in order of preference for the browser. PouchDB tries using the first adapter, if not, tries the second one and etc.
-    if (whichDB === "staff") {
-        _db = new PouchDB(_staffdb_name); // Fetching or creating the database for staff.
-        _db.info().then(function (result) {
-            // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
-            if (result.doc_count == 0) {createLocalDocument(_db); syncDB(_db, _staffdb_name);} else {checkChanges(_db, whichDB, _staffdb_name);}
-        }).catch(function (err) {
-            console.log("error getting info about database:");
-            console.log(err);
-        });
-    } else if (whichDB === "rooms") {
-        _dbrooms = new PouchDB(_roomsdb_name); // Fetching or creating the database for rooms.
-        _dbrooms.info().then(function (result) {
-            // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
-            if (result.doc_count == 0) {_firstTime = true; createLocalDocument(_dbrooms); syncDB(_dbrooms, _roomsdb_name);} else {checkMapChanges(0, whichDB, checkMapChanges);} // "CheckChanges" is callled within the "CheckMapchanges" function to
-                                                                                                                                                                                // avoid updating the rooms database before the map images were able to
-                                                                                                                                                                                // be updated.
-        }).catch(function (err) {
-            console.log("error getting info about database:");
-            console.log(err);
-        });
-    } else if (whichDB === "beacons") {
-        _dbbeacons = new PouchDB(_beacons_name); // Fetching or creating the database for rooms.
-        _dbbeacons.info().then(function (result) {
-            // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
-            if (result.doc_count == 0) {createLocalDocument(_dbbeacons); syncDB(_dbbeacons, _beacons_name);} else {checkChanges(_dbbeacons, whichDB, _beacons_name);}
-        }).catch(function (err) {
-            console.log("error getting info about database:");
-            console.log(err);
-        });
-    }
+    navigator.splashscreen.hide(); // After checking everything whether there are updates to download or not, we hide the splashscreen
 }
 
 // Deletes the database given as an argument
@@ -242,6 +205,7 @@ function updateLocalDocument(db, new_seq) {
             }).then(function (response) {
                 console.log("'_local/sequence_number_version' corrently updated.");
                 showToolTip("ready");
+                navigator.splashscreen.hide();
             });
         }).catch(function (err) {
             console.log("WARNING: .local 'sequence_number_version' document doesn't exist:");
