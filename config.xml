@@ -42,7 +42,7 @@
         <preference name="auto-hide-splash-screen" value="false" /> <!-- ios: if set to false, the splash screen must be hidden using a JavaScript API -->
         <preference name="disable-cursor" value="false" /> <!-- blackberry: prevents a mouse-icon/cursor from being displayed on the app -->
         <!-- SplashScreen preferences: --> <!-- Mas info en: https://github.com/apache/cordova-plugin-splashscreen -->
-        <preference name="SplashScreen" value="screen" /> <!-- 'value' is the folder where your splashscreens resides. Other people suggest putting 'splash' -->
+        <preference name="SplashScreen" value="screen" /> <!-- 'value' might be the folder where your splashscreens resides. Other people suggest putting 'splash' -->
         <preference name="AutoHideSplashScreen" value="false" /> <!-- All platforms: Indicates whether to hide splash screen automatically or not -->
         <preference name="SplashScreenDelay" value="3000" /> <!-- All platforms: Amount of time in milliseconds to wait before automatically hide splash screen. To disable it, write '0' -->
         <preference name="FadeSplashScreen" value="true"/> <!-- All platforms: Set to false to prevent the splash screen from fading in and out -->
@@ -70,7 +70,7 @@
     <!-- <plugin name="cordova-plugin-inappbrowser" source="npm" /> -->
     <!-- <plugin name="cordova-plugin-media" source="npm" /> -->
     <plugin name="cordova-plugin-network-information" source="npm" />
-    <plugin name="cordova-plugin-splashscreen" source="npm" spec="~3.2.1" />
+    <plugin name="cordova-plugin-splashscreen" source="npm" />
     <!-- <plugin name="cordova-plugin-statusbar" source="npm" /> -->
     <!-- <plugin name="cordova-plugin-vibration" source="npm" /> -->
     <plugin name="cordova-plugin-whitelist" source="npm" />
@@ -103,18 +103,18 @@
         <icon density="xxhdpi" src="www/res/icon/android/icon-144-xxhdpi.png" />
         <icon density="xxxhdpi" src="www/res/icon/android/icon-192-xxxhdpi.png" />
         <!-- splash screen -->
-        <splash qualifier="land-ldpi" src="www/res/screen/android/drawable-land-ldpi-screen.png" />
-        <splash qualifier="land-mdpi" src="www/res/screen/android/drawable-land-mdpi-screen.png" />
-        <splash qualifier="land-hdpi" src="www/res/screen/android/drawable-land-hdpi-screen.png" />
-        <splash qualifier="land-xhdpi" src="www/res/screen/android/drawable-land-xhdpi-screen.png" />
-        <splash qualifier="land-xxhdpi" src="www/res/screen/android/drawable-land-xxhdpi-screen.png" />
-        <splash qualifier="land-xxxhdpi" src="www/res/screen/android/drawable-land-xxxhdpi-screen.png" />
-        <splash qualifier="port-ldpi" src="www/res/screen/android/drawable-port-ldpi-screen.png" />
-        <splash qualifier="port-mdpi" src="www/res/screen/android/drawable-port-mdpi-screen.png" />
-        <splash qualifier="port-hdpi" src="www/res/screen/android/drawable-port-hdpi-screen.png" />
-        <splash qualifier="port-xhdpi" src="www/res/screen/android/drawable-port-xhdpi-screen.png" />
-        <splash qualifier="port-xxhdpi" src="www/res/screen/android/drawable-port-xxhdpi-screen.png" />
-        <splash qualifier="port-xxxhdpi" src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
+        <splash qualifier="land-ldpi" src="www/res/screen/android/screen-ldpi-landscape.png" />
+        <splash qualifier="land-mdpi" src="www/res/screen/android/screen-mdpi-landscape.png" />
+        <splash qualifier="land-hdpi" src="www/res/screen/android/screen-hdpi-landscape.png" />
+        <splash qualifier="land-xhdpi" src="www/res/screen/android/screen-xhdpi-landscape.png" />
+        <splash qualifier="land-xxhdpi" src="www/res/screen/android/screen-xxhdpi-landscape.png" />
+        <splash qualifier="land-xxxhdpi" src="www/res/screen/android/screen-xxxhdpi-landscape.png" />
+        <splash qualifier="port-ldpi" src="www/res/screen/android/screen-ldpi-portrait.png" />
+        <splash qualifier="port-mdpi" src="www/res/screen/android/screen-mdpi-portrait.png" />
+        <splash qualifier="port-hdpi" src="www/res/screen/android/screen-hdpi-portrait.png" />
+        <splash qualifier="port-xhdpi" src="www/res/screen/android/screen-xhdpi-portrait.png" />
+        <splash qualifier="port-xxhdpi" src="www/res/screen/android/screen-xxhdpi-portrait.png" />
+        <splash qualifier="port-xxxhdpi" src="www/res/screen/android/screen-xxxhdpi-portrait.png" />
     </platform>
     <platform name="ios">
         <!-- icon -->
