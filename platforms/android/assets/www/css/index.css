@@ -185,7 +185,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     -moz-transform: scale3d(0.9, 0.9, 1);
     transform: scale3d(0.9, 0.9, 1);
 }
-.popUptooltip {
+.popUptooltip {  /* It affects: SPA_MAP */
     visibility: hidden;
     width: 200px;
     background-color:rgba(0, 83, 206, 0.85);
@@ -199,7 +199,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     font-size: 15px;
     font-family: mypurisa;
 }
-.popUptooltip::after {
+.popUptooltip::after { /* It affects: SPA_MAP */
     content: "";
     position: absolute;
     top: 100%;

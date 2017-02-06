@@ -33,7 +33,7 @@ var _reva; // returned value for any function
 var _index; // the index value for "searched rooms" and "searched people"
 var _searched_people; // an array containing the staff/people who have been found with the query. It's a single dimension array containing objects (staff)
 var _searched_rooms; // an array containing all the rooms which have been found with the query. It's a single dimension array containing ARRAYS with two fields: the object (room) and floor number (the _id of the document)
-var _linkSearch = false // A boolean referencing whether the search was performed due to a link pressed action (within the contact page)
+var _linkSearch = false // A boolean referencing whether the search was performed due to a link pressed action (within the contact page) or not
 var _personRoomTouched = false; // A boolean representing whether the user has just clicked/touched a certain row among all the results (people or rooms). The purpose of this boolean is to avoid displaying the liveSearchResults div when is not necessary (because of the time delay that exist in searching)
 var _personRoomTouchedTimerID; // This is the ID of the timer that is launched by a setTimeout while in searching process to prevent dispaying the liveSearchResults div when it is not necessary.
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
@@ -74,7 +74,7 @@ var _carrete_minutos = "";// This will contain a snippet of HTML code of a dropd
 var _editingInProgress = false; // This variable controls whether the user has changed anything in the EDIT_CONTACT page. If a change occured, then, the corresponding prompt dialog will appear whenever he/she tries to swich between GUIs.
 var _amountOfRowsAdded = 0; // This integer represent IN TOTAL how many rows have been added to the GUI (in EDIT_CONTACT) starting at 0 index. It doesn't matter whether some of them (from the begining or the ending) were deleted or not. It's like a counter so that it doesn't crash when saving the profile.
 var _removedRows = []; // This array contains the INDEXes of the rows within "changes_dictionary" that were deleted intentionally by the user.
-var _showingToolTip = false; // A boolean used to check whether there is already a notification dialog on the device's screen or not. The idea is to avoid DUPLICATE dialogs!!
+var _showingDialog = false; // A boolean used to check whether there is already a notification dialog on the device's screen or not. The idea is to avoid DUPLICATE dialogs!!
 var _preventClick = false; // A boolean that is used to prevent buttons from running their ontouchend event when the finger leaves the hoover space. It's like a trick.
 var _wentOffline = false; // A boolean to avoid the message of 'online' event when the app starts up.
 var _paddingMap = 1500; // The padding around the map image used to allow the user pan over something more than just the image
@@ -97,9 +97,9 @@ var app = {
     },
     // 'offline' network connection loss
     onOffline: function() {
-        if (!_showingToolTip) {
-            _showingToolTip = true;
-            navigator.notification.alert("Seems like there is a network connection problem! Please check your WiFi or Data connection and try again 😢", function() {_showingToolTip = false;}, "No Internet connection", "Oki Doki!");
+        if (!_showingDialog) {
+            _showingDialog = true;
+            navigator.notification.alert("Seems like there is a network connection problem! Please check your WiFi or Data connection and try again 😢", function() {_showingDialog = false;}, "No Internet connection", "Oki Doki!");
             console.log("Internet connection is OFFLINE");
             _wentOffline = true;
         }
@@ -113,8 +113,7 @@ var app = {
         }
     },
     // 'backkeydown' Event Handler
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
+    // The scope of 'this' is the event.
     // skip_prompt parameter is a boolean that can be set to true when you want to go back without showing the prompt
     onBackButton: function(skip_prompt) { // In JavaScript, remember that it is NOT necessary to indicate the parameter when you call this function for instance. You can make: hola(true) or hola(), it doesn't matter.
         // Common (interesting) actions:
@@ -134,7 +133,7 @@ var app = {
         } else {
             cleanGUI();
             window.location = "#spa_index";
-            parenLasRotativas(); // This stops the scan and reseets the values for both Intervals set to calculate trilateration
+            parenLasRotativas(); // This stops the scan and resets the values for both Intervals set to calculate trilateration
             clearInterval(_blestatusTimerID);
         }
     },

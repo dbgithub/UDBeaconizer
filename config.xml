@@ -70,7 +70,7 @@
     <!-- <plugin name="cordova-plugin-inappbrowser" source="npm" /> -->
     <!-- <plugin name="cordova-plugin-media" source="npm" /> -->
     <plugin name="cordova-plugin-network-information" source="npm" />
-    <!-- <plugin name="cordova-plugin-splashscreen" source="npm" /> -->
+    <plugin name="cordova-plugin-splashscreen" source="npm" spec="~3.2.1" />
     <!-- <plugin name="cordova-plugin-statusbar" source="npm" /> -->
     <!-- <plugin name="cordova-plugin-vibration" source="npm" /> -->
     <plugin name="cordova-plugin-whitelist" source="npm" />
@@ -80,7 +80,6 @@
     <plugin name="cordova-plugin-ble" source="npm"/>
     <plugin name="cordova-plugin-bluetooth-serial" source="npm"/>
     <plugin name="cordova-plugin-x-toast" spec="https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git" source="git"/>
-    <plugin name="cordova-plugin-splashscreen" source="npm"/>
     <plugin name="cordova-plugin-googleplus" spec="https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git" source="git">
         <param name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.473073684258-jss0qgver3lio3cmjka9g71ratesqckr" />
     </plugin>
@@ -104,18 +103,18 @@
         <icon density="xxhdpi" src="www/res/icon/android/icon-144-xxhdpi.png" />
         <icon density="xxxhdpi" src="www/res/icon/android/icon-192-xxxhdpi.png" />
         <!-- splash screen -->
-        <splash density="land-ldpi" src="www/res/screen/android/screen-ldpi-landscape.png" />
-        <splash density="land-mdpi" src="www/res/screen/android/screen-mdpi-landscape.png" />
-        <splash density="land-hdpi" src="www/res/screen/android/screen-hdpi-landscape.png" />
-        <splash density="land-xhdpi" src="www/res/screen/android/screen-xhdpi-landscape.png" />
-        <splash density="land-xxhdpi" src="www/res/screen/android/screen-xxhdpi-landscape.png" />
-        <splash density="land-xxxhdpi" src="www/res/screen/android/screen-xxxhdpi-landscape.png" />
-        <splash density="port-ldpi" src="www/res/screen/android/screen-ldpi-portrait.png" />
-        <splash density="port-mdpi" src="www/res/screen/android/screen-mdpi-portrait.png" />
-        <splash density="port-hdpi" src="www/res/screen/android/screen-hdpi-portrait.png" />
-        <splash density="port-xhdpi" src="www/res/screen/android/screen-xhdpi-portrait.png" />
-        <splash density="port-xxhdpi" src="www/res/screen/android/screen-xxhdpi-portrait.png" />
-        <splash density="port-xxxhdpi" src="www/res/screen/android/screen-xxxhdpi-portrait.png" />
+        <splash density="land-ldpi" src="www/res/screen/android/drawable-land-ldpi-screen.png" />
+        <splash density="land-mdpi" src="www/res/screen/android/drawable-land-mdpi-screen.png" />
+        <splash density="land-hdpi" src="www/res/screen/android/drawable-land-hdpi-screen.png" />
+        <splash density="land-xhdpi" src="www/res/screen/android/drawable-land-xhdpi-screen.png" />
+        <splash density="land-xxhdpi" src="www/res/screen/android/drawable-land-xxhdpi-screen.png" />
+        <splash density="land-xxxhdpi" src="www/res/screen/android/drawable-land-xxxhdpi-screen.png" />
+        <splash density="port-ldpi" src="www/res/screen/android/drawable-port-ldpi-screen.png" />
+        <splash density="port-mdpi" src="www/res/screen/android/drawable-port-mdpi-screen.png" />
+        <splash density="port-hdpi" src="www/res/screen/android/drawable-port-hdpi-screen.png" />
+        <splash density="port-xhdpi" src="www/res/screen/android/drawable-port-xhdpi-screen.png" />
+        <splash density="port-xxhdpi" src="www/res/screen/android/drawable-port-xxhdpi-screen.png" />
+        <splash density="port-xxxhdpi" src="www/res/screen/android/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
         <!-- icon -->
