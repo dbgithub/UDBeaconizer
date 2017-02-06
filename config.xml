@@ -20,7 +20,7 @@
         <!-- all platform -->
         <preference name="orientation" value="default" /> <!-- all: default means both landscape and portrait are enabled -->
         <preference name="fullscreen" value="false" /> <!-- all: hides the status bar at the top of the screen -->
-        <preference name="phonegap-version" value="cli-6.3.0" /> <!-- Acabo de añadir esto para Phonegap Build (concretamente para BLE Central plugin) -->
+        <preference name="phonegap-version" value="cli-6.5.0" /> <!-- Acabo de añadir esto para Phonegap Build (concretamente para BLE Central plugin) -->
         <!-- More info about possible compiling errors in Phonegap BUILD at: https://github.com/floatinghotpot/cordova-admob-pro/issues/236 -->
         <!-- Supported Phonegap version for Phonegap BUILD (very interesting) at: https://build.phonegap.com/current-support -->
         <!-- iOS platform -->
