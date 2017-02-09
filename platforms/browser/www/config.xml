@@ -9,6 +9,7 @@
     </author>
     <content src="index.html" />
     <icon src="icon.png" />
+    <splash src="www/splash.png" />
     <access origin="*" />
     <allow-navigation href="http://*" />
     <allow-navigation href="https://*" />
@@ -20,7 +21,7 @@
     <allow-intent href="geo:*" />
     <preference name="orientation" value="default" />
     <preference name="fullscreen" value="false" />
-    <preference name="phonegap-version" value="cli-6.3.0" />
+    <preference name="phonegap-version" value="cli-6.5.0" />
     <preference name="target-device" value="universal" />
     <preference name="prerendered-icon" value="true" />
     <preference name="detect-data-types" value="true" />

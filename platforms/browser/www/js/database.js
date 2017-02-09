@@ -152,7 +152,7 @@ function checkChanges(db, dbalias, dbname) {
 }
 
 // This function checks for changes in the local database corresponding to maps' images.
-// 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
+// 'alias' corresponds to "room" for example, and 'dbname' corresponds to "roomsb" (the real database name)
 function checkMapChanges(floor, dbalias, callback) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
         setTimeout(function() {
@@ -160,6 +160,7 @@ function checkMapChanges(floor, dbalias, callback) {
                 console.log("map version [floor "+floor+"] (local)="+result2.v);
                 console.log("map version [floor "+floor+"] (remote)="+result);
                 if (result2.v < result) {requestMapImages(floor, null, result);}
+                // Now, we jump into another floor image:
                 if (floor < 5) {callback(++floor, dbalias, checkMapChanges);} else {checkChanges(_dbrooms, dbalias, _roomsdb_name);} // We call recursively once again. Watch out! "CheckChanges"
                                                                                                                                     // is called now because otherwise, if it was called in "createDB"
                                                                                                                                     // function the local rooms database tended to be updated
@@ -234,7 +235,8 @@ function updateLocalDocument(db, new_seq) {
     // }
 }
 
-// This function recursively retrieves all floor images from the remote database starting from the floor given by the parameter.
+// This function recursively retrieves all floor images (UNLESS one of the parameters, 'callback', is NULL; in that case, just one floor will be requested)
+// from the remote database starting from the floor given by the parameter.
 // It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
 function requestMapImages(floor, callback, new_version){
         console.log("Requesting map image #"+floor+" (floor)");
