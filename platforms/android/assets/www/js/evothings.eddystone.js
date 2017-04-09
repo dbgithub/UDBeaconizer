@@ -6,6 +6,8 @@
 	var undefinedCounter = 0; // It counts how many "undefined" values we get at least from one of the beacons. This counter works as an estimate to determine whether the readings from the beacons are weak or even
 	// if there are not beacons readings at all. The latter case means that there are not beacons around or that
 	// there exist a lot of interferences.
+	var euclideanD = []; // Array for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
+	var setpin = true; // Boolean for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
 
 
 	function startScan() {
@@ -424,7 +426,6 @@
 				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
 			}
 		}
-		console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		callback();
 	}
 
@@ -542,6 +543,37 @@
 				default:
 				break;
 			}
+			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
+						console.log("(realX = "+_real_X+",realY = "+_real_Y+") || Euclidean distance to estimated points: " + (Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
+						if (euclideanD.length >= 80 && setpin) {
+							setpin = false;
+							console.log("Euclidean 80!");
+							// Calculate now the average:
+							var sum = euclideanD.reduce(function(sum, value){
+								return sum + value;
+							}, 0);
+							var avg = sum / euclideanD.length;
+							console.log("AVG = " + avg);
+							//////////////////////////////////////////////
+							// Calculate now the differences between the values and their square values:
+							var diffs = euclideanD.map(function(value){
+								var diff = value - avg;
+								var sqr = diff * diff;
+								return sqr;
+							});
+							// Now calculate the averagge again of those values:
+							var sum2 = diffs.reduce(function(sum2, value){
+								return sum2 + value;
+							}, 0);
+
+							var avg2 = sum2 / diffs.length;
+							// Now we calculate the square root of the average:
+							var SD = Math.sqrt(avg2);
+							console.log("Standard Deviation = " + SD);
+						} else {
+							euclideanD.push((Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
+						}
 		}
 		callback();
 	}
