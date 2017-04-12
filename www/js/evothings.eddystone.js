@@ -4,10 +4,11 @@
 	// GLOBAL VARIABLES
 	var beacons = {}; // Dictionary of beacons.
 	var undefinedCounter = 0; // It counts how many "undefined" values we get at least from one of the beacons. This counter works as an estimate to determine whether the readings from the beacons are weak or even
-	// if there are not beacons readings at all. The latter case means that there are not beacons around or that
-	// there exist a lot of interferences.
-	var euclideanD = []; // Array for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
-	var setpin = true; // Boolean for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
+	// if there are not beacons readings at all. The latter case means that there are not beacons around or that there exist a lot of interferences.
+
+	// SpliTech 2017 performance and accuracy meassurement variables:
+	//var euclideanD = []; // Array for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
+	//var setpin = true; // Boolean for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
 
 
 	function startScan() {
@@ -544,7 +545,9 @@
 				break;
 			}
 			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+					// SpliTech2017 statistic purpose code:
 						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
+						/*
 						console.log("(realX = "+_real_X+",realY = "+_real_Y+") || Euclidean distance to estimated points: " + (Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
 						if (euclideanD.length >= 80 && setpin) {
 							setpin = false;
@@ -573,7 +576,7 @@
 							console.log("Standard Deviation = " + SD);
 						} else {
 							euclideanD.push((Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
-						}
+						}*/
 		}
 		callback();
 	}

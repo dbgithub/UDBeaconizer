@@ -1,7 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!-- More info about configuring this .xml configuration file and more importantly, the versionCode: http://docs.phonegap.com/phonegap-build/configuring/ -->
 <!-- More info about '.pgbomit' file at: http://docs.phonegap.com/phonegap-build/start/#structure_application and https://www.joshmorony.com/using-phonegap-builds-pgbomit-to-drastically-reduce-file-size/ -->
-<widget id="es.deusto.UDbeaconizer" version="1.0.0" android-versionCode="1" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+<widget id="es.deusto.UDbeaconizer" version="3.4.0" android-versionCode="304000" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- The versionCode is an internal code that is used among other things, for GooglePlay to know is a new version is released or not.-->
+  <!-- The version is shown to users and is public. The way we code it goes as follows: MAJOR= etapa de la aplicacion (ej. PFG, DTech, etapa RadBeacons etc.). MINOR = Mes de publicacion. PATCH = Differentes versiones/actualizaciones -->
     <name>UD Finder</name>
     <description>
         App for indoors geolocalization system to search professors, lecturers, rooms, offices and laboratories using beacons.
@@ -179,10 +181,10 @@
     <allow-navigation href="https://*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
-    <allow-intent href="tel:*" />
+    <!-- <allow-intent href="tel:*" />
     <allow-intent href="sms:*" />
     <allow-intent href="mailto:*" />
-    <allow-intent href="geo:*" />
+    <allow-intent href="geo:*" /> -->
     <platform name="android">
         <allow-intent href="market:*" />
     </platform>
