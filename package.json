@@ -1,0 +1,25 @@
+{
+    "name": "es.deusto.udbeaconizer",
+    "version": "3.4.0",
+    "displayName": "UD Finder",
+    "cordova": {
+        "platforms": [
+            "android"
+        ],
+        "plugins": {
+            "cordova-plugin-ble": {},
+            "cordova-plugin-bluetooth-serial": {},
+            "cordova-plugin-dialogs": {},
+            "cordova-plugin-googleplus": {},
+            "cordova-plugin-network-information": {},
+            "cordova-plugin-splashscreen": {},
+            "cordova-plugin-whitelist": {},
+            "cordova-plugin-x-toast": {}
+        }
+    },
+    "dependencies": {
+        "cordova-android": "~6.2.3",
+        "cordova-plugin-googleplus": "https://github.com/EddyVerbruggen/cordova-plugin-googleplus.git",
+        "cordova-plugin-x-toast": "https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin.git"
+    }
+}

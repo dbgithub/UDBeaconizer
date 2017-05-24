@@ -14,10 +14,10 @@
 	function startScan() {
 		console.log('Scan in progress.');
 		beacons = {}; // Reset the dictionary containing all detected/scanned beacons
-		_beaconsDistances = {}; // Reset. The object containing a set of 5 measured distances of every beacon is reset.
-		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+		_beaconsDistances = {}; // Reset. An object containing a set of 5 measured distances for every beacon.
+		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distances. This is used to avoid NaN values in trilateration.
 		_lastKnown5locations = [] // Reset. An object that contains a set of 5 last-known locations (of the user) in the form of {X,Y} coordinates.
-		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from one of the beacons.
+		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from a beacon.
 		evothings.eddystone.startScan(
 			function(beacon)
 			{
@@ -39,6 +39,8 @@
 		return 100 + rssi;
 	}
 
+	// Filters out the list of ALL beacons scanned and captured giving as an output a list already filtered with our beacons NAMESPACE.
+	// Thus, making sure the beacons in the output list are our own beacons.
 	function getSortedBeaconList()	{
 		var beaconList = [];
 		for (var key in beacons)
@@ -77,17 +79,13 @@
 			}
 		} else {
 			undefinedCounter = 0; // The counter is reset in case the contact with the beacons is again lost.
+			// Next step is sorting our own beacons based on RSSI strength
 			beaconList.sort(function(beacon1, beacon2)
 			{
 				return mapBeaconRSSI(beacon1.rssi) < mapBeaconRSSI(beacon2.rssi);
 			});
 			return beaconList;
 		}
-	}
-
-	function updateBeaconList()	{
-		applyTrilateration();
-		// displayBeacons();
 	}
 
 	// Removes beacons older than 10 seconds (readings not received) from the beacons' dictionary
@@ -210,13 +208,13 @@
 	// Returns the distance in meters between the beacon and the user (smartphone)
 	function htmlBeaconDistance(beacon)	{
 		if (beacon.rssi >= 0) {return -1;}
-		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m. Should we consider the information provided by easiBeacon, the one with -59dBm and -69 dBm depending on the beacon??
+		console.log("beacon.txPower (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower);
+		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m.
 		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position). We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
 		// The distance estimate is calculated as follows:
 		if (ratio < 1.0) {
 			return Math.pow(ratio, 10).toFixed(2);
-
 		} else {
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
@@ -228,10 +226,7 @@
 				_radii[beacon.address] = _lastKnownBeaconsDistances[beacon.address];
 				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
-				var val = calculateAverageDistance(beacon.address);
-				_lastKnownBeaconsDistances[beacon.address] = val;
-				_radii[beacon.address] = val;
-				return val;
+				return calculateAverageDistance(beacon.address);
 			}
 		}
 	}
@@ -248,11 +243,11 @@
 		// Evothings.eddystone.js: Start tracking beacons!
 		setTimeout(startScan, 500);
 		// Evothings.eddystone.js: Timer that refreshes the display.
-		_trilaterationTimerID = setInterval(updateBeaconList, 500);
+		_trilaterationTimerID = setInterval(applyTrilateration, 500);
 		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
 	}
 
-	// Calculate an average of measured distances of beacons.
+	// Calculate an average of measured distances of the beacon passed as a parameter.
 	// It discards outliers (values too high or too low)
 	function calculateAverageDistance(mac) {
 		// Firstly, we remove the outliers (or the values that are the biggest/smallest ones even if they are slightly bigger/smaller):
@@ -267,7 +262,10 @@
 			average += _beaconsDistances[mac][k];
 		} // END for
 		// console.log("Average:" + (average/n).toFixed(2));
-		return parseFloat((average/n).toFixed(2));
+		var resul = parseFloat((average/n).toFixed(2));
+		_lastKnownBeaconsDistances[mac] = resul;
+		_radii[mac] = resul;
+		return resul;
 	}
 
 	// It returns the floor the beacon is at, physically speaking.
@@ -279,7 +277,7 @@
 	// For instance, if the user gets the following values representing the floor from the beacons: 2 + 2 + 1, it means that two of them are in the 2nd floor whereas there is another one in the 1st floor. The average estimates that the user is at 2nd floor.
 	function estimateFloor() {
 		// At this point, after the call to the following function, all the beacons from the list will be our own beacons. Not any other BLE device.
-		_sortedList = getSortedBeaconList();
+		_sortedList = getSortedBeaconList(); // a list of beacons sorted by signal strength and NAMESPACE number.
 		if (_sortedList == null) {return null;} // There has to be a way to stop the process of trilateration calculation when there are NOT readings from beacons. When the later happens, '_sortedList' will be null, hece, we return null and we will stop the process in the calling method.
 		// We iterate over all the beacons in the list and we will estimate the floor the user is at based on the AVERAGE of the same amount of beacons which are in the same floor
 		var sum = 0;
@@ -588,7 +586,7 @@
 		var you_label = document.getElementById("p_you_label");
 		var circulito = document.getElementById("youPoint_SVG_circle"); // This is the SVG circle inside SVG tag
 		var circulito2 = document.getElementById("youPoint_SVG_circle2"); // This is the SVG little circle inside SVG tag
-		// Setting (calculating) the radius of YOU circle:
+		// Setting (calculating) the radius of the YOU circle. We will iterate over all radii values and take the biggest one.
 		var radius = 30; // '30' is a number that I set it on my own judge, it's considered sort of a minimum value. It does not relate to any variable somewhere else.
 		for (l in _radii) {
 			radius = Math.max(radius, _radii[l]);
@@ -630,7 +628,7 @@
 		var p_dist = document.getElementById("p_distanceTillDest");
 		var distance = (Math.sqrt(Math.pow((_real_X-_destX),2)+Math.pow((_real_Y-_destY),2))/26).toFixed();
 		if (isNaN(distance)) {
-			p_dist.innerHTML = "?" + " m"
+			p_dist.innerHTML = "?" + " m";
 		} else {
 			p_dist.innerHTML = distance + " m";
 		}
@@ -640,7 +638,7 @@
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
 			_stop = true;
-			// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
+			// TODO: Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
 			// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
 			// if (_currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
 			retrieveMap(_currentfloor.toString(), function() {}); // If I take this call out of setTimeout function, JavaScripts yields errors.
@@ -672,6 +670,7 @@
 				})
 			})
 		})
+		// displayBeacons();
 	}
 
 	// Stops the scanning process of BLE devices
