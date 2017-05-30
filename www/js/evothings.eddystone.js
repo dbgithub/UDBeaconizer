@@ -421,7 +421,7 @@
 			if (_final_X !== Infinity && _final_X !== -Infinity && !isNaN(_final_X) && _final_X !== undefined &&
 			_final_Y !== Infinity && _final_Y !== -Infinity && !isNaN(_final_Y) && _final_Y !== undefined) {
 				// console.log("Pushed values: " + _final_X + " | " + _final_Y);
-				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+				//_lastKnown5locations.push({X:_final_X, Y:_final_Y})
 			}
 		}
 		callback();
@@ -434,113 +434,113 @@
 	// The algorithm/switch is based upon severales rules taking into account the X and Y axises. First, the most restrictive rules are set,
 	// and then, the less restrictive.
 	function funcion_de_coreccion(callback) {
-		if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
-		_real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
-			var offset = 200; // Offset of 200px
-			switch(_currentfloor) {
-				case 0:
-				var limit = 780 + offset;
-				if (780 <= _real_Y && _real_Y <= limit && 441 <= _real_X && _real_X <= 2204) {_real_Y = 780;break;}
-				var limit = 441 + offset;
-				if (441 <= _real_X && _real_X <= limit && 780 <= _real_Y) {_real_X = 441; break;}
-				if (_real_Y <= 153) {_real_Y = 153; break;}
-				if (_real_X <= 51) {_real_X = 51; break;}
-				break;
-				case 1:
-				var limit = 480 + offset;
-				if (480 <= _real_Y && _real_Y <= limit && 1089 <= _real_X && _real_X <= 1563) {_real_Y = 480;break;}
-				var limit = 1089 + offset;
-				if (1089 <= _real_X && _real_X <= limit && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1089; break;}
-				var limit = 1563 - offset;
-				if (limit <= _real_X && _real_X<= 1563 && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1563; break;}
-				var limit = 774 + offset;
-				if (774 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1089) {_real_Y = 774; break;}
-				var limit = 450 + offset;
-				if (450 <= _real_X && _real_X <= limit && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 450; break;}
-				var limit = 774 + offset;
-				if (774 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2214) {_real_Y = 774; break;}
-				var limit = 2214 - offset;
-				if (limit <= _real_Y && _real_Y<= 2214 && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 2214; break;}
-				if (_real_Y <= 162) {_real_Y = 162; break;}
-				if (_real_Y >= 1488) {_real_Y = 1488; break;}
-				break;
-				case 2:
-				var limit = 465 + offset;
-				if (465 <= _real_Y && _real_Y <= limit && 1083 <= _real_X && _real_X <= 1563) {_real_Y = 465;break;}
-				var limit = 1083 + offset;
-				if (1083 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1083; break;}
-				var limit = 1563 - offset;
-				if (limit <= _real_X && _real_X<= 1563 && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1563; break;}
-				var limit = 756 + offset;
-				if (756 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1083) {_real_Y = 756; break;}
-				var limit = 450 + offset;
-				if (450 <= _real_X && _real_X <= limit && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 450; break;}
-				var limit = 756 + offset;
-				if (756 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2205) {_real_Y = 756; break;}
-				var limit = 2205 - offset;
-				if (limit <= _real_Y && _real_Y<= 2205 && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 2205; break;}
-				if (_real_Y <= 150) {_real_Y = 150; break;}
-				if (_real_Y >= 1458) {_real_Y = 1458; break;}
-				break;
-				case 3:
-				var limit = 468 + offset;
-				if (468 <= _real_Y && _real_Y <= limit && 1068 <= _real_X && _real_X <= 1545) {_real_Y = 468;break;}
-				var limit = 1068 + offset;
-				if (1068 <= _real_X && _real_X <= limit && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1068; break;}
-				var limit = 1545 - offset;
-				if (limit <= _real_X && _real_X<= 1545 && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1545; break;}
-				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 435 <= _real_X && _real_X <= 1068) {_real_Y = 762; break;}
-				var limit = 435 + offset;
-				if (435 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 435; break;}
-				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 1545 <= _real_X && _real_X<= 2190) {_real_Y = 762; break;}
-				var limit = 2190 - offset;
-				if (limit <= _real_Y && _real_Y<= 2190 && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 2190; break;}
-				if (_real_Y <= 141) {_real_Y = 141; break;}
-				if (_real_Y >= 1473) {_real_Y = 1473; break;}
-				break;
-				case 4:
-				var limit = 477 + offset;
-				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477; console.log("caso 0");break;}
-				var limit = 1092 + offset;
-				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; console.log("caso 1");break;}
-				var limit = 1557 - offset;
-				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; console.log("caso 2");break;}
-				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; console.log("caso 3");break;}
-				var limit = 465 + offset;
-				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; console.log("caso 4");break;}
-				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; console.log("caso 5");break;}
-				var limit = 2202 - offset;
-				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; console.log("caso 6");break;}
-				if (_real_Y <= 162) {_real_Y = 162; console.log("caso 7");break;}
-				if (_real_Y >= 1485) {_real_Y = 1485; console.log("caso 8"); break;}
-				break;
-				case 5:
-				var limit = 465 + offset;
-				if (465 <= _real_Y && _real_Y <= limit && 1086 <= _real_X && _real_X <= 1554) {_real_Y = 465;break;}
-				var limit = 1086 + offset;
-				if (1086 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1086; break;}
-				var limit = 1554 - offset;
-				if (limit <= _real_X && _real_X<= 1554 && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1554; break;}
-				var limit = 693 + offset;
-				if (693 <= _real_Y && _real_Y <= limit && 399 <= _real_X && _real_X <= 1086) {_real_Y = 693; break;}
-				var limit = 399 + offset;
-				if (399 <= _real_X && _real_X <= limit && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 399; break;}
-				var limit = 693 + offset;
-				if (693 <= _real_Y && _real_Y <= limit && 1554 <= _real_X && _real_X<= 2247) {_real_Y = 693; break;}
-				var limit = 2247 - offset;
-				if (limit <= _real_Y && _real_Y<= 2247 && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 2247; break;}
-				if (_real_Y <= 210) {_real_Y = 210; break;}
-				if (_real_Y >= 1434) {_real_Y = 1434; break;}
-				if (_real_X <= 135) {_real_X = 135; break;}
-				if (_real_X >= 2520) {_real_X = 2520; break;}
-				break;
-				default:
-				break;
-			}
+		// if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
+		// _real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
+		// 	var offset = 200; // Offset of 200px
+		// 	switch(_currentfloor) {
+		// 		case 0:
+		// 		var limit = 780 + offset;
+		// 		if (780 <= _real_Y && _real_Y <= limit && 441 <= _real_X && _real_X <= 2204) {_real_Y = 780;break;}
+		// 		var limit = 441 + offset;
+		// 		if (441 <= _real_X && _real_X <= limit && 780 <= _real_Y) {_real_X = 441; break;}
+		// 		if (_real_Y <= 153) {_real_Y = 153; break;}
+		// 		if (_real_X <= 51) {_real_X = 51; break;}
+		// 		break;
+		// 		case 1:
+		// 		var limit = 480 + offset;
+		// 		if (480 <= _real_Y && _real_Y <= limit && 1089 <= _real_X && _real_X <= 1563) {_real_Y = 480;break;}
+		// 		var limit = 1089 + offset;
+		// 		if (1089 <= _real_X && _real_X <= limit && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1089; break;}
+		// 		var limit = 1563 - offset;
+		// 		if (limit <= _real_X && _real_X<= 1563 && 480 <= _real_Y && _real_Y<= 774) {_real_X = 1563; break;}
+		// 		var limit = 774 + offset;
+		// 		if (774 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1089) {_real_Y = 774; break;}
+		// 		var limit = 450 + offset;
+		// 		if (450 <= _real_X && _real_X <= limit && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 450; break;}
+		// 		var limit = 774 + offset;
+		// 		if (774 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2214) {_real_Y = 774; break;}
+		// 		var limit = 2214 - offset;
+		// 		if (limit <= _real_Y && _real_Y<= 2214 && 774 <= _real_Y && _real_Y<= 1488) {_real_X = 2214; break;}
+		// 		if (_real_Y <= 162) {_real_Y = 162; break;}
+		// 		if (_real_Y >= 1488) {_real_Y = 1488; break;}
+		// 		break;
+		// 		case 2:
+		// 		var limit = 465 + offset;
+		// 		if (465 <= _real_Y && _real_Y <= limit && 1083 <= _real_X && _real_X <= 1563) {_real_Y = 465;break;}
+		// 		var limit = 1083 + offset;
+		// 		if (1083 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1083; break;}
+		// 		var limit = 1563 - offset;
+		// 		if (limit <= _real_X && _real_X<= 1563 && 465 <= _real_Y && _real_Y<= 756) {_real_X = 1563; break;}
+		// 		var limit = 756 + offset;
+		// 		if (756 <= _real_Y && _real_Y <= limit && 450 <= _real_X && _real_X <= 1083) {_real_Y = 756; break;}
+		// 		var limit = 450 + offset;
+		// 		if (450 <= _real_X && _real_X <= limit && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 450; break;}
+		// 		var limit = 756 + offset;
+		// 		if (756 <= _real_Y && _real_Y <= limit && 1563 <= _real_X && _real_X<= 2205) {_real_Y = 756; break;}
+		// 		var limit = 2205 - offset;
+		// 		if (limit <= _real_Y && _real_Y<= 2205 && 756 <= _real_Y && _real_Y<= 1458) {_real_X = 2205; break;}
+		// 		if (_real_Y <= 150) {_real_Y = 150; break;}
+		// 		if (_real_Y >= 1458) {_real_Y = 1458; break;}
+		// 		break;
+		// 		case 3:
+		// 		var limit = 468 + offset;
+		// 		if (468 <= _real_Y && _real_Y <= limit && 1068 <= _real_X && _real_X <= 1545) {_real_Y = 468;break;}
+		// 		var limit = 1068 + offset;
+		// 		if (1068 <= _real_X && _real_X <= limit && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1068; break;}
+		// 		var limit = 1545 - offset;
+		// 		if (limit <= _real_X && _real_X<= 1545 && 468 <= _real_Y && _real_Y<= 762) {_real_X = 1545; break;}
+		// 		var limit = 762 + offset;
+		// 		if (762 <= _real_Y && _real_Y <= limit && 435 <= _real_X && _real_X <= 1068) {_real_Y = 762; break;}
+		// 		var limit = 435 + offset;
+		// 		if (435 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 435; break;}
+		// 		var limit = 762 + offset;
+		// 		if (762 <= _real_Y && _real_Y <= limit && 1545 <= _real_X && _real_X<= 2190) {_real_Y = 762; break;}
+		// 		var limit = 2190 - offset;
+		// 		if (limit <= _real_Y && _real_Y<= 2190 && 762 <= _real_Y && _real_Y<= 1473) {_real_X = 2190; break;}
+		// 		if (_real_Y <= 141) {_real_Y = 141; break;}
+		// 		if (_real_Y >= 1473) {_real_Y = 1473; break;}
+		// 		break;
+		// 		case 4:
+		// 		var limit = 477 + offset;
+		// 		if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477; console.log("caso 0");break;}
+		// 		var limit = 1092 + offset;
+		// 		if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; console.log("caso 1");break;}
+		// 		var limit = 1557 - offset;
+		// 		if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; console.log("caso 2");break;}
+		// 		var limit = 762 + offset;
+		// 		if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; console.log("caso 3");break;}
+		// 		var limit = 465 + offset;
+		// 		if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; console.log("caso 4");break;}
+		// 		var limit = 762 + offset;
+		// 		if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; console.log("caso 5");break;}
+		// 		var limit = 2202 - offset;
+		// 		if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; console.log("caso 6");break;}
+		// 		if (_real_Y <= 162) {_real_Y = 162; console.log("caso 7");break;}
+		// 		if (_real_Y >= 1485) {_real_Y = 1485; console.log("caso 8"); break;}
+		// 		break;
+		// 		case 5:
+		// 		var limit = 465 + offset;
+		// 		if (465 <= _real_Y && _real_Y <= limit && 1086 <= _real_X && _real_X <= 1554) {_real_Y = 465;break;}
+		// 		var limit = 1086 + offset;
+		// 		if (1086 <= _real_X && _real_X <= limit && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1086; break;}
+		// 		var limit = 1554 - offset;
+		// 		if (limit <= _real_X && _real_X<= 1554 && 465 <= _real_Y && _real_Y<= 693) {_real_X = 1554; break;}
+		// 		var limit = 693 + offset;
+		// 		if (693 <= _real_Y && _real_Y <= limit && 399 <= _real_X && _real_X <= 1086) {_real_Y = 693; break;}
+		// 		var limit = 399 + offset;
+		// 		if (399 <= _real_X && _real_X <= limit && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 399; break;}
+		// 		var limit = 693 + offset;
+		// 		if (693 <= _real_Y && _real_Y <= limit && 1554 <= _real_X && _real_X<= 2247) {_real_Y = 693; break;}
+		// 		var limit = 2247 - offset;
+		// 		if (limit <= _real_Y && _real_Y<= 2247 && 693 <= _real_Y && _real_Y<= 1434) {_real_X = 2247; break;}
+		// 		if (_real_Y <= 210) {_real_Y = 210; break;}
+		// 		if (_real_Y >= 1434) {_real_Y = 1434; break;}
+		// 		if (_real_X <= 135) {_real_X = 135; break;}
+		// 		if (_real_X >= 2520) {_real_X = 2520; break;}
+		// 		break;
+		// 		default:
+		// 		break;
+		// 	}
 			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 					// SpliTech2017 statistic purpose code:
 						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
