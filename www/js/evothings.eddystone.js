@@ -253,8 +253,8 @@
 		// Firstly, we remove the outliers (or the values that are the biggest/smallest ones even if they are slightly bigger/smaller):
 		_beaconsDistances[mac].sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
 		//  console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4] + " | " + _beaconsDistances[mac][5] + " | " + _beaconsDistances[mac][6] );
-		_beaconsDistances[mac].shift(); // The first (smallest) value is removed from the array
-		_beaconsDistances[mac].pop(); // The last (biggest) value is removed from the array
+		_beaconsDistances[mac].shift(); // The first (biggest) value is removed from the array
+		_beaconsDistances[mac].pop(); // The last (smallest) value is removed from the array
 		// Now we compute an average among the values that remain in the array:
 		var average = 0;
 		var n = _beaconsDistances[mac].length;
@@ -369,16 +369,15 @@
 	// Instead of drawing directly the position of the user, we will take the last known 5 hypothetical locations of the user and we will narrow down (estimate)
 	// a better and more accurate position. The idea behind this algorithm is to calculate the middle-point within the straight line that goes from one location
 	// to the other. Now, we enumerate the new calculated points as if they were the original ones, and we repeat the process as much as we want.
-	// As a final step, we calculate an average point based on the minimum X and maximum X coordinates of the extreme positions on the map. The same happens with Y.
-	// The result will be a X and Y coordinates of a better accurate location.
+	// As a final step, we calculate an average point based on the minimum X and maximum X coordinates of the extreme positions on the map. We do the same with Y.
+	// The result will be a (X, Y) coordinates of a better accurate location.
 	function funcion_de_precision(callback) {
 		var temp = _lastKnown5locations.slice();
 		if (_lastKnown5locations.length == 5) {
-			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, TWO times will be executed.
-			// As you increase the frecuency, you get much close coordinates.
+			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, FIVE times will be executed.
+			// As you increase the frecuency, you get much closer points.
 			for (k = 0; k < 5; k++) {
 				for (i=0; i<_lastKnown5locations.length; i++) {
-					// console.log("i = " + i);
 					// We calculate now the middle-point that relies on the straight line between one point to the consecutive one:
 					var x1 = _lastKnown5locations[i].X;
 					var y1 = _lastKnown5locations[i].Y;
@@ -396,7 +395,7 @@
 				}
 			}
 
-			// Now, we have to come up with a single coordinate (x,y) which turns out to be the user's location that we have estimated (improved):
+			// Now, we have to come up with a single coordinate (x,y) which turns out to be the user's location that we have improved:
 			// In fact, we want again to compute the middle-point that relies between the coordinates of the extreme locations. That is, the ones that are on the extremes.
 			// We will do that for variable X and Y. To do so, we have to iterate over the locations that we have narrowed down to retrieve the extremes.
 			var Xcollection = [];
@@ -503,21 +502,21 @@
 				break;
 				case 4:
 				var limit = 477 + offset;
-				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477;break;}
+				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477; console.log("caso 0");break;}
 				var limit = 1092 + offset;
-				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; break;}
+				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; console.log("caso 1");break;}
 				var limit = 1557 - offset;
-				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; break;}
+				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; console.log("caso 2");break;}
 				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; break;}
+				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; console.log("caso 3");break;}
 				var limit = 465 + offset;
-				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; break;}
+				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; console.log("caso 4");break;}
 				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; break;}
+				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; console.log("caso 5");break;}
 				var limit = 2202 - offset;
-				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; break;}
-				if (_real_Y <= 162) {_real_Y = 162; break;}
-				if (_real_Y >= 1485) {_real_Y = 1485; break;}
+				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; console.log("caso 6");break;}
+				if (_real_Y <= 162) {_real_Y = 162; console.log("caso 7");break;}
+				if (_real_Y >= 1485) {_real_Y = 1485; console.log("caso 8"); break;}
 				break;
 				case 5:
 				var limit = 465 + offset;
