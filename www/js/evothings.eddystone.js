@@ -208,10 +208,9 @@
 	// Returns the distance in meters between the beacon and the user (smartphone)
 	function htmlBeaconDistance(beacon)	{
 		if (beacon.rssi >= 0) {return -1;}
-		console.log("beacon.rssi (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.rssi*1.0);
-		console.log("beacon.txPower (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower);
-		console.log("beacon.txPower-41 (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower-41);
-		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m.
+		//console.log("beacon.rssi (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.rssi*1.0);
+		//console.log("beacon.txPower (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower);
+		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' represents the transmission power loss within 1 m.
 		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position). We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
 		// The distance estimate is calculated as follows:
