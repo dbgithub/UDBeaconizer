@@ -421,7 +421,8 @@ function retrieveBeacon(instance, j) {
 function retrieveBeaconCoordinates(instance) {
   _dbbeacons.get(instance).then(function(doc) {
           console.log("retrieveBeaconCoordinates: ("+doc.x+","+doc.y+")");
-          return {X:doc.x,Y:doc.y}
+          _centroid.X += doc.x;
+          _centroid.Y += doc.y;
       }).catch(function (err) {
           console.log("error retrieving beacon from the database");
           console.log(err);
