@@ -376,8 +376,8 @@
 		for (index in temp) {
 			console.log("_centroid.X = " + _centroid.X);
 			console.log("_centroid.Y = " + _centroid.Y);
-			_centroid.X += retrieveBeaconCoordinates(temp[index].instance).X;
-			_centroid.Y += retrieveBeaconCoordinates(temp[index].instance).Y;
+			_centroid.X += (retrieveBeaconCoordinates(temp[index].instance)).X;
+			_centroid.Y += (retrieveBeaconCoordinates(temp[index].instance)).Y;
 		}
 		_centroid.X = _centroid.X / 3;
 		_centroid.Y = _centroid.Y / 3;
