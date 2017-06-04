@@ -49,6 +49,8 @@
 			if (beacons[key] != null && beacons[key] !== undefined && uint8ArrayToString(beacons[key].nid) == "a7ae2eb7a749bac1ca64") { // Apparently, namespace ID has to be compared in lowercase values
 				console.log("Pool of beacons. Address: " + key);
 				beaconList.push(beacons[key]);
+				if (_frequencyHistogram[uint8ArrayToString(beacons[key].bid)] == undefined) {_frequencyHistogram[uint8ArrayToString(beacons[key].bid)] = {instance:uint8ArrayToString(beacons[key].bid), n: 0};} else {_frequencyHistogram[uint8ArrayToString(beacons[key].bid)].n += 1;}
+				console.log("frequencyHistogram["+uint8ArrayToString(beacons[key].bid)+"].n = " + _frequencyHistogram[uint8ArrayToString(beacons[key].bid)].n);
 			}
 		}
 		if (beaconList.length == 0) {
@@ -209,9 +211,8 @@
 	function htmlBeaconDistance(beacon)	{
 		if (beacon.rssi >= 0) {return -1;}
 		//console.log("beacon.rssi (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.rssi*1.0);
-		console.log("beacon.txPower (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower);
-		console.log("beacon.txPower41 (" + uint8ArrayToString(beacon.bid) + ") = " + (beacon.txPower-41));
-		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m.
+		//console.log("beacon.txPower (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower);
+		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' represents the transmission power loss within 1 m.
 		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position). We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
 		// The distance estimate is calculated as follows:
@@ -364,6 +365,20 @@
 		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
 
+		// Apart from calculating trilateration between the three nearest beacons. We need to compute the centroid (centroide) of the three beacons from which we have more readings.
+		// Not necessary the ones who are nearest. That is, we are not using the same beacons as in this function.
+		var temp = [];
+		for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);} // Moving all elements from a dictionary of Objects to an array of Objects.
+		temp.sort(function(a, b){return b.n-a.n}); // The array is sorted by size: from BIG to SMALL (the sort function is accessing one of the members of the object: 'n')
+		temp = temp.slice(0,3);
+		_centroid.X = 0; _centroid.Y = 0;
+		retrieveBeaconCoordinates(temp[0].instance);
+		retrieveBeaconCoordinates(temp[1].instance);
+		retrieveBeaconCoordinates(temp[2].instance);
+		_centroid.X = _centroid.X / 3;
+		_centroid.Y = _centroid.Y / 3;
+		console.log("_centroid(X,Y) = " + _centroid.X + ", " + _centroid.Y);
+
 		callback();
 	}
 
@@ -423,7 +438,7 @@
 			if (_final_X !== Infinity && _final_X !== -Infinity && !isNaN(_final_X) && _final_X !== undefined &&
 			_final_Y !== Infinity && _final_Y !== -Infinity && !isNaN(_final_Y) && _final_Y !== undefined) {
 				// console.log("Pushed values: " + _final_X + " | " + _final_Y);
-				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+				//_lastKnown5locations.push({X:_final_X, Y:_final_Y})
 			}
 		}
 		callback();

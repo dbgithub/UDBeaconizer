@@ -64,7 +64,9 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _final_Y; // This represents the Y coordinate of the computed value after trilateration
     var _real_X; // This represents the X coordinate of the locatin of the person (device)
     var _real_Y; // This represents the Y coordinate of the locatin of the person (device)
-    var _radii = {} // An object that holds the values of the distances to the nearest three beacons. Among those distances one will be choosen to be the radius of the YOU circle.
+    var _radii = {}; // An object that holds the values of the distances to the nearest three beacons. Among those distances one will be choosen to be the radius of the YOU circle.
+    var _frequencyHistogram = []; // An array holding the number of times that a certain beacon has been scanned for each and every beacon. The index is the instance number of the beacon and the value is an object with two fields: the instance number of the beacon ('instance') and the appearance frequenc ('n'). e.g. _frequencyHistogram["00040002"] = {instance:"00040002", n:32};
+    var _centroid = {}; // An object representing a coordinate (X,Y) of the centroid of the three beacons from which we have more readings.
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
