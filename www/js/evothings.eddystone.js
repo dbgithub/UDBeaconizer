@@ -49,6 +49,8 @@
 			if (beacons[key] != null && beacons[key] !== undefined && uint8ArrayToString(beacons[key].nid) == "a7ae2eb7a749bac1ca64") { // Apparently, namespace ID has to be compared in lowercase values
 				console.log("Pool of beacons. Address: " + key);
 				beaconList.push(beacons[key]);
+				if (frequencyHistogram[uint8ArrayToString(beacons[key].bid)] == undefined) {frequencyHistogram[uint8ArrayToString(beacons[key].bid)] = 0;} else {frequencyHistogram[uint8ArrayToString(beacons[key].bid)] += 1;}
+				console.log("frequencyHistogram["+uint8ArrayToString(beacons[key].bid)+"] = " + frequencyHistogram[uint8ArrayToString(beacons[key].bid)]);
 			}
 		}
 		if (beaconList.length == 0) {

@@ -394,7 +394,7 @@ function retrieveMap(floor, callback) {
     // More info about XMLhttprequest at: http://www.w3schools.com/ajax/ajax_xmlhttprequest_send.asp
 }
 
-// This function retrieves thte information attached to a specific beacon from the database and assigns its coordinates to the corresponding global variables.
+// This function retrieves the information attached to a specific beacon from the database and assigns its coordinates to the corresponding global variables.
 // Those global variables are used for trilateration.
 function retrieveBeacon(instance, j) {
     _dbbeacons.get(instance).then(function(doc) {
