@@ -373,8 +373,6 @@
 		temp = temp.slice(0,3);
 		_centroid.X = 0; _centroid.Y = 0;
 		for (index in temp) {
-			console.log("_centroid.X = " + _centroid.X);
-			console.log("_centroid.Y = " + _centroid.Y);
 			retrieveBeaconCoordinates(temp[index].instance);
 		}
 		_centroid.X = _centroid.X / 3;
