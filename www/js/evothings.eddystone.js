@@ -49,8 +49,8 @@
 			if (beacons[key] != null && beacons[key] !== undefined && uint8ArrayToString(beacons[key].nid) == "a7ae2eb7a749bac1ca64") { // Apparently, namespace ID has to be compared in lowercase values
 				console.log("Pool of beacons. Address: " + key);
 				beaconList.push(beacons[key]);
-				if (frequencyHistogram[uint8ArrayToString(beacons[key].bid)] == undefined) {frequencyHistogram[uint8ArrayToString(beacons[key].bid)] = 0;} else {frequencyHistogram[uint8ArrayToString(beacons[key].bid)] += 1;}
-				console.log("frequencyHistogram["+uint8ArrayToString(beacons[key].bid)+"] = " + frequencyHistogram[uint8ArrayToString(beacons[key].bid)]);
+				if (_frequencyHistogram[uint8ArrayToString(beacons[key].bid)] == undefined) {_frequencyHistogram[uint8ArrayToString(beacons[key].bid)] = {instance:uint8ArrayToString(beacons[key].bid), n: 0};} else {_frequencyHistogram[uint8ArrayToString(beacons[key].bid)].n += 1;}
+				console.log("frequencyHistogram["+uint8ArrayToString(beacons[key].bid)+"].n = " + _frequencyHistogram[uint8ArrayToString(beacons[key].bid)].n);
 			}
 		}
 		if (beaconList.length == 0) {
@@ -364,6 +364,16 @@
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
 		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
+
+		// Apart from calculating trilateration between the three nearest beacons. We need to compute the centroid (centroide) of the three beacons from which we have more readings.
+		// Not necessary the ones who are nearest. That is, we are not using the same beacons.
+		// var temp = [];
+		// for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);}
+		// temp.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
+		// temp = temp.slice(0,3)
+		// for ()
+		// _centroid.X = ()/3;
+		// _centroid.Y = ()/3
 
 		callback();
 	}
