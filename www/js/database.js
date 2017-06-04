@@ -418,6 +418,16 @@ function retrieveBeacon(instance, j) {
         });
 }
 
+function retrieveBeaconCoordinates(instance) {
+  _dbbeacons.get(instance).then(function(doc) {
+          return {X:doc.x,Y:doc.y}
+      }).catch(function (err) {
+          console.log("error retrieving beacon from the database");
+          console.log(err);
+      });
+
+}
+
 // TO DELETE: it's just for testing purposes
 function getAttachment(floor){
     console.log("HOLA??? (floor= "+floor+")");

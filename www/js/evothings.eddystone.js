@@ -366,15 +366,21 @@
 		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
 
 		// Apart from calculating trilateration between the three nearest beacons. We need to compute the centroid (centroide) of the three beacons from which we have more readings.
-		// Not necessary the ones who are nearest. That is, we are not using the same beacons.
-		// var temp = [];
-		// for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);}
-		// temp.sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
-		// temp = temp.slice(0,3)
-		// for ()
-		// _centroid.X = ()/3;
-		// _centroid.Y = ()/3
-
+		// Not necessary the ones who are nearest. That is, we are not using the same beacons as in this function.
+		var temp = [];
+		for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);} // Moving all elements from a dictionary of Objects to an array of Objects.
+		temp.sort(function(a, b){return b.n-a.n}); // The array is sorted by size: from BIG to SMALL (the sort function is accessing one of the members of the object: 'n')
+		temp = temp.slice(0,3);
+		console.log(temp);
+		_centroid.X = 0; _centroid.Y = 0;
+		for (index in temp) {
+			_centroid.X += retrieveBeaconCoordinates(temp[index].instance).X; console.log("_centroid.X = " + _centroid.X);
+			_centroid.Y += retrieveBeaconCoordinates(temp[index].instance).Y; console.log("_centroid.Y = " + _centroid.Y);
+		}
+		_centroid.X = _centroid.X / 3;
+		_centroid.Y = _centroid.Y / 3;
+		console.log("_centroid(X,Y) = " + _centroid.X + ", " + _centroid.Y);
+		
 		callback();
 	}
 
