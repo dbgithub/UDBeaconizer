@@ -371,13 +371,13 @@
 		for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);} // Moving all elements from a dictionary of Objects to an array of Objects.
 		temp.sort(function(a, b){return b.n-a.n}); // The array is sorted by size: from BIG to SMALL (the sort function is accessing one of the members of the object: 'n')
 		temp = temp.slice(0,3);
-		_centroid.X = 0; _centroid.Y = 0;
+		_centroid.Xtmp = 0; _centroid.Ytmp = 0; // temporal variables
 		retrieveBeaconCoordinates(temp[0].instance);
 		retrieveBeaconCoordinates(temp[1].instance);
 		retrieveBeaconCoordinates(temp[2].instance);
 		_centroid.X = _centroid.X / 3;
 		_centroid.Y = _centroid.Y / 3;
-		console.log("_centroid(X,Y) = " + _centroid.X + ", " + _centroid.Y);
+		console.log("_hola(X,Y) = " + _centroid.X + ", " + _centroid.Y);
 
 		callback();
 	}
