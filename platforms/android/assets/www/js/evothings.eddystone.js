@@ -438,7 +438,7 @@
 			if (_final_X !== Infinity && _final_X !== -Infinity && !isNaN(_final_X) && _final_X !== undefined &&
 			_final_Y !== Infinity && _final_Y !== -Infinity && !isNaN(_final_Y) && _final_Y !== undefined) {
 				// console.log("Pushed values: " + _final_X + " | " + _final_Y);
-				//_lastKnown5locations.push({X:_final_X, Y:_final_Y})
+				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
 			}
 		}
 		callback();
