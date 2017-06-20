@@ -418,10 +418,11 @@ function retrieveBeacon(instance, j) {
         });
 }
 
+// Retrieves the coordinates of the beacon passed as a parameter and it sums to a global variable
 function retrieveBeaconCoordinates(instance) {
   _dbbeacons.get(instance).then(function(doc) {
-          _centroid.Xtmp += parseInt(doc.x); 
-          _centroid.Ytmp += parseInt(doc.y); 
+          _centroid.Xtmp += parseInt(doc.x);
+          _centroid.Ytmp += parseInt(doc.y);
 	  _centroid.X = _centroid.Xtmp;
 	  _centroid.Y = _centroid.Ytmp;
 	  console.log("_centroid.Xtmp = " + _centroid.Xtmp);

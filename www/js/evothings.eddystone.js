@@ -371,7 +371,7 @@
 		for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);} // Moving all elements from a dictionary of Objects to an array of Objects.
 		temp.sort(function(a, b){return b.n-a.n}); // The array is sorted by size: from BIG to SMALL (the sort function is accessing one of the members of the object: 'n')
 		temp = temp.slice(0,3);
-		_centroid.Xtmp = 0; _centroid.Ytmp = 0; // temporal variables
+		_centroid.Xtmp = 0; _centroid.Ytmp = 0; // temporal variables (reseting values)
 		retrieveBeaconCoordinates(temp[0].instance);
 		retrieveBeaconCoordinates(temp[1].instance);
 		retrieveBeaconCoordinates(temp[2].instance);
@@ -453,6 +453,22 @@
 	function funcion_de_coreccion(callback) {
 		if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
 		_real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
+
+			// Taking the centroid into account, we will trace/draw a circle with a radius value to determine.
+			// The estimated point should fall into the specified circle to be depicted on the map, otherwise it will not be displayed.
+			// The radius value is really linked to the image resolution used as a map:
+			if ((_real_X > _centroid.X + _centroidOffset) || (_real_X < _centroid.X - _centroidOffset) ||
+					(_real_Y > _centroid.Y + _centroidOffset) || (_real_Y < _centroid.Y - _centroidOffset)) {
+						console.log("Parece que se encuentra fuera del radio del centroide. (realX = "+_real_X+",realY = "+_real_Y+")");
+						_real_X = undefined;
+						_real_Y = undefined;
+						console.log("After setting to undefined (realX = "+_real_X+",realY = "+_real_Y+")");
+						callback();
+						return;
+					}
+
+					console.log("HOLA! Probando si pasa por aqui.");
+					/*
 			var offset = 200; // Offset of 200px
 			switch(_currentfloor) {
 				case 0:
@@ -591,7 +607,7 @@
 						} else {
 							euclideanD.push((Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
 						}*/
-		}
+		}*/
 		callback();
 	}
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
