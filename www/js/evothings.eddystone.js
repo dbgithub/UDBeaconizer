@@ -105,6 +105,13 @@
 		}
 	}
 
+	// Cleans/Clears out the readings stored in this array.
+	function clearOutFrequencyHistogram() {
+		console.log(".length before clearing out: "+_frequencyHistogram.length);
+		_frequencyHistogram = [];
+		console.log("Frequency histogram cleared out! (.length = "+_frequencyHistogram.length+")");
+	}
+
 	function displayBeacons()	{
 		console.log("hello, displaying beacons...");
 		var html = '';
@@ -243,11 +250,12 @@
 		// Evothings.eddystone.js: 'timer' is the ID that identifies the timer created by "setInterval".
 		_trilaterationTimerID = null;
 		_beaconRemoverTimerID = null;
-		// Evothings.eddystone.js: Start tracking beacons!
-		setTimeout(startScan, 500);
-		// Evothings.eddystone.js: Timer that refreshes the display.
+		_frequencyHistogramTimerID = null;
+		setTimeout(startScan, 500); // Start tracking beacons!
+		// Timers for different purposes:
 		_trilaterationTimerID = setInterval(applyTrilateration, 500);
 		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
+		_frequencyHistogramTimerID = setInterval(clearOutFrequencyHistogram, 10000);
 	}
 
 	// Calculate an average of measured distances of the beacon passed as a parameter.
@@ -377,7 +385,7 @@
 		retrieveBeaconCoordinates(temp[2].instance);
 		_centroid.X = _centroid.X / 3;
 		_centroid.Y = _centroid.Y / 3;
-		console.log("_hola(X,Y) = " + _centroid.X + ", " + _centroid.Y);
+		console.log("_centroide final coordinate(X,Y) = " + _centroid.X + ", " + _centroid.Y);
 
 		callback();
 	}
@@ -457,21 +465,21 @@
 			// Taking the centroid into account, we will trace/draw a circle with a radius value to determine.
 			// The estimated point should fall into the specified circle to be depicted on the map, otherwise it will not be displayed.
 			// The radius value is really linked to the image resolution used as a map:
-			if ((_real_X > _centroid.X + _centroidOffset) || (_real_X < _centroid.X - _centroidOffset) ||
-					(_real_Y > _centroid.Y + _centroidOffset) || (_real_Y < _centroid.Y - _centroidOffset)) {
-						console.log("Parece que se encuentra fuera del radio del centroide. (realX = "+_real_X+",realY = "+_real_Y+")");
-						_real_X = undefined;
-						_real_Y = undefined;
-						console.log("After setting to undefined (realX = "+_real_X+",realY = "+_real_Y+")");
-						callback();
-						return;
-					}
+			if (_centroid.X !== undefined && _centroid.Y !== undefined) {
+				if ((_real_X > _centroid.X + _centroidRadius) || (_real_X < _centroid.X - _centroidRadius) ||
+				(_real_Y > _centroid.Y + _centroidRadius) || (_real_Y < _centroid.Y - _centroidRadius)) {
+					console.log("Parece que se encuentra fuera del radio del centroide! (realX = "+_real_X+",realY = "+_real_Y+")");
+					_real_X = undefined;
+					_real_Y = undefined;
+					callback();
+					return;
+				}
+			}
 
-					console.log("HOLA! Probando si pasa por aqui.");
-					/*
 			var offset = 200; // Offset of 200px
 			switch(_currentfloor) {
 				case 0:
+				console.log("switch: caso 0");
 				var limit = 780 + offset;
 				if (780 <= _real_Y && _real_Y <= limit && 441 <= _real_X && _real_X <= 2204) {_real_Y = 780;break;}
 				var limit = 441 + offset;
@@ -480,6 +488,7 @@
 				if (_real_X <= 51) {_real_X = 51; break;}
 				break;
 				case 1:
+				console.log("switch: caso 1");
 				var limit = 480 + offset;
 				if (480 <= _real_Y && _real_Y <= limit && 1089 <= _real_X && _real_X <= 1563) {_real_Y = 480;break;}
 				var limit = 1089 + offset;
@@ -498,6 +507,7 @@
 				if (_real_Y >= 1488) {_real_Y = 1488; break;}
 				break;
 				case 2:
+				console.log("switch: caso 2");
 				var limit = 465 + offset;
 				if (465 <= _real_Y && _real_Y <= limit && 1083 <= _real_X && _real_X <= 1563) {_real_Y = 465;break;}
 				var limit = 1083 + offset;
@@ -516,6 +526,7 @@
 				if (_real_Y >= 1458) {_real_Y = 1458; break;}
 				break;
 				case 3:
+				console.log("switch: caso 3");
 				var limit = 468 + offset;
 				if (468 <= _real_Y && _real_Y <= limit && 1068 <= _real_X && _real_X <= 1545) {_real_Y = 468;break;}
 				var limit = 1068 + offset;
@@ -534,24 +545,26 @@
 				if (_real_Y >= 1473) {_real_Y = 1473; break;}
 				break;
 				case 4:
+				console.log("switch: caso 4");
 				var limit = 477 + offset;
-				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477; console.log("caso 0");break;}
+				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477; console.log("caso a");break;}
 				var limit = 1092 + offset;
-				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; console.log("caso 1");break;}
+				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; console.log("caso b");break;}
 				var limit = 1557 - offset;
-				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; console.log("caso 2");break;}
+				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; console.log("caso c");break;}
 				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; console.log("caso 3");break;}
+				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; console.log("caso d");break;}
 				var limit = 465 + offset;
-				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; console.log("caso 4");break;}
+				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; console.log("caso e");break;}
 				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; console.log("caso 5");break;}
+				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; console.log("caso f");break;}
 				var limit = 2202 - offset;
-				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; console.log("caso 6");break;}
-				if (_real_Y <= 162) {_real_Y = 162; console.log("caso 7");break;}
-				if (_real_Y >= 1485) {_real_Y = 1485; console.log("caso 8"); break;}
+				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; console.log("caso g");break;}
+				if (_real_Y <= 162) {_real_Y = 162; console.log("caso h");break;}
+				if (_real_Y >= 1485) {_real_Y = 1485; console.log("caso i"); break;}
 				break;
 				case 5:
+				console.log("switch: caso 5");
 				var limit = 465 + offset;
 				if (465 <= _real_Y && _real_Y <= limit && 1086 <= _real_X && _real_X <= 1554) {_real_Y = 465;break;}
 				var limit = 1086 + offset;
@@ -575,8 +588,8 @@
 				break;
 			}
 			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
-			*/
-					// SpliTech2017 statistic purpose code:
+
+					// SpliTech2017 statistic purpose code (metrics):
 						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
 						/*
 						console.log("(realX = "+_real_X+",realY = "+_real_Y+") || Euclidean distance to estimated points: " + (Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
@@ -622,6 +635,7 @@
 		// Setting (calculating) the radius of the YOU circle. We will iterate over all radii values and take the biggest one.
 		var radius = 30; // '30' is a number that I set it on my own judge, it's considered sort of a minimum value. It does not relate to any variable somewhere else.
 		for (l in _radii) {
+			if (_radii[l] > 400) {continue;} // We wouldn't like to exceed more than 400px, otherwise the circle would be extremely large!
 			radius = Math.max(radius, _radii[l]);
 		}
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
@@ -630,8 +644,6 @@
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
 			youPoint_circle.style.WebkitFilter="grayscale(100%) blur(30px)";
 			you_label.style.backgroundColor = "gray";
-			youPoint_circle.style.width = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
-			youPoint_circle.style.height = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
 			youPoint_circle.style.left = _lastKnownXcoordinate - (radius*5)/2 + _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
 			youPoint_circle.style.top = _lastKnownYcoordinate - (radius*5)/2+ _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
 			you_label.style.left=_lastKnownXcoordinate + (radius*4.8)/2 + _paddingMap +"px";
@@ -712,6 +724,7 @@
 		evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
 		clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
 		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
+		clearInterval(_frequencyHistogramTimerID); // This stops the process of clearing out the frequency histogram array for beacon readings
 	}
 
 	// Checks if the BLE is enabled, if YES, then we try to locate again the user on the map.
