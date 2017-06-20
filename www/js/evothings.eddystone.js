@@ -575,6 +575,7 @@
 				break;
 			}
 			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+			*/
 					// SpliTech2017 statistic purpose code:
 						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
 						/*
@@ -607,7 +608,7 @@
 						} else {
 							euclideanD.push((Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
 						}*/
-		}*/
+		}
 		callback();
 	}
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
