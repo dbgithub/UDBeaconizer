@@ -255,7 +255,7 @@
 		// Timers for different purposes:
 		_trilaterationTimerID = setInterval(applyTrilateration, 500);
 		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
-		_frequencyHistogramTimerID = setInterval(clearOutFrequencyHistogram, 10000);
+		_frequencyHistogramTimerID = setInterval(clearOutFrequencyHistogram, 30000);
 	}
 
 	// Calculate an average of measured distances of the beacon passed as a parameter.
