@@ -635,15 +635,18 @@
 	// We want it to be motionless because based on the flag, the user is supposed to not to be in motion.
 	function computeAccelerometerAvg(callback) {
 		if (_deviceMotionless) {
+		  if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
+		  _real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) { 
 			_avgEstimateAccelerometer.counter++;
-			_avgEstimateAccelerometer.x = (_avgEstimateAccelerometer.x + _real_X) / _avgEstimateAccelerometer.counter;
-			_avgEstimateAccelerometer.y = (_avgEstimateAccelerometer.y + _real_Y) / _avgEstimateAccelerometer.counter;
-			console.log("avgEstimateAccelerometer.counter = " + avgEstimateAccelerometer.counter);
+			_avgEstimateAccelerometer.x = (_avgEstimateAccelerometer.x + _real_X);
+			_avgEstimateAccelerometer.y = (_avgEstimateAccelerometer.y + _real_Y);
+			console.log("_avgEstimateAccelerometer.counter = " + _avgEstimateAccelerometer.counter);
 			console.log("_avgEstimateAccelerometer.x = " + _avgEstimateAccelerometer.x);
 			console.log("_avgEstimateAccelerometer.y = " + _avgEstimateAccelerometer.y);
-			_real_X = _avgEstimateAccelerometer.x;
-			_real_Y = _avgEstimateAccelerometer.y;
+			_real_X = _avgEstimateAccelerometer.x / _avgEstimateAccelerometer.counter;
+			_real_Y = _avgEstimateAccelerometer.y / _avgEstimateAccelerometer.counter;
 			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+		 }
 		}
 		callback();
 	}
@@ -744,12 +747,12 @@
 			  'Acceleration (delta) Z: ' + Math.abs(_deltaAccel.z));
 
 		// Now, we check if the DELTA is small enough (in the THREE axises) to trigger the calculus of the average:
-		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {
-			_avgEstimateAccelerometer.x = 0; _avgEstimateAccelerometer.y = 0; _avgEstimateAccelerometer.counter = 0;
+		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {	
 			_deviceMotionless = true;
 			console.log("_deviceMotionless = " + _deviceMotionless);
 		} else {
 			_deviceMotionless = false;
+			_avgEstimateAccelerometer.x = 0; _avgEstimateAccelerometer.y = 0; _avgEstimateAccelerometer.counter = 0;
 			console.log("_deviceMotionless = " + _deviceMotionless);
 		}
 

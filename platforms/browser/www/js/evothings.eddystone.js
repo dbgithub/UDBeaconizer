@@ -4,17 +4,20 @@
 	// GLOBAL VARIABLES
 	var beacons = {}; // Dictionary of beacons.
 	var undefinedCounter = 0; // It counts how many "undefined" values we get at least from one of the beacons. This counter works as an estimate to determine whether the readings from the beacons are weak or even
-	// if there are not beacons readings at all. The latter case means that there are not beacons around or that
-	// there exist a lot of interferences.
+	// if there are not beacons readings at all. The latter case means that there are not beacons around or that there exist a lot of interferences.
+
+	// SpliTech 2017 performance and accuracy meassurement variables:
+	//var euclideanD = []; // Array for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
+	//var setpin = true; // Boolean for testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017)
 
 
 	function startScan() {
 		console.log('Scan in progress.');
 		beacons = {}; // Reset the dictionary containing all detected/scanned beacons
-		_beaconsDistances = {}; // Reset. The object containing a set of 5 measured distances of every beacon is reset.
-		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distance. This is used to avoid NaN values in trilateration.
+		_beaconsDistances = {}; // Reset. An object containing a set of 5 measured distances for every beacon.
+		_lastKnownBeaconsDistances = {}; // Reset. This object contains a set of three beacons with their respective last known correct and appropiate distances. This is used to avoid NaN values in trilateration.
 		_lastKnown5locations = [] // Reset. An object that contains a set of 5 last-known locations (of the user) in the form of {X,Y} coordinates.
-		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from one of the beacons.
+		undefinedCounter = 0; // Reseting value. It counts how many "undefined" values we get at least from a beacon.
 		evothings.eddystone.startScan(
 			function(beacon)
 			{
@@ -36,6 +39,8 @@
 		return 100 + rssi;
 	}
 
+	// Filters out the list of ALL beacons scanned and captured giving as an output a list already filtered with our beacons NAMESPACE.
+	// Thus, making sure the beacons in the output list are our own beacons.
 	function getSortedBeaconList()	{
 		var beaconList = [];
 		for (var key in beacons)
@@ -44,6 +49,8 @@
 			if (beacons[key] != null && beacons[key] !== undefined && uint8ArrayToString(beacons[key].nid) == "a7ae2eb7a749bac1ca64") { // Apparently, namespace ID has to be compared in lowercase values
 				console.log("Pool of beacons. Address: " + key);
 				beaconList.push(beacons[key]);
+				if (_frequencyHistogram[uint8ArrayToString(beacons[key].bid)] == undefined) {_frequencyHistogram[uint8ArrayToString(beacons[key].bid)] = {instance:uint8ArrayToString(beacons[key].bid), n: 0};} else {_frequencyHistogram[uint8ArrayToString(beacons[key].bid)].n += 1;}
+				console.log("frequencyHistogram["+uint8ArrayToString(beacons[key].bid)+"].n = " + _frequencyHistogram[uint8ArrayToString(beacons[key].bid)].n);
 			}
 		}
 		if (beaconList.length == 0) {
@@ -74,17 +81,13 @@
 			}
 		} else {
 			undefinedCounter = 0; // The counter is reset in case the contact with the beacons is again lost.
+			// Next step is sorting our own beacons based on RSSI strength
 			beaconList.sort(function(beacon1, beacon2)
 			{
 				return mapBeaconRSSI(beacon1.rssi) < mapBeaconRSSI(beacon2.rssi);
 			});
 			return beaconList;
 		}
-	}
-
-	function updateBeaconList()	{
-		applyTrilateration();
-		// displayBeacons();
 	}
 
 	// Removes beacons older than 10 seconds (readings not received) from the beacons' dictionary
@@ -100,6 +103,11 @@
 				delete beacons[key];
 			}
 		}
+	}
+
+	// Cleans/Clears out the readings stored in this array.
+	function clearOutFrequencyHistogram() {
+		_frequencyHistogram = [];
 	}
 
 	function displayBeacons()	{
@@ -207,13 +215,14 @@
 	// Returns the distance in meters between the beacon and the user (smartphone)
 	function htmlBeaconDistance(beacon)	{
 		if (beacon.rssi >= 0) {return -1;}
-		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' means the rssi value measured at distance 1m. Should we consider the information provided by easiBeacon, the one with -59dBm and -69 dBm depending on the beacon??
+		//console.log("beacon.rssi (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.rssi*1.0);
+		//console.log("beacon.txPower (" + uint8ArrayToString(beacon.bid) + ") = " + beacon.txPower);
+		var ratio = (beacon.rssi*1.0)/(beacon.txPower-41); // 'beacon.txPower-41' represents the transmission power loss within 1 m.
 		_allowYOUlabel = true; // Now we allow the red label YOU that indicates the source point in the map (the user's position). We allow it to be shown now because at this point we know that there exist a communication with the beacons.
 
 		// The distance estimate is calculated as follows:
 		if (ratio < 1.0) {
 			return Math.pow(ratio, 10).toFixed(2);
-
 		} else {
 			var accuracy = ((0.89976)*Math.pow(ratio,7.7095)) + 0.111;
 			accuracy = parseFloat(accuracy.toFixed(2));
@@ -225,10 +234,7 @@
 				_radii[beacon.address] = _lastKnownBeaconsDistances[beacon.address];
 				return _lastKnownBeaconsDistances[beacon.address];
 			} else {
-				var val = calculateAverageDistance(beacon.address);
-				_lastKnownBeaconsDistances[beacon.address] = val;
-				_radii[beacon.address] = val;
-				return val;
+				return calculateAverageDistance(beacon.address);
 			}
 		}
 	}
@@ -242,21 +248,23 @@
 		// Evothings.eddystone.js: 'timer' is the ID that identifies the timer created by "setInterval".
 		_trilaterationTimerID = null;
 		_beaconRemoverTimerID = null;
-		// Evothings.eddystone.js: Start tracking beacons!
-		setTimeout(startScan, 500);
-		// Evothings.eddystone.js: Timer that refreshes the display.
-		_trilaterationTimerID = setInterval(updateBeaconList, 500);
+		_frequencyHistogramTimerID = null;
+		setTimeout(startScan, 500); // Start tracking beacons!
+		// Timers for different purposes:
+		_trilaterationTimerID = setInterval(applyTrilateration, 500);
 		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
+		_frequencyHistogramTimerID = setInterval(clearOutFrequencyHistogram, 30000);
+		_watchIDaccelerometer = navigator.accelerometer.watchAcceleration(onSuccessAccelerometer,function () {console.log("ERROR reading values from accelerometer");},{frequency:3000});
 	}
 
-	// Calculate an average of measured distances of beacons.
+	// Calculate an average of measured distances of the beacon passed as a parameter.
 	// It discards outliers (values too high or too low)
 	function calculateAverageDistance(mac) {
 		// Firstly, we remove the outliers (or the values that are the biggest/smallest ones even if they are slightly bigger/smaller):
 		_beaconsDistances[mac].sort(function(a, b){return b-a}); // The array is sorted by size: from BIG to SMALL
 		//  console.log(_beaconsDistances[mac][0] + " | " + _beaconsDistances[mac][1] + " | " + _beaconsDistances[mac][2] + " | " + _beaconsDistances[mac][3] + " | " + _beaconsDistances[mac][4] + " | " + _beaconsDistances[mac][5] + " | " + _beaconsDistances[mac][6] );
-		_beaconsDistances[mac].shift(); // The first (smallest) value is removed from the array
-		_beaconsDistances[mac].pop(); // The last (biggest) value is removed from the array
+		_beaconsDistances[mac].shift(); // The first (biggest) value is removed from the array
+		_beaconsDistances[mac].pop(); // The last (smallest) value is removed from the array
 		// Now we compute an average among the values that remain in the array:
 		var average = 0;
 		var n = _beaconsDistances[mac].length;
@@ -264,7 +272,10 @@
 			average += _beaconsDistances[mac][k];
 		} // END for
 		// console.log("Average:" + (average/n).toFixed(2));
-		return parseFloat((average/n).toFixed(2));
+		var resul = parseFloat((average/n).toFixed(2));
+		_lastKnownBeaconsDistances[mac] = resul;
+		_radii[mac] = resul;
+		return resul;
 	}
 
 	// It returns the floor the beacon is at, physically speaking.
@@ -276,7 +287,7 @@
 	// For instance, if the user gets the following values representing the floor from the beacons: 2 + 2 + 1, it means that two of them are in the 2nd floor whereas there is another one in the 1st floor. The average estimates that the user is at 2nd floor.
 	function estimateFloor() {
 		// At this point, after the call to the following function, all the beacons from the list will be our own beacons. Not any other BLE device.
-		_sortedList = getSortedBeaconList();
+		_sortedList = getSortedBeaconList(); // a list of beacons sorted by signal strength and NAMESPACE number.
 		if (_sortedList == null) {return null;} // There has to be a way to stop the process of trilateration calculation when there are NOT readings from beacons. When the later happens, '_sortedList' will be null, hece, we return null and we will stop the process in the calling method.
 		// We iterate over all the beacons in the list and we will estimate the floor the user is at based on the AVERAGE of the same amount of beacons which are in the same floor
 		var sum = 0;
@@ -285,6 +296,7 @@
 			var beacon = _sortedList[i];
 			var instance = uint8ArrayToString(beacon.bid); // The instance is 6 bytes long represented as Hexadecimal. An Hexadecimal represents 4bits, hence the instance is 12 characters long (48bits divided by 4bits)
 			var floor = getFloor(instance);
+			//TODO: if (i == 0 || i == 1 || i == 2) {floor = 2;}
 			sum += floor; // We will sum all the floor numbers captured from all beacons, we will calculate an average of it and we eventually conclude the floor the user is at
 		}
 		return Math.round((sum/_sortedList.length).toFixed(4)); // current floor
@@ -361,6 +373,26 @@
 		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
 
+
+		callback();
+	}
+
+	// To make a better precision estimate, it is necessary to calculate the centroid among the three beacons from which we receive most readings.
+	function calculateCentroid(callback) {
+		// Apart from calculating trilateration between the three nearest beacons. We need to compute the centroid (centroide) of the three beacons from which we have more readings.
+		// Not necessary the ones who are nearest. That is, we are not using the same beacons as in this function.
+		var temp = [];
+		for (index in _frequencyHistogram) {temp.push(_frequencyHistogram[index]);} // Moving all elements from a dictionary of Objects to an array of Objects.
+		temp.sort(function(a, b){return b.n-a.n}); // The array is sorted by size: from BIG to SMALL (the sort function is accessing one of the members of the object: 'n')
+		temp = temp.slice(0,3);
+		_centroid.Xtmp = 0; _centroid.Ytmp = 0; // temporal variables (reseting values)
+		retrieveBeaconCoordinates(temp[0].instance);
+		retrieveBeaconCoordinates(temp[1].instance);
+		retrieveBeaconCoordinates(temp[2].instance);
+		_centroid.X = _centroid.X / 3;
+		_centroid.Y = _centroid.Y / 3;
+		console.log("_centroide final coordinate(X,Y) = " + _centroid.X + ", " + _centroid.Y);
+
 		callback();
 	}
 
@@ -368,16 +400,15 @@
 	// Instead of drawing directly the position of the user, we will take the last known 5 hypothetical locations of the user and we will narrow down (estimate)
 	// a better and more accurate position. The idea behind this algorithm is to calculate the middle-point within the straight line that goes from one location
 	// to the other. Now, we enumerate the new calculated points as if they were the original ones, and we repeat the process as much as we want.
-	// As a final step, we calculate an average point based on the minimum X and maximum X coordinates of the extreme positions on the map. The same happens with Y.
-	// The result will be a X and Y coordinates of a better accurate location.
+	// As a final step, we calculate an average point based on the minimum X and maximum X coordinates of the extreme positions on the map. We do the same with Y.
+	// The result will be a (X, Y) coordinates of a better accurate location.
 	function funcion_de_precision(callback) {
 		var temp = _lastKnown5locations.slice();
 		if (_lastKnown5locations.length == 5) {
-			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, TWO times will be executed.
-			// As you increase the frecuency, you get much close coordinates.
+			// This first loop refers to the NUMBER of times that you want to apply the accuracy function. In this case, FIVE times will be executed.
+			// As you increase the frecuency, you get much closer points.
 			for (k = 0; k < 5; k++) {
 				for (i=0; i<_lastKnown5locations.length; i++) {
-					// console.log("i = " + i);
 					// We calculate now the middle-point that relies on the straight line between one point to the consecutive one:
 					var x1 = _lastKnown5locations[i].X;
 					var y1 = _lastKnown5locations[i].Y;
@@ -395,7 +426,7 @@
 				}
 			}
 
-			// Now, we have to come up with a single coordinate (x,y) which turns out to be the user's location that we have estimated (improved):
+			// Now, we have to come up with a single coordinate (x,y) which turns out to be the user's location that we have improved:
 			// In fact, we want again to compute the middle-point that relies between the coordinates of the extreme locations. That is, the ones that are on the extremes.
 			// We will do that for variable X and Y. To do so, we have to iterate over the locations that we have narrowed down to retrieve the extremes.
 			var Xcollection = [];
@@ -424,7 +455,6 @@
 				_lastKnown5locations.push({X:_final_X, Y:_final_Y})
 			}
 		}
-		console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		callback();
 	}
 
@@ -437,9 +467,25 @@
 	function funcion_de_coreccion(callback) {
 		if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
 		_real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
+
+			// Taking the centroid into account, we will trace/draw a circle with a radius value to determine.
+			// The estimated point should fall into the specified circle to be depicted on the map, otherwise it will not be displayed.
+			// The radius value is really linked to the image resolution used as a map:
+			if (_centroid.X !== undefined && _centroid.Y !== undefined) {
+				if ((_real_X > _centroid.X + _centroidRadius) || (_real_X < _centroid.X - _centroidRadius) ||
+				(_real_Y > _centroid.Y + _centroidRadius) || (_real_Y < _centroid.Y - _centroidRadius)) {
+					console.log("Parece que se encuentra fuera del radio del centroide! (realX = "+_real_X+",realY = "+_real_Y+")");
+					_real_X = undefined;
+					_real_Y = undefined;
+					callback();
+					return;
+				}
+			}
+
 			var offset = 200; // Offset of 200px
 			switch(_currentfloor) {
 				case 0:
+				console.log("switch: caso 0");
 				var limit = 780 + offset;
 				if (780 <= _real_Y && _real_Y <= limit && 441 <= _real_X && _real_X <= 2204) {_real_Y = 780;break;}
 				var limit = 441 + offset;
@@ -448,6 +494,7 @@
 				if (_real_X <= 51) {_real_X = 51; break;}
 				break;
 				case 1:
+				console.log("switch: caso 1");
 				var limit = 480 + offset;
 				if (480 <= _real_Y && _real_Y <= limit && 1089 <= _real_X && _real_X <= 1563) {_real_Y = 480;break;}
 				var limit = 1089 + offset;
@@ -466,6 +513,7 @@
 				if (_real_Y >= 1488) {_real_Y = 1488; break;}
 				break;
 				case 2:
+				console.log("switch: caso 2");
 				var limit = 465 + offset;
 				if (465 <= _real_Y && _real_Y <= limit && 1083 <= _real_X && _real_X <= 1563) {_real_Y = 465;break;}
 				var limit = 1083 + offset;
@@ -484,6 +532,7 @@
 				if (_real_Y >= 1458) {_real_Y = 1458; break;}
 				break;
 				case 3:
+				console.log("switch: caso 3");
 				var limit = 468 + offset;
 				if (468 <= _real_Y && _real_Y <= limit && 1068 <= _real_X && _real_X <= 1545) {_real_Y = 468;break;}
 				var limit = 1068 + offset;
@@ -502,24 +551,26 @@
 				if (_real_Y >= 1473) {_real_Y = 1473; break;}
 				break;
 				case 4:
+				console.log("switch: caso 4");
 				var limit = 477 + offset;
-				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477;break;}
+				if (477 <= _real_Y && _real_Y <= limit && 1092 <= _real_X && _real_X <= 1557) {_real_Y = 477; console.log("caso a");break;}
 				var limit = 1092 + offset;
-				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; break;}
+				if (1092 <= _real_X && _real_X <= limit && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1092; console.log("caso b");break;}
 				var limit = 1557 - offset;
-				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; break;}
+				if (limit <= _real_X && _real_X<= 1557 && 477 <= _real_Y && _real_Y<= 762) {_real_X = 1557; console.log("caso c");break;}
 				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; break;}
+				if (762 <= _real_Y && _real_Y <= limit && 465 <= _real_X && _real_X <= 1092) {_real_Y = 762; console.log("caso d");break;}
 				var limit = 465 + offset;
-				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; break;}
+				if (465 <= _real_X && _real_X <= limit && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 465; console.log("caso e");break;}
 				var limit = 762 + offset;
-				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; break;}
+				if (762 <= _real_Y && _real_Y <= limit && 1557 <= _real_X && _real_X<= 2202) {_real_Y = 762; console.log("caso f");break;}
 				var limit = 2202 - offset;
-				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; break;}
-				if (_real_Y <= 162) {_real_Y = 162; break;}
-				if (_real_Y >= 1485) {_real_Y = 1485; break;}
+				if (limit <= _real_Y && _real_Y<= 2202 && 762 <= _real_Y && _real_Y<= 1485) {_real_X = 2202; console.log("caso g");break;}
+				if (_real_Y <= 162) {_real_Y = 162; console.log("caso h");break;}
+				if (_real_Y >= 1485) {_real_Y = 1485; console.log("caso i"); break;}
 				break;
 				case 5:
+				console.log("switch: caso 5");
 				var limit = 465 + offset;
 				if (465 <= _real_Y && _real_Y <= limit && 1086 <= _real_X && _real_X <= 1554) {_real_Y = 465;break;}
 				var limit = 1086 + offset;
@@ -542,6 +593,57 @@
 				default:
 				break;
 			}
+			//console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+
+					// SpliTech2017 statistic purpose code (metrics):
+						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
+						/*
+						console.log("(realX = "+_real_X+",realY = "+_real_Y+") || Euclidean distance to estimated points: " + (Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
+						if (euclideanD.length >= 80 && setpin) {
+							setpin = false;
+							console.log("Euclidean 80!");
+							// Calculate now the average:
+							var sum = euclideanD.reduce(function(sum, value){
+								return sum + value;
+							}, 0);
+							var avg = sum / euclideanD.length;
+							console.log("AVG = " + avg);
+							//////////////////////////////////////////////
+							// Calculate now the differences between the values and their square values:
+							var diffs = euclideanD.map(function(value){
+								var diff = value - avg;
+								var sqr = diff * diff;
+								return sqr;
+							});
+							// Now calculate the averagge again of those values:
+							var sum2 = diffs.reduce(function(sum2, value){
+								return sum2 + value;
+							}, 0);
+
+							var avg2 = sum2 / diffs.length;
+							// Now we calculate the square root of the average:
+							var SD = Math.sqrt(avg2);
+							console.log("Standard Deviation = " + SD);
+						} else {
+							euclideanD.push((Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
+						}*/
+		}
+		callback();
+	}
+
+	// Based on a flag (true or false), it computes an average of the estimated positions to make the estimate as still as possible.
+	// We want it to be motionless because based on the flag, the user is supposed to not to be in motion.
+	function computeAccelerometerAvg(callback) {
+		if (_deviceMotionless) {
+			_avgEstimateAccelerometer.counter++;
+			_avgEstimateAccelerometer.x = (_avgEstimateAccelerometer.x + _real_X) / _avgEstimateAccelerometer.counter;
+			_avgEstimateAccelerometer.y = (_avgEstimateAccelerometer.y + _real_Y) / _avgEstimateAccelerometer.counter;
+			console.log("avgEstimateAccelerometer.counter = " + avgEstimateAccelerometer.counter);
+			console.log("_avgEstimateAccelerometer.x = " + _avgEstimateAccelerometer.x);
+			console.log("_avgEstimateAccelerometer.y = " + _avgEstimateAccelerometer.y);
+			_real_X = _avgEstimateAccelerometer.x;
+			_real_Y = _avgEstimateAccelerometer.y;
+			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		}
 		callback();
 	}
@@ -553,9 +655,10 @@
 		var you_label = document.getElementById("p_you_label");
 		var circulito = document.getElementById("youPoint_SVG_circle"); // This is the SVG circle inside SVG tag
 		var circulito2 = document.getElementById("youPoint_SVG_circle2"); // This is the SVG little circle inside SVG tag
-		// Setting (calculating) the radius of YOU circle:
+		// Setting (calculating) the radius of the YOU circle. We will iterate over all radii values and take the biggest one.
 		var radius = 30; // '30' is a number that I set it on my own judge, it's considered sort of a minimum value. It does not relate to any variable somewhere else.
 		for (l in _radii) {
+			if (_radii[l] > 400) {continue;} // We wouldn't like to exceed more than 400px, otherwise the circle would be extremely large!
 			radius = Math.max(radius, _radii[l]);
 		}
 		// If the values computed are not good enough values or strange values, we show the last known accurate position of that point, but
@@ -564,8 +667,6 @@
 		_real_Y === Infinity || _real_Y === -Infinity || isNaN(_real_Y) || _real_Y === undefined) {
 			youPoint_circle.style.WebkitFilter="grayscale(100%) blur(30px)";
 			you_label.style.backgroundColor = "gray";
-			youPoint_circle.style.width = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
-			youPoint_circle.style.height = (radius*6) + "px"; // '6' is a number that I set it on my own judge.It does not relate to any variable somewhere else.
 			youPoint_circle.style.left = _lastKnownXcoordinate - (radius*5)/2 + _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
 			youPoint_circle.style.top = _lastKnownYcoordinate - (radius*5)/2+ _paddingMap +"px"; // '(radius*5)/2' is the radius of the circle's image. It is necessary to make the circle centered.
 			you_label.style.left=_lastKnownXcoordinate + (radius*4.8)/2 + _paddingMap +"px";
@@ -594,18 +695,71 @@
 		// We calculate the distance from device's position to destination point. The calculated distance (Euclidean distance) is shown in meters.
 		var p_dist = document.getElementById("p_distanceTillDest");
 		var distance = (Math.sqrt(Math.pow((_real_X-_destX),2)+Math.pow((_real_Y-_destY),2))/26).toFixed();
-		if (isNaN(distance)) {
-			p_dist.innerHTML = "?" + " m"
+		if (isNaN(distance) || distance == Infinity || distance == -Infinity) {
+			p_dist.innerHTML = "?" + " m";
 		} else {
 			p_dist.innerHTML = distance + " m";
 		}
 	}
 
+	// onSuccess callback for the watch accelerometer function
+	function onSuccessAccelerometer(acceleration) {
+		// The following consecutive IF statements calculate the DELTA on acceleretion values from accelerometer:
+		if (acceleration.x < 0) {
+			if (_previousAccel.x < 0) {
+				_deltaAccel.x = acceleration.x - _previousAccel.x;
+				_previousAccel.x = acceleration.x;
+			} else {_deltaAccel.x = acceleration.x + _previousAccel.x; _previousAccel.x = acceleration.x;}
+		} else {
+			if (_previousAccel.x < 0) {
+				_deltaAccel.x = acceleration.x + _previousAccel.x;
+				_previousAccel.x = acceleration.x;
+			} else {_deltaAccel.x = acceleration.x - _previousAccel.x; _previousAccel.x = acceleration.x;}
+		}
+		if (acceleration.y < 0) {
+			if (_previousAccel.y < 0) {
+				_deltaAccel.y = acceleration.y - _previousAccel.y;
+				_previousAccel.y = acceleration.y;
+			} else {_deltaAccel.y = acceleration.y + _previousAccel.y; _previousAccel.y = acceleration.y;}
+		} else {
+			if (_previousAccel.y < 0) {
+				_deltaAccel.y = acceleration.y + _previousAccel.y;
+				_previousAccel.y = acceleration.y;
+			} else {_deltaAccel.y = acceleration.y - _previousAccel.y; _previousAccel.y = acceleration.y;}
+		}
+		if (acceleration.z < 0) {
+			if (_previousAccel.z < 0) {
+				_deltaAccel.z = acceleration.z - _previousAccel.z;
+				_previousAccel.z = acceleration.z;
+			} else {_deltaAccel.z = acceleration.z + _previousAccel.z; _previousAccel.z = acceleration.z;}
+		} else {
+			if (_previousAccel.z < 0) {
+				_deltaAccel.z = acceleration.z + _previousAccel.z;
+				_previousAccel.z = acceleration.z;
+			} else {_deltaAccel.z = acceleration.z - _previousAccel.z; _previousAccel.z = acceleration.z;}
+		}
+
+		console.log('Acceleration (delta) X: ' + Math.abs(_deltaAccel.x) + '\n' +
+			  'Acceleration (delta) Y: ' + Math.abs(_deltaAccel.y) + '\n' +
+			  'Acceleration (delta) Z: ' + Math.abs(_deltaAccel.z));
+
+		// Now, we check if the DELTA is small enough (in the THREE axises) to trigger the calculus of the average:
+		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {
+			_avgEstimateAccelerometer.x = 0; _avgEstimateAccelerometer.y = 0; _avgEstimateAccelerometer.counter = 0;
+			_deviceMotionless = true;
+			console.log("_deviceMotionless = " + _deviceMotionless);
+		} else {
+			_deviceMotionless = false;
+			console.log("_deviceMotionless = " + _deviceMotionless);
+		}
+
+
+	}
 	// When the user is in another floor different to the room's floor, then we have to load two maps to let the user switch between them.
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
 			_stop = true;
-			// Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
+			// TODO: Now we will write the appropiate label to let the user know whether he/she has to go upstairs or downstairs:
 			// var p_upstairs_downstairs = document.getElementById("p_upstairs_downstairs");
 			// if (_currentfloor < _floor) {p_upstairs_downstairs.innerHTML="Go upstairs!";} else {p_upstairs_downstairs.innerHTML="Go downstairs!";}
 			retrieveMap(_currentfloor.toString(), function() {}); // If I take this call out of setTimeout function, JavaScripts yields errors.
@@ -626,17 +780,24 @@
 			retrieveNearestThreeBeacons(function() {
 				// The following step is to compute/calculate the trilateration mathematical formula for real:
 				computeTrilateration(function() {
-					// We apply an accuracy function to estimate a better position based on already last-known 5 locations of the user:
-					funcion_de_precision(function() {
-						// We apply a corrective function that delimits the position of the final point indicating user's position:
-						funcion_de_coreccion(function() {
-							// Now, yes, as the final step, we update the elements over the GUI:
-							updateGUI();
+					// We find the centroid among the three beacons from which we receive more readings.
+					calculateCentroid(function () {
+						// We apply an accuracy function to estimate a better position based on already last-known 5 locations of the user:
+						funcion_de_precision(function() {
+							// We apply a corrective function that delimits the position of the final point indicating user's position:
+							funcion_de_coreccion(function() {
+								// If the required flag is set to TRUE, then we estimate that the device is motionless and we proceed to calculate an average of the position estimates to make to red dot as still as possible.
+								computeAccelerometerAvg(function() {
+									// Now, yes, as the final step, we update the elements over the GUI:
+									updateGUI();
+								})
+							})
 						})
 					})
 				})
 			})
 		})
+		// displayBeacons();
 	}
 
 	// Stops the scanning process of BLE devices
@@ -645,6 +806,7 @@
 		evothings.eddystone.stopScan(); // we stop the scan because is not needed anymore
 		clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
 		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
+		clearInterval(_frequencyHistogramTimerID); // This stops the process of clearing out the frequency histogram array for beacon readings
 	}
 
 	// Checks if the BLE is enabled, if YES, then we try to locate again the user on the map.

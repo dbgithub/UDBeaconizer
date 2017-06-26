@@ -43,6 +43,8 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     // GLOBAL VARIABLES used in "evothings.eddystone.js":
     var _trilaterationTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function
     var _beaconRemoverTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function to remove the old beacons from time to tijme
+    var _frequencyHistogramTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function to clear out the readings obtained and stored in an array.
+    var _watchIDaccelerometer; // This is the ID to watch the acceleremeter sensor during the trilateration process.
     var _blestatusTimerID; // This is the ID of the timer that checks periodically (every second) whether Bluetooth is enabled or not.
     var _beaconsDistances = {}; // This object contains a set of 5 measured distances of every beacon so as to calculate an average of the values.
     var _nearestbeacons = []; // An array containing the three NEAREST beacons from the total list of beacons.
@@ -66,7 +68,12 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _real_Y; // This represents the Y coordinate of the locatin of the person (device)
     var _radii = {}; // An object that holds the values of the distances to the nearest three beacons. Among those distances one will be choosen to be the radius of the YOU circle.
     var _frequencyHistogram = []; // An array holding the number of times that a certain beacon has been scanned for each and every beacon. The index is the instance number of the beacon and the value is an object with two fields: the instance number of the beacon ('instance') and the appearance frequenc ('n'). e.g. _frequencyHistogram["00040002"] = {instance:"00040002", n:32};
-    var _centroid = {}; // An object representing a coordinate (X,Y) of the centroid of the three beacons from which we have more readings.
+    var _centroid = {}; // An object representing a coordinate (X,Y), that is, the centroid of the three beacons from which we have more readings.
+    var _centroidRadius = 350; // This is the radius, not the width of the circle.
+    var _previousAccel = {}; // an object to store the X, Y and Z of the last accelerometer sensor meassurements
+    var _deltaAccel = {}; // an object to store the delta on X, Y and Z components between last and current accelerometer sensor meassurements
+    var _deviceMotionless = false; // a boolean that estimates whether the device is motionless or not, which means that we should start calculating an average to make the RED DOT as still as possible.
+    var _avgEstimateAccelerometer = {}; // an object holding an average of X and Y coordinates for the user's estimated position
 var _input; // A boolean representing whether an text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.

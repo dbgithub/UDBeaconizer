@@ -30,6 +30,9 @@
         },
         "cordova-plugin-x-toast": {
             "PACKAGE_NAME": "es.deusto.UDbeaconizer"
+        },
+        "cordova-plugin-device-motion": {
+            "PACKAGE_NAME": "es.deusto.UDbeaconizer"
         }
     },
     "dependent_plugins": {}
