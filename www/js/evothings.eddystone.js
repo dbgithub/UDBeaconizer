@@ -107,9 +107,7 @@
 
 	// Cleans/Clears out the readings stored in this array.
 	function clearOutFrequencyHistogram() {
-		console.log(".length before clearing out: "+_frequencyHistogram.length);
 		_frequencyHistogram = [];
-		console.log("Frequency histogram cleared out! (.length = "+_frequencyHistogram.length+")");
 	}
 
 	function displayBeacons()	{
@@ -256,6 +254,7 @@
 		_trilaterationTimerID = setInterval(applyTrilateration, 500);
 		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
 		_frequencyHistogramTimerID = setInterval(clearOutFrequencyHistogram, 30000);
+		_watchIDaccelerometer = navigator.accelerometer.watchAcceleration(onSuccessAccelerometer,function () {},{frequency:3000});
 	}
 
 	// Calculate an average of measured distances of the beacon passed as a parameter.
@@ -297,6 +296,7 @@
 			var beacon = _sortedList[i];
 			var instance = uint8ArrayToString(beacon.bid); // The instance is 6 bytes long represented as Hexadecimal. An Hexadecimal represents 4bits, hence the instance is 12 characters long (48bits divided by 4bits)
 			var floor = getFloor(instance);
+			//TODO: if (i == 0 || i == 1 || i == 2) {floor = 2;}
 			sum += floor; // We will sum all the floor numbers captured from all beacons, we will calculate an average of it and we eventually conclude the floor the user is at
 		}
 		return Math.round((sum/_sortedList.length).toFixed(4)); // current floor
@@ -373,6 +373,12 @@
 		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
 
+
+		callback();
+	}
+
+	// To make a better precision estimate, it is necessary to calculate the centroid among the three beacons from which we receive most readings.
+	function calculateCentroid(callback) {
 		// Apart from calculating trilateration between the three nearest beacons. We need to compute the centroid (centroide) of the three beacons from which we have more readings.
 		// Not necessary the ones who are nearest. That is, we are not using the same beacons as in this function.
 		var temp = [];
@@ -587,7 +593,7 @@
 				default:
 				break;
 			}
-			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+			//console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 
 					// SpliTech2017 statistic purpose code (metrics):
 						// Testing the offset between the real person position and the estimated point (paper purpose for SpliTech2017):
@@ -621,6 +627,23 @@
 						} else {
 							euclideanD.push((Math.sqrt(Math.pow(1842-_real_X,2) + Math.pow(320-_real_Y,2)))/25);
 						}*/
+		}
+		callback();
+	}
+
+	// Based on a flag (true or false), it computes an average of the estimated positions to make the estimate as still as possible.
+	// We want it to be motionless because based on the flag, the user is supposed to not to be in motion.
+	function computeAccelerometerAvg(callback) {
+		if (_deviceMotionless) {
+			_avgEstimateAccelerometer.counter++;
+			_avgEstimateAccelerometer.x = (_avgEstimateAccelerometer.x + _real_X) / _avgEstimateAccelerometer.counter;
+			_avgEstimateAccelerometer.y = (_avgEstimateAccelerometer.y + _real_Y) / _avgEstimateAccelerometer.counter;
+			console.log("avgEstimateAccelerometer.counter = " + avgEstimateAccelerometer.counter);
+			console.log("_avgEstimateAccelerometer.x = " + _avgEstimateAccelerometer.x);
+			console.log("_avgEstimateAccelerometer.y = " + _avgEstimateAccelerometer.y);
+			_real_X = _avgEstimateAccelerometer.x;
+			_real_Y = _avgEstimateAccelerometer.y;
+			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		}
 		callback();
 	}
@@ -672,13 +695,65 @@
 		// We calculate the distance from device's position to destination point. The calculated distance (Euclidean distance) is shown in meters.
 		var p_dist = document.getElementById("p_distanceTillDest");
 		var distance = (Math.sqrt(Math.pow((_real_X-_destX),2)+Math.pow((_real_Y-_destY),2))/26).toFixed();
-		if (isNaN(distance)) {
+		if (isNaN(distance) || distance == Infinity || distance == -Infinity) {
 			p_dist.innerHTML = "?" + " m";
 		} else {
 			p_dist.innerHTML = distance + " m";
 		}
 	}
 
+	// onSuccess callback for the watch accelerometer function
+	function onSuccessAccelerometer(acceleration) {
+		// The following consecutive IF statements calculate the DELTA on acceleretion values from accelerometer:
+		if (acceleration.x < 0) {
+			if (_previousAccel.x < 0) {
+				_deltaAccel.x = acceleration.x - _previousAccel.x;
+				_previousAccel.x = acceleration.x;
+			} else {_deltaAccel.x = acceleration.x + _previousAccel.x; _previousAccel.x = acceleration.x;}
+		} else {
+			if (_previousAccel.x < 0) {
+				_deltaAccel.x = acceleration.x + _previousAccel.x;
+				_previousAccel.x = acceleration.x;
+			} else {_deltaAccel.x = acceleration.x - _previousAccel.x; _previousAccel.x = acceleration.x;}
+		}
+		if (acceleration.y < 0) {
+			if (_previousAccel.y < 0) {
+				_deltaAccel.y = acceleration.y - _previousAccel.y;
+				_previousAccel.y = acceleration.y;
+			} else {_deltaAccel.y = acceleration.y + _previousAccel.y; _previousAccel.y = acceleration.y;}
+		} else {
+			if (_previousAccel.y < 0) {
+				_deltaAccel.y = acceleration.y + _previousAccel.y;
+				_previousAccel.y = acceleration.y;
+			} else {_deltaAccel.y = acceleration.y - _previousAccel.y; _previousAccel.y = acceleration.y;}
+		}
+		if (acceleration.z < 0) {
+			if (_previousAccel.z < 0) {
+				_deltaAccel.z = acceleration.z - _previousAccel.z;
+				_previousAccel.z = acceleration.z;
+			} else {_deltaAccel.z = acceleration.z + _previousAccel.z; _previousAccel.z = acceleration.z;}
+		} else {
+			if (_previousAccel.z < 0) {
+				_deltaAccel.z = acceleration.z + _previousAccel.z;
+				_previousAccel.z = acceleration.z;
+			} else {_deltaAccel.z = acceleration.z - _previousAccel.z; _previousAccel.z = acceleration.z;}
+		}
+
+		console.log('Acceleration (delta) X: ' + Math.abs(deltaAccel.x) + '\n' +
+			  'Acceleration (delta) Y: ' + Math.abs(deltaAccel.y) + '\n' +
+			  'Acceleration (delta) Z: ' + Math.abs(deltaAccel.z));
+
+		// Now, we check if the DELTA is small enough (in the THREE axises) to trigger the calculus of the average:
+		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {
+			_avgEstimateAccelerometer.x = 0; _avgEstimateAccelerometer.y = 0; _avgEstimateAccelerometer.counter = 0;
+			_deviceMotionless = true;
+			console.log("_deviceMotionless");
+		} else {
+			_deviceMotionless = false;
+		}
+
+
+	}
 	// When the user is in another floor different to the room's floor, then we have to load two maps to let the user switch between them.
 	function duplicateMaps(_currentfloor){
 		setTimeout(function() {
@@ -704,12 +779,18 @@
 			retrieveNearestThreeBeacons(function() {
 				// The following step is to compute/calculate the trilateration mathematical formula for real:
 				computeTrilateration(function() {
-					// We apply an accuracy function to estimate a better position based on already last-known 5 locations of the user:
-					funcion_de_precision(function() {
-						// We apply a corrective function that delimits the position of the final point indicating user's position:
-						funcion_de_coreccion(function() {
-							// Now, yes, as the final step, we update the elements over the GUI:
-							updateGUI();
+					// We find the centroid among the three beacons from which we receive more readings.
+					calculateCentroid(function () {
+						// We apply an accuracy function to estimate a better position based on already last-known 5 locations of the user:
+						funcion_de_precision(function() {
+							// We apply a corrective function that delimits the position of the final point indicating user's position:
+							funcion_de_coreccion(function() {
+								// If the required flag is set to TRUE, then we estimate that the device is motionless and we proceed to calculate an average of the position estimates to make to red dot as still as possible.
+								computeAccelerometerAvg(function() {
+									// Now, yes, as the final step, we update the elements over the GUI:
+									updateGUI();
+								})
+							})
 						})
 					})
 				})
