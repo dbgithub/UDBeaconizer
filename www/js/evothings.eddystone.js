@@ -254,7 +254,7 @@
 		_trilaterationTimerID = setInterval(applyTrilateration, 500);
 		_beaconRemoverTimerID = setInterval(removeOldBeacons, 5000);
 		_frequencyHistogramTimerID = setInterval(clearOutFrequencyHistogram, 30000);
-		_watchIDaccelerometer = navigator.accelerometer.watchAcceleration(onSuccessAccelerometer,function () {},{frequency:3000});
+		_watchIDaccelerometer = navigator.accelerometer.watchAcceleration(onSuccessAccelerometer,function () {console.log("ERROR reading values from accelerometer");},{frequency:3000});
 	}
 
 	// Calculate an average of measured distances of the beacon passed as a parameter.
@@ -739,17 +739,18 @@
 			} else {_deltaAccel.z = acceleration.z - _previousAccel.z; _previousAccel.z = acceleration.z;}
 		}
 
-		console.log('Acceleration (delta) X: ' + Math.abs(deltaAccel.x) + '\n' +
-			  'Acceleration (delta) Y: ' + Math.abs(deltaAccel.y) + '\n' +
-			  'Acceleration (delta) Z: ' + Math.abs(deltaAccel.z));
+		console.log('Acceleration (delta) X: ' + Math.abs(_deltaAccel.x) + '\n' +
+			  'Acceleration (delta) Y: ' + Math.abs(_deltaAccel.y) + '\n' +
+			  'Acceleration (delta) Z: ' + Math.abs(_deltaAccel.z));
 
 		// Now, we check if the DELTA is small enough (in the THREE axises) to trigger the calculus of the average:
 		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {
 			_avgEstimateAccelerometer.x = 0; _avgEstimateAccelerometer.y = 0; _avgEstimateAccelerometer.counter = 0;
 			_deviceMotionless = true;
-			console.log("_deviceMotionless");
+			console.log("_deviceMotionless = " + _deviceMotionless);
 		} else {
 			_deviceMotionless = false;
+			console.log("_deviceMotionless = " + _deviceMotionless);
 		}
 
 
