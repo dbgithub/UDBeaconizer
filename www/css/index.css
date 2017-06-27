@@ -66,7 +66,8 @@
     margin-left: -45%;
     position: absolute; /* This is absolute in order to make the impression that floats over the rest of the elements */
     margin-top: -6px;
-    max-height: 180px;
+    /*max-height: 180px;*/
+    max-height: 30vh;
     overflow: scroll;
     z-index: 2;
     visibility: hidden;
@@ -407,11 +408,11 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
         margin-right: auto;
     }
 }
-@media screen and (max-height: 1080px) {
+/*@media screen and (max-height: 1080px) {
     #spa_index #div_liveSearchResults {
       max-height: 120px;
     }
-}
+}*/
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
 /* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% */
