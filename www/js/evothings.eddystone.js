@@ -653,6 +653,11 @@
 								Number.isSafeInteger(_avgEstimateAccelerometer.x) && Number.isSafeInteger(_avgEstimateAccelerometer.y)) {
 						_avgEstimateAccelerometer.counter = -1;
 						console.log("DEVICE STILL! (max safe integer reached OR estimate practically motionless) COUNTER = " + _avgEstimateAccelerometer.counter);
+					} else {
+						console.log("\n_real_X - _new_real_X = " + _real_X - _new_real_X + "\n" + "_real_Y - _new_real_Y = " + _real_Y - _new_real_Y +
+												"Number.isSafeInteger(_avgEstimateAccelerometer.x): " + Number.isSafeInteger(_avgEstimateAccelerometer.x) +
+												"Number.isSafeInteger(_avgEstimateAccelerometer.y): " + Number.isSafeInteger(_avgEstimateAccelerometer.y) +
+												"Number.isSafeInteger(_avgEstimateAccelerometer.counter): " + Number.isSafeInteger(_avgEstimateAccelerometer.counter));
 					}
 				}
 				_real_X = _new_real_X;
