@@ -653,11 +653,6 @@
 								Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.x)) && Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.y))) {
 						_avgEstimateAccelerometer.counter = -1;
 						console.log("DEVICE STILL! (max safe integer reached OR estimate practically motionless) COUNTER = " + _avgEstimateAccelerometer.counter);
-					} else {
-						console.log("_real_X - _new_real_X = " + _real_X - _new_real_X + "\n" + "_real_Y - _new_real_Y = " + _real_Y - _new_real_Y + "\n"+
-												"Number.isSafeInteger(_avgEstimateAccelerometer.x): " + Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.x)) + "\n"+
-												"Number.isSafeInteger(_avgEstimateAccelerometer.y): " + Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.y)) + "\n"+
-												"Number.isSafeInteger(_avgEstimateAccelerometer.counter): " + Number.isSafeInteger(_avgEstimateAccelerometer.counter));
 					}
 				}
 				_real_X = _new_real_X;
@@ -828,7 +823,7 @@
 		clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
 		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
 		clearInterval(_frequencyHistogramTimerID); // This stops the process of clearing out the frequency histogram array for beacon readings
-		clearInterval(_watchIDaccelerometer); // This stops from watching accelerometer values.
+		navigator.accelerometer.clearWatch(_watchIDaccelerometer); // This stops from watching accelerometer values.
 	}
 
 	// Checks if the BLE is enabled, if YES, then we try to locate again the user on the map.
