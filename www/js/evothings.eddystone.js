@@ -650,13 +650,13 @@
 					_new_real_X = _avgEstimateAccelerometer.x / _avgEstimateAccelerometer.counter;
 					_new_real_Y = _avgEstimateAccelerometer.y / _avgEstimateAccelerometer.counter;
 					if ((_real_X - _new_real_X >= -10) && (_real_X - _new_real_X <= 10) && (_real_Y - _new_real_Y >= -10) && (_real_Y - _new_real_Y <= 10) && Number.isSafeInteger(_avgEstimateAccelerometer.counter) &&
-								Number.isSafeInteger(_avgEstimateAccelerometer.x) && Number.isSafeInteger(_avgEstimateAccelerometer.y)) {
+								Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.x)) && Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.y))) {
 						_avgEstimateAccelerometer.counter = -1;
 						console.log("DEVICE STILL! (max safe integer reached OR estimate practically motionless) COUNTER = " + _avgEstimateAccelerometer.counter);
 					} else {
-						console.log("\n_real_X - _new_real_X = " + _real_X - _new_real_X + "\n" + "_real_Y - _new_real_Y = " + _real_Y - _new_real_Y +
-												"Number.isSafeInteger(_avgEstimateAccelerometer.x): " + Number.isSafeInteger(_avgEstimateAccelerometer.x) +
-												"Number.isSafeInteger(_avgEstimateAccelerometer.y): " + Number.isSafeInteger(_avgEstimateAccelerometer.y) +
+						console.log("_real_X - _new_real_X = " + _real_X - _new_real_X + "\n" + "_real_Y - _new_real_Y = " + _real_Y - _new_real_Y + "\n"+
+												"Number.isSafeInteger(_avgEstimateAccelerometer.x): " + Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.x)) + "\n"+
+												"Number.isSafeInteger(_avgEstimateAccelerometer.y): " + Number.isSafeInteger(Math.ceil(_avgEstimateAccelerometer.y)) + "\n"+
 												"Number.isSafeInteger(_avgEstimateAccelerometer.counter): " + Number.isSafeInteger(_avgEstimateAccelerometer.counter));
 					}
 				}
