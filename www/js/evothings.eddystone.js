@@ -249,6 +249,7 @@
 		_trilaterationTimerID = null;
 		_beaconRemoverTimerID = null;
 		_frequencyHistogramTimerID = null;
+		_watchIDaccelerometer = null;
 		setTimeout(startScan, 500); // Start tracking beacons!
 		// Timers for different purposes:
 		_trilaterationTimerID = setInterval(applyTrilateration, 500);
@@ -371,7 +372,7 @@
 		// console.log("(X = "+X+",Y = "+Y+")");
 		// console.log("(b1X:"+_b1X+",b1Y:"+_b1Y+")");
 		// console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
-		console.log("(final_X = "+_final_X+",final_Y = "+_final_Y+")");
+		console.log("(finalX = "+_final_X+",finalY = "+_final_Y+")");
 
 
 		callback();
@@ -637,17 +638,28 @@
 		if (_deviceMotionless) {
 		  if (_real_X !== Infinity && _real_X !== -Infinity && !isNaN(_real_X) && _real_X !== undefined &&
 		  _real_Y !== Infinity && _real_Y !== -Infinity && !isNaN(_real_Y) && _real_Y !== undefined) {
-			_avgEstimateAccelerometer.counter++;
-			_avgEstimateAccelerometer.x = (_avgEstimateAccelerometer.x + _real_X);
-			_avgEstimateAccelerometer.y = (_avgEstimateAccelerometer.y + _real_Y);
-			console.log("_avgEstimateAccelerometer.counter = " + _avgEstimateAccelerometer.counter);
-			console.log("_avgEstimateAccelerometer.x = " + _avgEstimateAccelerometer.x);
-			console.log("_avgEstimateAccelerometer.y = " + _avgEstimateAccelerometer.y);
-			_real_X = _avgEstimateAccelerometer.x / _avgEstimateAccelerometer.counter;
-			_real_Y = _avgEstimateAccelerometer.y / _avgEstimateAccelerometer.counter;
-			console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
+				// We want to prevent an overflow of the counter, therefore, when the difference between the already computed average and the new value is less than 10px,
+				// then we stop from keep counting, and the position will be definitely still.
+				if (_avgEstimateAccelerometer.counter != -1) {
+					_avgEstimateAccelerometer.counter++;
+					_avgEstimateAccelerometer.x = (_avgEstimateAccelerometer.x + _real_X);
+					_avgEstimateAccelerometer.y = (_avgEstimateAccelerometer.y + _real_Y);
+					console.log("_avgEstimateAccelerometer.counter = " + _avgEstimateAccelerometer.counter);
+					console.log("_avgEstimateAccelerometer.x = " + _avgEstimateAccelerometer.x);
+					console.log("_avgEstimateAccelerometer.y = " + _avgEstimateAccelerometer.y);
+					_new_real_X = _avgEstimateAccelerometer.x / _avgEstimateAccelerometer.counter;
+					_new_real_Y = _avgEstimateAccelerometer.y / _avgEstimateAccelerometer.counter;
+					if ((_real_X - _new_real_X >= -10) && (_real_X - _new_real_X <= 10) && (_real_Y - _new_real_Y >= -10) && (_real_Y - _new_real_Y <= 10) && Number.isSafeInteger(_avgEstimateAccelerometer.counter) &&
+								Number.isSafeInteger(_avgEstimateAccelerometer.x) && Number.isSafeInteger(_avgEstimateAccelerometer.y)) {
+						_avgEstimateAccelerometer.counter = -1;
+						console.log("DEVICE STILL! (max safe integer reached OR estimate practically motionless) COUNTER = " + _avgEstimateAccelerometer.counter);
+					}
+				}
+				_real_X = _new_real_X;
+				_real_Y = _new_real_Y;
 		 }
 		}
+		console.log("(realX = "+_real_X+",realY = "+_real_Y+")");
 		callback();
 	}
 	// This functions captures the elements from the GUI layer, draws whatever it has to draw, changes the visibility of some object and it performs the corresponding changes.
@@ -748,7 +760,7 @@
 
 		// Now, we check if the DELTA is small enough (in the THREE axises) to trigger the calculus of the average:
 		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {
-			if (!_deviceMotionlessTriggered)	{_deviceMotionlessTriggered = true; setTimeout(function() {_deviceMotionless = true;}, 20000);}
+			if (!_deviceMotionlessTriggered)	{_deviceMotionlessTriggered = true; setTimeout(function() {_deviceMotionless = true;}, 30000);} // wait 30 seconds before computing an average, so that position estimates did reach stable values.
 			console.log("_deviceMotionless = " + _deviceMotionless + "; triggered? -> " + _deviceMotionlessTriggered);
 		} else {
 			_deviceMotionless = false;
@@ -811,6 +823,7 @@
 		clearInterval(_trilaterationTimerID); // In case we go back from Map page, this is to avoid applying trilateration forever.
 		clearInterval(_beaconRemoverTimerID); // This stops the process of removing the old beacons from time to time.
 		clearInterval(_frequencyHistogramTimerID); // This stops the process of clearing out the frequency histogram array for beacon readings
+		clearInterval(_watchIDaccelerometer); // This stops from watching accelerometer values.
 	}
 
 	// Checks if the BLE is enabled, if YES, then we try to locate again the user on the map.
