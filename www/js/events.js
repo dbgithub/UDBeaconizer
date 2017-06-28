@@ -454,6 +454,7 @@
     if (!_front) {switchMaps();} // we reset the variable to its original value
     if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     $(window.location.hash + " input.input_search_bar")[0].value = _searched_rooms[_index][0].label; // Write the number of the room in the searchbar
+    $("#floor_label").addClass("anima_magician");
 
     retrieveMap(_floor, function () { // Here we are retrieving the map corresponding to the floor given by the room[] array.
         locateUser(); // This call executes all the algorithms to locate the person on the map (trilateration, drawing points and labels etc.)
