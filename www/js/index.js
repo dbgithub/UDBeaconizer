@@ -77,7 +77,7 @@ var _tooltipTimer; // Timer for a tooltip message on the screen.
     var _deviceMotionless = false; // a boolean that estimates whether the device is motionless or not, which means that we should start calculating an average to make the RED DOT as still as possible.
     var _deviceMotionlessTriggered = false; // An auxiliary boolean that indicated if the setTimeout has been launched.
     var _avgEstimateAccelerometer = {}; // an object holding an average of X and Y coordinates for the user's estimated position
-var _input; // A boolean representing whether an text input has gained focus or not.
+var _input; // A boolean representing whether a text input has gained focus or not.
 var _viewportHeight; // This is the Height of the Viewport of the application at some point in time.
 var _softKeyboard = false; // A boolean representing whether the soft keyboard is shown or not.
 var _signedInUser = null; // This is a Javascript object representing the user just signed in. The containing fields are: 'email', 'idToken', 'userId', 'displayName', 'imageUrl'. More info at: https://github.com/EddyVerbruggen/cordova-plugin-googleplus
