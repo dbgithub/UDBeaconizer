@@ -310,6 +310,7 @@
 	function checkIfUserAtTheSameFloor(callback) {
 		console.log("user floor = " + _floor + " | beacons floor = " + _currentfloor + " | stopLoop = " +_stop);
 		if (_floor != _currentfloor && !_stop) { // This will occur if the user and the room are in different floors.
+			$("#spa_map #footer > img:first-child").css("display", "inline");
 			$("#spa_map #footer > img:first-child").addClass("anima_magician");
 			$("#floor_label").addClass("anima_magician");
 			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
@@ -318,6 +319,8 @@
 			_stop = false;
 			_sameFloor = true; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 			removeDuplicatedMaps();
+			$("#spa_map #footer > img:first-child").css("display", "none");
+			$("#floor_label").addClass("anima_magician");
 		} else if (_floor != _currentfloor && _stop) {
 			_sameFloor = false; // A boolean indicating whether the user is at the same floor as the one he/she is searching for. This works in conjuction with the "_allowYOUlabel" boolean to make the label YOU (source point, user's location) be visible.
 		}

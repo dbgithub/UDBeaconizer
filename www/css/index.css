@@ -67,7 +67,7 @@
     position: absolute; /* This is absolute in order to make the impression that floats over the rest of the elements */
     margin-top: -6px;
     /*max-height: 180px;*/
-    max-height: 30vh;
+    max-height: 30vh; /* 'vh' unit depends on the Viewport Height, it's a relationship */
     overflow: scroll;
     z-index: 2;
     visibility: hidden;

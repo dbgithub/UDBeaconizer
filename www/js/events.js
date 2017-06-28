@@ -1,6 +1,6 @@
 // This method initializes the functionalities of some plugins and third-party scripts all in one function.
 // It is not strictly required to initialize it at the beginning, but it saves time whenever the functionalities are needed during the life-cycle of the application.
-function pluginsInitialization() {
+  function pluginsInitialization() {
     // jQuery-flip
     $("#card").flip({
         trigger: 'manual',
@@ -137,7 +137,7 @@ function pluginsInitialization() {
 
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
-function livesearch(inputvalue) {
+  function livesearch(inputvalue) {
     // var re = /\s/g; // this is a regular expression checking for one or more space characters in the whole string, "g" means global.
     // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
     // hence the search would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
@@ -175,7 +175,7 @@ function livesearch(inputvalue) {
 
 // It hides the live-search-result DOM element and its content
 // We collect several elements with a certain ID becasue SPA (single page application) is a nightmare regarding selecting the IDs of the DOM
-function hideLiveSearchResults() {
+  function hideLiveSearchResults() {
     var div = $("[id='div_liveSearchResults']"); // It obtains all elements with 'id' to whatever. It doesn't just capture the element in the current page, instead, it captures all divs from all pages.
     for (i = 0; i< div.length; i++) {
         $(div[i]).css("visibility", "hidden");
@@ -186,7 +186,7 @@ function hideLiveSearchResults() {
 
 // This function cleans the GUI of the index page. This involves cleaning the text within ALL inputs of all SPA pages.
 // As an aside note, it also removes the jQuery white crosses that are used to actually remove the content of the inputs too.
-function cleanGUI() {
+  function cleanGUI() {
     var input = $("[class=input_search_bar]");
     // We are also interested in removing the jQuery white cross that is used to erase the content of the input.
     // This white cross is drawn (implemented) as an anchor tag (<a>) by jQuery, so we need to access it and add a "hidden" class.
@@ -203,18 +203,18 @@ function cleanGUI() {
 
 // Searches for the person/people in the database
 // We also make a call to "retrieveRoom" because there are some rooms that doesn't contain numbers and therefore are treated as normal strings
-function searchPeople(inputvalue) {
+  function searchPeople(inputvalue) {
     retrievePerson(inputvalue, function() {showBothStaffNRooms();});
     retrieveRoom(inputvalue, false, function() {showRoomsList();}); // false means that it doesn't show its results because "retrievePerson" is actually handleing it.
 }
 
 // Searches for the room in the database
-function searchRoom(inputvalue) {
+  function searchRoom(inputvalue) {
     retrieveRoom(inputvalue, true, function() {showRoomsList();}); // true means that it DOES show its results because the search item contains a number
 }
 
 // Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
-function showRoomsList() {
+  function showRoomsList() {
     if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (rooms): " +_searched_rooms.length);
@@ -240,7 +240,7 @@ function showRoomsList() {
 }
 
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
-function showBothStaffNRooms() {
+  function showBothStaffNRooms() {
     if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (people): " +_searched_people.length);
@@ -273,7 +273,7 @@ function showBothStaffNRooms() {
 }
 
 // This is called when SPA Contact is loaded
-function loadContactDetails() {
+  function loadContactDetails() {
     // I used to use browser's localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info also at: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     var person = _searched_people[_index];
@@ -328,7 +328,7 @@ function loadContactDetails() {
 }
 
 // This is called when SPA EditContact is loaded
-function loadEditContactDetails() {
+  function loadEditContactDetails() {
     var person = _searched_people[_index];
     var rows = "";
     var officehours = "";
@@ -410,7 +410,7 @@ function loadEditContactDetails() {
 }
 
 // Adds/Appends an HTML row within the SPA EditContact
-function add_row() {
+  function add_row() {
     // Now we are defining and declaring a standard row with the corresponding dropdown elements. This structure will be added every time the user taps on "Add Row":
     // First of all, let's see how many rows have already been added and we will follow up that number:
     _amountOfRowsAdded++;
@@ -438,7 +438,7 @@ function add_row() {
 
 // This function is triggered when any office number with a link has been pressed. It puts the pressed room/place within the search bar
 // and searches for it.
-function linkSearch(x) {
+  function linkSearch(x) {
     _searched_rooms = [];
     $(window.location.hash + " input.input_search_bar")[0].value = x; // Write the name of the room in the searchbar
     _linkSearch = true;
@@ -446,10 +446,10 @@ function linkSearch(x) {
 }
 
 // This method is called in the 'onLoad' event handler of the map.html page
-function loadMap() {
+  function loadMap() {
     console.log("LOADING ROOM... "+ _searched_rooms[_index][0].label);
     _floor = _searched_rooms[_index][1]; // we assign the floor number to this global variable in order to decide what map to show later on.
-    _sameFloor = true; // we want to load the desstination image first and in the front side of the jQuery flip plugin.
+    _sameFloor = true; // we want to load the destination image first and in the front side of the jQuery flip plugin.
     _allowYOUlabel = false; // we reset the boolean
     if (!_front) {switchMaps();} // we reset the variable to its original value
     if (_personRoomTouched) {clearTimeout(_personRoomTouchedTimerID); _personRoomTouchedTimerID = setTimeout(function() {_personRoomTouched = false;}, 1000);} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
@@ -482,7 +482,7 @@ function loadMap() {
 
 // This method pans and zooms over the image/map.
 // It waits for the second map to load to avoid misbihavors
-function panANDzoom() {
+  function panANDzoom() {
     $("#map_wrapper").panzoom("resetPan", false); // This resets the image's position to the origin of coordinates
     $("#map_wrapper").panzoom("resetZoom", false); // This resets the image's zoom to the original zoom value
     $("#map_wrapper").panzoom("setMatrix", [1,0,0,1,0,0]); // This resets the image's matrix to default and initial values.
@@ -496,7 +496,7 @@ function panANDzoom() {
 
 // Shows/loads the image within the DOM element.
 // "_sameFloor" boolean indicates whether to load the map/image just as a unique floor or as a second floor. This might occur if the user and the room are in different floors.
-function showMap() {
+  function showMap() {
     if (_sameFloor) {
         // We show the image as a unique map. This could mean that the user and the room are at the same floor.
         var map = document.getElementById("map");
@@ -527,7 +527,7 @@ function showMap() {
 }
 
 // A function to swap between two maps
-function switchMaps() {
+  function switchMaps() {
     $('#card').flip('toggle');
     $('#floor_label').flip('toggle');
     if (_front) {_front = false;} else {_front = true;}
@@ -552,7 +552,7 @@ function switchMaps() {
 
 // This functions checks two booleans. Both booleans are set during application runtime.
 // All depends on whether there exists a communication with the beacons and if the user is at the same floor as the one he/she is searching for.
-function updateYOUlabel() {
+  function updateYOUlabel() {
     console.log("sameFloor = " + _sameFloor + " | YOU label visible = " + _allowYOUlabel);
     var youPoint_circle = document.getElementById("youPoint_circle"); // This is the red point corresponding to YOU
     var you_label = document.getElementById("p_you_label"); // This is the red label corresponding to YOU
@@ -569,16 +569,16 @@ function updateYOUlabel() {
         you_label.style.visibility="hidden";
     }
 }
-// This functions removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
+// This function removes the possibility of switching between maps because it is supposed that the user and the room he/she is searching for are in the same floor.
 // So, now, we go back to the normal scenario.
-function removeDuplicatedMaps() {
+  function removeDuplicatedMaps() {
     if (!_front) {switchMaps();}
     var you_label = document.getElementById("p_you_label");
     var dest_label = document.getElementById("p_dest_label");
     var youPoint_circle = document.getElementById("youPoint_circle");
     var dest_point = document.getElementById("destinationPoint_circle");
     $("#spa_map #footer > img:first-child").removeClass("anima_magician");
-    $("#floor_label").removeClass("anima_magician");
+    //$("#floor_label").removeClass("anima_magician");
     you_label.style.visibility = "visible";
     dest_label.style.visibility = "visible";
     youPoint_circle.style.visibility = "visible";
@@ -587,7 +587,7 @@ function removeDuplicatedMaps() {
 
 // This function shows a tooltip with the message given in the parameter when the user presses and maintains the finger over the object.
 // When the user maintains the pressure over that object this tooltip will appear explaining the meaning of that button, object or whatever.
-function showOnPressedToolTip(string){
+  function showOnPressedToolTip(string){
     _tooltipTimer = setTimeout(function () {
         window.plugins.toast.show(string, 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
     }, 800);
@@ -595,17 +595,17 @@ function showOnPressedToolTip(string){
 
 // This function shows a tooltip with the message given in the parameter.
 // For the moment, the duration and position of the Toast message is not editable.
-function showToolTip(string) {
+  function showToolTip(string) {
     window.plugins.toast.show(string, 'long', 'bottom', null, function(e){console.log("error showing toast:");console.log(e);});
 }
 
 // Aborts the tooltip timer, and therefore, the toast message in this case
-function abortToolTipTimer(){
+  function abortToolTipTimer(){
     clearTimeout(_tooltipTimer);
 }
 
 // This function performs several things before loading the map html page within the SPA (Single Page Application) context.
-function goMap(index) {
+  function goMap(index) {
     // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
@@ -615,7 +615,7 @@ function goMap(index) {
 }
 
 // This function performs several things before loading the contact html page within the SPA (Single Page Application) context.
-function goContact(index) {
+  function goContact(index) {
     // I used to do this in a different way, using localstorage: http://stackoverflow.com/questions/17309199/how-to-send-variables-from-one-file-to-another-in-javascript?answertab=votes#tab-top
     // more info here: https://developer.mozilla.org/en-US/docs/Web/API/Web_Storage_API
     _index = index; // Now we assign the index to a global variable so as to know which variable to use in "searched room" and "searched people"
@@ -625,7 +625,7 @@ function goContact(index) {
 }
 
 // This function performs several things before loading the "edit contact" page within the SPA (Single Page Application) context.
-function goEditContact() {
+  function goEditContact() {
     if (_signedInUser != null) {
         cleanGUI();
         window.location = "#spa_edit_contact";
@@ -636,7 +636,7 @@ function goEditContact() {
 }
 
 // This function performs several things before loading the "edit map" page within the SPA (Single Page Application) context.
-function goEditMap() {
+  function goEditMap() {
     showToolTip("Currently this feature is not available :(  I'm sorry!");
     // window.location = "#spa_mapEdit";
 }
@@ -645,7 +645,7 @@ function goEditMap() {
 // _input is a boolean representing whether an text input has gained focus or not.
 // _viewportHeight is the Height of the Viewport of the application at some point in time.
 // _softKeyboard is a boolean representing whether the soft keyboard is shown or not.
-function softKeyboard(height) {
+  function softKeyboard(height) {
     var piezazo = document.getElementById("footer");
     if (!_input || (_input && height > _viewportHeight && _softKeyboard)) {piezazo.style.display = "initial"; _softKeyboard = false} else if (_input && !_softKeyboard ) {piezazo.style.display = "none"; _softKeyboard = true;}
     _viewportHeight = height;
@@ -664,7 +664,7 @@ function softKeyboard(height) {
 // Para mas informacion sobre todo: https://developers.google.com/identity/sign-in/web/sign-in
 // Google Developers products: https://developers.google.com/products/
 // Apps connected to your device/account: https://security.google.com/settings/security/permissions?pli=1
-function signInOAuth() {
+  function signInOAuth() {
         try {
             window.plugins.googleplus.login(
                 {
@@ -689,7 +689,7 @@ function signInOAuth() {
 }
 
 // This function logs out the user from the app. It forgets the OAuth2 token as well as which account was used to log in.
-function disconnectOAuth() {
+  function disconnectOAuth() {
     try {
         window.plugins.googleplus.disconnect(
             function (msg) {
@@ -712,7 +712,7 @@ function disconnectOAuth() {
 
 // This funtion tries to sign in silently within the Google account in case the user was already signed in before and did not sign out.
 // Even though the app was closed, the logging information will remain somewhere so that it can be accessed again without forcing the user to introduce again the credentials.
-function silentLoginOAuth() {
+  function silentLoginOAuth() {
     try {
         window.plugins.googleplus.trySilentLogin(
             {
@@ -735,7 +735,7 @@ function silentLoginOAuth() {
 }
 
 // This function is executed after the user has signed in. It displays her/his name and email. The "sign out" button appears too.
-function afterSignedIn(user) {
+  function afterSignedIn(user) {
     $(".btn_signout").css("display", "inline"); $(".btn_signout").removeClass("anima_fade");
     $(".p_oauth_name").css("display", "inline"); $(".p_oauth_name").removeClass("anima_fade");
     $(".p_oauth_email").css("display", "inline"); $(".p_oauth_email").removeClass("anima_fade");
@@ -748,7 +748,7 @@ function afterSignedIn(user) {
 // Meaning of the bolean (bol) variable:
 // 1 = SAVE
 // 0 = CANCEL
-function prompt_savecancel(action, bol, callback) {
+  function prompt_savecancel(action, bol, callback) {
     // bolean meaning:
     // 1 = SAVE
     // 0 = CANCEL
@@ -785,7 +785,7 @@ function prompt_savecancel(action, bol, callback) {
 // This function saves the changes done on the EditContact SPA. An ajax call is made passing as parameters
 // the tokenID of the OAuth from Google, the changes done in the form of a dictionary and the contact with
 // the original information.
-function savechanges() {
+  function savechanges() {
     // The following dictionary or Object will store key-value records regarding the changes made by the user.
     // More info at: http://stackoverflow.com/questions/456932/hash-table-in-javascript#answer-457035
     // https://www.tutorialspoint.com/javascript/javascript_objects.htm
@@ -865,7 +865,7 @@ function savechanges() {
 
 // This function checks for Internet connection on the device. It makes use of the Cordova API "cordova.network.information" and
 // a native function of the browser to check whether it is online or not.
-function checkInternetConnection() {
+  function checkInternetConnection() {
     if (navigator.connection.type === Connection.NONE || !window.navigator.onLine) {
         showToolTip("Seems like there is a network connection problem! Please check your WiFi or Data connection and try again 😢");
     }
