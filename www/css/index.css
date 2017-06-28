@@ -508,7 +508,7 @@ div[data-role=panel] p:first-of-type { /* It affects: SPA_MAP + SPA_CONTACT */
     height: 50px !important;
     bottom: 70px;
     /*left: 0px;*/
-    left: 75px;
+    left: 70px;
     display:none; /* It is not shown because it will be shown just in necessary cases*/
 }
 #spa_map .footer > img:first-child:active { /* la flechita significa todas las 'img' con parent 'footer' */

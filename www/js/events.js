@@ -222,7 +222,7 @@
         if (_searched_rooms.length == 1 && _linkSearch) {window.location='#spa_map';goMap(0); _linkSearch = false; return;} // If this statement returns true, it means that the search was originally performed by a link-pressed action (within the contact page for instance).
         var list = "";
         for (j = 0; j < _searched_rooms.length; j++) {
-            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; if (window.location.hash == '#spa_edit_contact') {prompt_savecancel('DISCARD changes',0, function() {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");})} else {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");};\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
+            list += "<li><a ontouchend=\"if(_preventClick){_preventClick=false;return true;}; _linkSearch = false; if (window.location.hash == '#spa_edit_contact') {prompt_savecancel('DISCARD changes',0, function() {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");})} else {window.location='#spa_map'; _personRoomTouched = true; goMap("+j+");};\" ontouchmove='_preventClick=true;' data-transition='slide' data-prefetch='true'><img src='img/location_ico_icon.png' alt='rooomicon' class='ui-li-icon ui-corner-none'>" + (_searched_rooms[j])[0].label + "</a></li>"
         }
         var div = $(window.location.hash + " #div_liveSearchResults");
         if (_searched_rooms.length > 6) {
