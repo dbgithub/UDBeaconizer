@@ -39,7 +39,7 @@ var _personRoomTouchedTimerID; // This is the ID of the timer that is launched b
 var _firstTime = false; // This boolean controls whether it is necessary to execute 'requestMapImages' when syncDB is called.
 var _mapNames = ["0_planta_cero.jpg", "1_planta_uno.jpg", "2_planta_dos.jpg", "3_planta_tres.jpg", "4_planta_cuatro.jpg", "5_planta_cinco.jpg"]; // This array contains the names of the images representing the maps. Whenever we declare a new map or we change its name, we should ONLY do it here, not anywhere else in the code.
 var _searchTimer; // A timer that executes a certain function when the user stops writing something in the search bar.
-var _searchTimerArray = []; // An array that is used to avoid overlapping of the results in "div_liveSearchResults"
+var _searchTimerArray = []; // An array that is used to avoid overlapping of the results in "div_liveSearchResults" // TODO: not very usefull fore the moment! I don't know how to tackle that!
 var _tooltipTimer; // Timer for a tooltip message on the screen.
     // GLOBAL VARIABLES used in "evothings.eddystone.js":
     var _trilaterationTimerID; // This is the ID of the timer triggered by a setInterval in the trilateration function
@@ -148,6 +148,7 @@ var app = {
             window.location = "#spa_index";
             parenLasRotativas(); // This stops the scan and resets the values for both Intervals set to calculate trilateration
             clearInterval(_blestatusTimerID);
+            fetchDB();
         }
     },
     onDeviceReady: function() {

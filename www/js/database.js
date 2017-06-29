@@ -5,7 +5,7 @@
 // in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
-function fetchDB() {
+  function fetchDB() {
     _db = new PouchDB(_staffdb_name); // Fetching the database for staff.
     _dbrooms = new PouchDB(_roomsdb_name); // Fetching the database for rooms.
     _dbbeacons = new PouchDB(_beacons_name); // Fetching the database for beacons.
@@ -19,7 +19,7 @@ function fetchDB() {
 // in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
-function initializeDB() {
+  function initializeDB() {
     // STAFF database:
     _db.info().then(function (result) {
         // If it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
@@ -38,7 +38,7 @@ function initializeDB() {
 // in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
-function iniRoomsDB() {
+  function iniRoomsDB() {
     //ROOMS database:
     _dbrooms.info().then(function (result) {
         // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
@@ -59,7 +59,7 @@ function iniRoomsDB() {
 // in order to avoid race conditions! That's why the overall structure of the initialization of the database is done separating each function from each other.
 // The logic goes as follows: first fetching occurs, then 'staff' database initialization, then 'rooms' database initialization and so on. Callbacks are
 // called within the functions to avoid problems with race conditions or similar issues.
-function iniBeaconsDB() {
+  function iniBeaconsDB() {
     // BEACONS database:
     _dbbeacons.info().then(function (result) {
         // Now, if it is the first time, a local document is created for updating purposes, otherwise, we will look for changes:
@@ -72,7 +72,7 @@ function iniBeaconsDB() {
 }
 
 // Deletes the database given as an argument
-function deleteDB(dbname) {
+  function deleteDB(dbname) {
     dbase = new PouchDB(dbname);
     dbase.destroy().then(function (response) {
         // success
@@ -84,7 +84,7 @@ function deleteDB(dbname) {
 }
 
 // Shows database info
-function DBinfo(db) {
+  function DBinfo(db) {
     db.info().then(function (result) {
         var str =
         "DB name: " + result.db_name + "\n" +
@@ -103,7 +103,7 @@ function DBinfo(db) {
 
 // This function syncs the local database with the remote database.
 // Afterwards, the local document within the local database is updated to keep up with the remote update sequence number.
-function syncDB(db, dbname) {
+  function syncDB(db, dbname) {
     var remotedb = new PouchDB(_database_domain+'/'+dbname); // We fetch here the remote database
     // Now we replicate the content from the remote database to the local database in order to ensure the same data is in both databases.
     db.replicate.from(remotedb).on('change', function (info) {
@@ -138,7 +138,7 @@ function syncDB(db, dbname) {
 // This function checks for changes in the local database.
 // It compares the 'update_seq' of the remote database with the 'sequence_number_version' of the local document of the local database.
 // 'alias' corresponds to "staff" for example, and 'dbname' corresponds to "staffdb" (the real database name)
-function checkChanges(db, dbalias, dbname) {
+  function checkChanges(db, dbalias, dbname) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/version'+'?auth=admin', success: function(result){
         db.get('_local/sequence_number_version').then(function (result2) {
             console.log("sequence_number_version ["+dbalias+"] (local)="+result2.seq_version);
@@ -153,7 +153,7 @@ function checkChanges(db, dbalias, dbname) {
 
 // This function checks for changes in the local database corresponding to maps' images.
 // 'alias' corresponds to "room" for example, and 'dbname' corresponds to "roomsb" (the real database name)
-function checkMapChanges(floor, dbalias, callback) {
+  function checkMapChanges(floor, dbalias, callback) {
     $.ajax({type:"GET", url: _server_domain+'/'+dbalias+'/mapversion/'+floor+'?auth=admin', success: function(result){
         setTimeout(function() {
             _dbrooms.get("map"+floor.toString()).then(function (result2) {
@@ -178,7 +178,7 @@ function checkMapChanges(floor, dbalias, callback) {
 // This sequence number is used as a version number of the database, pretty much the same as the vanilla "update_seq".
 // This local document and the sequence number is only stored in local databases, not in remote databases. The latter ones have their own "update_seq".
 // The problem is that when replication is done, the local database doesn't track the changes done by replicate which doesn't update "update_seq" number either.
-function createLocalDocument(db) {
+  function createLocalDocument(db) {
     db.info().then(function (result) {
         db.put({
             _id: '_local/sequence_number_version',
@@ -196,7 +196,7 @@ function createLocalDocument(db) {
 // This function is called from two parts of the code: "syncDB" and "saveMapImage". In the former scenario, there is no need to look
 // at the new sequence number. However, in the latter case, there is no way of knowing the new sequence number rather than checking it
 // in the local database and add 1 to that number.
-function updateLocalDocument(db, new_seq) {
+  function updateLocalDocument(db, new_seq) {
     // if (new_seq != null) { // Este codigo comentado y el de la parte de abajo es para evitar que rooms.js se actualice solo cuando hay que actualizar un mapa. No esta acabado del todo. Falta evitar que se ejecute cuando la app se inicia por primera vez.
         db.get('_local/sequence_number_version').then(function (result) {
             db.put({
@@ -238,7 +238,7 @@ function updateLocalDocument(db, new_seq) {
 // This function recursively retrieves all floor images (UNLESS one of the parameters, 'callback', is NULL; in that case, just one floor will be requested)
 // from the remote database starting from the floor given by the parameter.
 // It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
-function requestMapImages(floor, callback, new_version){
+  function requestMapImages(floor, callback, new_version){
         console.log("Requesting map image #"+floor+" (floor)");
         var fimage = new XMLHttpRequest();
         fimage.open("GET", _server_domain+'/maps/'+_mapNames[floor], true); // 'true' means asynchronous
@@ -276,7 +276,7 @@ function requestMapImages(floor, callback, new_version){
 // Map images are saved separated from the information of each floor in the database. The document contains an image field where the image is saved as a string.
 // The images are not saved as attachements!
 // It is necessary to include also a version of the map which will be used later on to check whether the map is outdated or not.
-function saveMapImage(floor, base64, new_version) {
+  function saveMapImage(floor, base64, new_version) {
     _dbrooms.get("map"+floor).then(function (doc) {
         var ver;
         if (new_version != null) {ver = new_version; } else {ver = doc.v;}
@@ -299,7 +299,7 @@ function saveMapImage(floor, base64, new_version) {
 }
 
 // This function retrieves a person or several persons based on the given name from the database
-function retrievePerson(name, callback) {
+  function retrievePerson(name, callback) {
     _db.allDocs({
         include_docs: true
         // attachments: true // This is not used for the moment
@@ -321,7 +321,7 @@ function retrievePerson(name, callback) {
 // The boolean controls whether to show the results or not. This is done like that because when the searching item contains a number
 // retrieveRoom is exclusively executed, but if the searching item doesn't contain a number retrieveStaff is executed first and
 // is responsible of showing the corresponding results.
-function retrieveRoom(room, bool, callback) {
+  function retrieveRoom(room, bool, callback) {
     _dbrooms.allDocs({
         include_docs: true,
         startkey: '0', // We are including startkey and endkey so that we skip the floor documents which are not part of the search.
@@ -369,7 +369,7 @@ function retrieveRoom(room, bool, callback) {
 }
 
 // This function is part of an AJAX call that retrieves an image/map
-function retrieveMap(floor, callback) {
+  function retrieveMap(floor, callback) {
         _dbrooms.get("map"+floor).then(function (doc) {
             blobUtil.base64StringToBlob(doc.image).then(function (blob) {
                 // success
@@ -396,7 +396,7 @@ function retrieveMap(floor, callback) {
 
 // This function retrieves the information attached to a specific beacon from the database and assigns its coordinates to the corresponding global variables.
 // Those global variables are used for trilateration.
-function retrieveBeacon(instance, j) {
+  function retrieveBeacon(instance, j) {
     _dbbeacons.get(instance).then(function(doc) {
             _beacon = doc;
             if (j == 0) {
@@ -419,7 +419,7 @@ function retrieveBeacon(instance, j) {
 }
 
 // Retrieves the coordinates of the beacon passed as a parameter and it sums to a global variable
-function retrieveBeaconCoordinates(instance) {
+  function retrieveBeaconCoordinates(instance) {
   _dbbeacons.get(instance).then(function(doc) {
           _centroid.Xtmp += parseInt(doc.x);
           _centroid.Ytmp += parseInt(doc.y);
@@ -434,7 +434,7 @@ function retrieveBeaconCoordinates(instance) {
 }
 
 // TO DELETE: it's just for testing purposes
-function getAttachment(floor){
+  function getAttachment(floor){
     console.log("HOLA??? (floor= "+floor+")");
     _dbrooms.get("map"+floor.toString()).then(function (doc) {
         console.log(doc._id);
