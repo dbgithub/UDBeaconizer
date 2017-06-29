@@ -247,7 +247,8 @@
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
   function showBothStaffNRooms() {
     var tmp_value = _searchTimerArray.shift();
-    if (tmp_value < _searchTimer) {return;}
+    if (tmp_value < _searchTimer) {console.log("shifted value (not allowed): " + tmp_value); return;}
+    console.log("shifted value!: " + tmp_value);
     if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (people): " +_searched_people.length);
