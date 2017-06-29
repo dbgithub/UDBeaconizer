@@ -138,7 +138,6 @@
 // This function tracks the user when he/she stops writing and makes a query with the text within the bar. It makes sure that white
 // spaces don't count as a query. It's a live search meaning that every 1s it checks what is inside the search bar.
   function livesearch(inputvalue) {
-    clearTimeout(_searchTimer); _searchTimer = null;
     // var re = /\s/g; // this is a regular expression checking for one or more space characters in the whole string, "g" means global.
     // We are not using it for the moment because "Fulanito menganito" would be detected as a string with a space,
     // hence the search would not be lunched. To test a text accordingly to the regular expressions just: re.test(text)
@@ -146,15 +145,17 @@
     // We check whether the input text introduced by the user contains numbers (rooms, offices...) or a simple name:
     if (inputvalue.length != 0 && inputvalue != "" && !/\d/.test(inputvalue)) {
         console.log(inputvalue);
-        clearTimeout(_searchTimer); _searchTimer = null;
+        //clearTimeout(_searchTimer);
         _searchTimer = setTimeout(function() {searchPeople(inputvalue)}, 50); // YOU CAN MODIFY the '50' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
+        _searchTimerArray.push(_searchTimer);
     } else if (/\d/.test(inputvalue)){ // This is going to happen if the input has a digit among what has been written
         console.log(inputvalue);
-        clearTimeout(_searchTimer); _searchTimer = null;
+        //clearTimeout(_searchTimer);
         _searchTimer = setTimeout(function() {searchRoom(inputvalue)}, 50); // YOU CAN MODIFY the '50' value to make it more responsive. More info about timer at: http://www.w3schools.com/js/js_timing.asp
+        _searchTimerArray.push(_searchTimer);
     } else {
         // More info about Toast plugin at: https://github.com/EddyVerbruggen/Toast-PhoneGap-Plugin
-        clearTimeout(_searchTimer); _searchTimer = null;
+        //clearTimeout(_searchTimer);
         hideLiveSearchResults();
         showToolTip('Please, type anything in the search bar :)');
     }// END outside if
@@ -216,7 +217,9 @@
 
 // Shows the list of rooms (labs, places) found in the database according to the input text. It's displayed in the live-search-result element from DOM.
   function showRoomsList() {
-    if (_searchTimer == null ) {return;}
+    var tmp_value = _searchTimerArray.shift();
+    if (tmp_value < _searchTimer) {console.log("shifted value (not allowed): " + tmp_value); return;}
+    console.log("shifted value!: " + tmp_value);
     if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (rooms): " +_searched_rooms.length);
@@ -243,7 +246,8 @@
 
 // Shows the list of rooms and staff found in the database according to the input text. It's displayed in the live-search-result element from DOM.
   function showBothStaffNRooms() {
-    if (_searchTimer == null ) {return;}
+    var tmp_value = _searchTimerArray.shift();
+    if (tmp_value < _searchTimer) {return;}
     if (_personRoomTouched) {return;} // This prevents the liveSearchResults div from appearing when a SPA page is changed and a search is still on the go.
     if ($(window.location.hash + " input.input_search_bar").val() == "") {return;} // When the erase/clear button is clicked in the search bar, the search is trigerred unintentionally, so this 'if' prevents the liveresults div from showing again.
     console.log("Items found (people): " +_searched_people.length);
