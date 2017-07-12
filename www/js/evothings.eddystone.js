@@ -758,8 +758,8 @@
 			  'Acceleration (delta) Y: ' + Math.abs(_deltaAccel.y) + '\n' +
 			  'Acceleration (delta) Z: ' + Math.abs(_deltaAccel.z));
 
-		// Now, we check if the DELTA is small enough (in the THREE axises) to trigger the calculus of the average:
-		if (_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) {
+		// Now, we check if the DELTA is small enough (in at least TWO axises) to trigger the calculus of the average:
+		if ((_deltaAccel.x < 0.8 && _deltaAccel.y < 0.8) || (_deltaAccel.x < 0.8 &&  _deltaAccel.z < 0.8) || (_deltaAccel.y < 0.8 && _deltaAccel.z < 0.8) ) {
 			if (!_deviceMotionlessTriggered)	{_deviceMotionlessTriggered = true; setTimeout(function() {_deviceMotionless = true;}, 30000);} // wait 30 seconds before computing an average, so that position estimates did reach stable values.
 			console.log("_deviceMotionless = " + _deviceMotionless + "; triggered? -> " + _deviceMotionlessTriggered);
 		} else {
